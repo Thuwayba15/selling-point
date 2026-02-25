@@ -1,16 +1,20 @@
 "use client";
 
-import { Button, Card, Form, Input, Space, Typography } from "antd";
-import Link from "next/link";
+import { Form } from "antd";
 import { useRouter } from "next/navigation";
-
 import { useAuthActions } from "@/providers/auth";
-
-const { Title, Text } = Typography;
+import AuthLayout from "@/components/auth/AuthLayout";
+import AuthCard from "@/components/auth/AuthCard";
+import AuthTitle from "@/components/auth/AuthTitle";
+import AuthInput from "@/components/auth/AuthInput";
+import AuthButton from "@/components/auth/AuthButton";
+import AuthLink from "@/components/auth/AuthLink";
+import { useStyles } from "@/components/auth/style";
 
 const LoginPage = () => {
   const router = useRouter();
   const { login } = useAuthActions();
+  const { styles } = useStyles();
 
   const onFinish = async (values: { email: string; password: string }) => {
     const ok = await login(values.email, values.password);
@@ -18,29 +22,37 @@ const LoginPage = () => {
   };
 
   return (
-    <Card>
-      <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-        <Title level={3}>Login</Title>
+    <AuthLayout>
+      <AuthCard>
+        <Form layout="vertical" name="login" onFinish={onFinish}>
+          <AuthTitle>Login</AuthTitle>
 
-        <Form layout="vertical" onFinish={onFinish}>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, type: "email", message: "Please enter a valid email" }]}
+          >
+            <AuthInput placeholder="Value" />
           </Form.Item>
 
-          <Form.Item name="password" label="Password" rules={[{ required: true }]}>
-            <Input.Password />
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, min: 6, message: "Password must be at least 6 characters" }]}
+          >
+            <AuthInput type="password" placeholder="Value" />
           </Form.Item>
 
-          <Button type="primary" htmlType="submit" block>
+          <AuthButton type="primary" htmlType="submit" block>
             Sign in
-          </Button>
-        </Form>
+          </AuthButton>
 
-        <Text>
-          No account? <Link href="/register">Register</Link>
-        </Text>
-      </Space>
-    </Card>
+          <div className={styles.registerNote}>
+            No account? <AuthLink href="/register">Register</AuthLink>
+          </div>
+        </Form>
+      </AuthCard>
+    </AuthLayout>
   );
 };
 
