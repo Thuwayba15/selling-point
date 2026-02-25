@@ -1,5 +1,16 @@
+
 import type { ReactNode } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import "antd/dist/reset.css";
+import './globals.css';
+import { Inter } from "next/font/google";
+import { ConfigProvider } from 'antd';
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "500", "600", "700"],
+  display: "swap",
+});
 
 import { AuthProvider } from "@/providers/auth";
 // import { OpportunitiesProvider } from "@/providers/opportunities";
@@ -13,8 +24,8 @@ import { AuthProvider } from "@/providers/auth";
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
-      <body>
-        <AntdRegistry>
+      <body className={inter.className}>
+       
           <AuthProvider>
             {/* <OpportunitiesProvider>
               <ProposalsProvider>
@@ -23,7 +34,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                       <ClientsProvider>
                         <ReportsProvider>
                           <UsersProvider> */}
+                           <AntdRegistry>
+                            <ConfigProvider>
                             {children}
+                            </ConfigProvider>
+                            </AntdRegistry>
                             {/* </UsersProvider>
                         </ReportsProvider>
                       </ClientsProvider>
@@ -32,7 +47,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
               </ProposalsProvider>
             </OpportunitiesProvider>*/}
           </AuthProvider>
-        </AntdRegistry> 
       </body>
     </html>
   );
