@@ -1,4 +1,3 @@
-
 import { createStyles, css } from "antd-style";
 import { colors } from "@/theme/colors";
 import '../../app/globals.css';
@@ -95,5 +94,21 @@ export const useStyles = createStyles({
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
+  `,
+  userMenuContent: css`
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    padding: 16px;
+  `,
+  userMenuTextStrong: css`
+    font-size: 14px;
+  `,
+  userMenuTextSecondary: css`
+    font-size: 12px;
+  `,
+  userMenuDivider: css`
+    margin: 12px 0;
   `,
 });
