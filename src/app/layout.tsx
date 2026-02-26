@@ -7,13 +7,13 @@ import "antd/dist/reset.css";
 import "./globals.css";
 
 import { AuthProvider } from "@/providers/auth";
+import { ClientsProvider } from "@/providers/clients";
 import { antdTheme } from "@/theme/theme";
 // import { OpportunitiesProvider } from "@/providers/opportunities";
 import { OpportunitiesProvider } from "@/providers/opportunities";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
 // import { ActivitiesProvider } from "@/providers/activities";
-// import { ClientsProvider } from "@/providers/clients";
 // import { ReportsProvider } from "@/providers/reports";
 // import { UsersProvider } from "@/providers/users";
 
@@ -28,23 +28,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          {/* <OpportunitiesProvider>
-            <ProposalsProvider>
-              <ContractsProvider>
-                <ActivitiesProvider>
-                  <ClientsProvider>
-                    <ReportsProvider>
-                      <UsersProvider> */}
-          <AntdRegistry>
-            <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
-          </AntdRegistry>
-          {/* </UsersProvider>
-                    </ReportsProvider>
-                  </ClientsProvider>
-                </ActivitiesProvider>
-              </ContractsProvider>
-            </ProposalsProvider>
-          </OpportunitiesProvider>*/}
+          <ClientsProvider>
+            <AntdRegistry>
+              <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
+            </AntdRegistry>
+          </ClientsProvider>
         </AuthProvider>
       </body>
     </html>

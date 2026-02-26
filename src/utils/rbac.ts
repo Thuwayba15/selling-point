@@ -133,6 +133,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   ],
 
   SalesRep: [
+    // Clients
+    "create:client",
+    "update:client",
+
     // Opportunities (only assigned ones)
     "view:my-opportunities",
     "update:assigned-opportunity",
