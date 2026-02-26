@@ -1,42 +1,61 @@
-import { AuthActionType, type AuthAction, type AuthState } from "./context";
+"use client";
 
-export const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case AuthActionType.BOOTSTRAP_SUCCESS: {
-      const user = action.payload.user;
+import { handleActions } from "redux-actions";
+import type { Action } from "redux-actions";
+
+import { INITIAL_STATE, type AuthState, type AuthUser } from "./context";
+import { AuthActionTypes } from "./actions";
+
+type PayloadAction<T> = Action<T>;
+
+export const authReducer = handleActions<AuthState, any>(
+  {
+    [AuthActionTypes.BOOTSTRAP_SUCCESS]: (
+      state,
+      action: PayloadAction<AuthUser | null>,
+    ) => {
+      const user = action.payload ?? null;
+
       return {
         ...state,
         isBootstrapped: true,
-        user,
         isAuthenticated: Boolean(user),
+        user,
         errorMessage: null,
       };
-    }
+    },
 
-    case AuthActionType.LOGIN_SUCCESS:
+    [AuthActionTypes.LOGIN_SUCCESS]: (
+      state,
+      action: PayloadAction<AuthUser>,
+    ) => {
+      const user = action.payload ?? null;
+
       return {
         ...state,
         isBootstrapped: true,
-        isAuthenticated: true,
-        user: action.payload.user,
+        isAuthenticated: Boolean(user),
+        user,
         errorMessage: null,
       };
+    },
 
-    case AuthActionType.LOGOUT:
-      return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
-        errorMessage: null,
-      };
+    [AuthActionTypes.LOGOUT]: (state) => ({
+      ...state,
+      isAuthenticated: false,
+      user: null,
+      errorMessage: null,
+    }),
 
-    case AuthActionType.SET_ERROR:
-      return { ...state, errorMessage: action.payload.message };
+    [AuthActionTypes.SET_ERROR]: (state, action: PayloadAction<string>) => ({
+      ...state,
+      errorMessage: action.payload ?? "Something went wrong.",
+    }),
 
-    case AuthActionType.CLEAR_ERROR:
-      return { ...state, errorMessage: null };
-
-    default:
-      return state;
-  }
-};
+    [AuthActionTypes.CLEAR_ERROR]: (state) => ({
+      ...state,
+      errorMessage: null,
+    }),
+  },
+  INITIAL_STATE,
+);

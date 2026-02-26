@@ -80,4 +80,4 @@ const ReportsPage = () => {
   );
 };
 
-export default withAuthGuard(ReportsPage);
+  export default withAuthGuard(ReportsPage, { allowedRoles: ["Admin", "SalesManager"] });

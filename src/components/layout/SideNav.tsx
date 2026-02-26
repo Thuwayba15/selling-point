@@ -7,17 +7,16 @@ import {
   HomeOutlined,
   ProjectOutlined,
   FileTextOutlined,
-  ReloadOutlined,
   CheckSquareOutlined,
   TeamOutlined,
   BarChartOutlined,
-  SettingOutlined,
   CrownOutlined,
   ToolOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";
 import { useAuthState } from "@/providers/auth";
+import { isAdmin, isManager } from "@/utils/rbac";
 
 import { useStyles } from "./style";
 
@@ -25,6 +24,11 @@ export const SideNav = () => {
   const pathname = usePathname();
   const { user } = useAuthState();
   const { styles } = useStyles();
+
+  // Get roles safely (handle undefined case)
+  const roles = user?.roles ?? [];
+  const adminRole = isAdmin(roles);
+  const managerRole = isManager(roles);
 
   const baseItems = [
     { key: ROUTES.dashboard, icon: <HomeOutlined />, label: <Link href={ROUTES.dashboard}>Dashboard</Link> },
@@ -34,17 +38,18 @@ export const SideNav = () => {
     { key: ROUTES.contracts, icon: <FileTextOutlined />, label: <Link href={ROUTES.contracts}>Contracts</Link> },
     { key: ROUTES.activities, icon: <CheckSquareOutlined />, label: <Link href={ROUTES.activities}>Activities</Link> },
     { key: ROUTES.clients, icon: <TeamOutlined />, label: <Link href={ROUTES.clients}>Clients</Link> },
-    { key: ROUTES.reports, icon: <BarChartOutlined />, label: <Link href={ROUTES.reports}>Reports</Link> },
+    ...(managerRole
+      ? [{ key: ROUTES.reports, icon: <BarChartOutlined />, label: <Link href={ROUTES.reports}>Reports</Link> }]
+      : []),
   ];
 
-  const adminItems =
-    user?.role === "admin"
-      ? [
-          { key: ROUTES.admin, icon: <CrownOutlined />, label: <Link href={ROUTES.admin}>Admin</Link> },
-          { key: ROUTES.adminUsers, icon: <TeamOutlined />, label: <Link href={ROUTES.adminUsers}>Admin • Users</Link> },
-          { key: ROUTES.adminConfig, icon: <ToolOutlined />, label: <Link href={ROUTES.adminConfig}>Admin • Config</Link> },
-        ]
-      : [];
+  const adminItems = adminRole
+    ? [
+        { key: ROUTES.admin, icon: <CrownOutlined />, label: <Link href={ROUTES.admin}>Admin</Link> },
+        { key: ROUTES.adminUsers, icon: <TeamOutlined />, label: <Link href={ROUTES.adminUsers}>Admin • Users</Link> },
+        { key: ROUTES.adminConfig, icon: <ToolOutlined />, label: <Link href={ROUTES.adminConfig}>Admin • Config</Link> },
+      ]
+    : [];
 
   return (
     <>
