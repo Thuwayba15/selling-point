@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Input, Button, Select } from "antd";
+import { Card, Form, Input, Button, Select, Switch } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
@@ -13,6 +13,8 @@ interface OpportunitiesFiltersProps {
     ownerId?: string;
   }) => void;
   clients?: Array<{ id: string; name: string }>;
+  showMyOpportunities?: boolean;
+  onShowMyOpportunitiesChange?: (value: boolean) => void;
 }
 
 const STAGE_OPTIONS = [
@@ -24,7 +26,12 @@ const STAGE_OPTIONS = [
   { label: "Closed Lost", value: 6 },
 ];
 
-export const OpportunitiesFilters = ({ onApplyFilters, clients = [] }: OpportunitiesFiltersProps) => {
+export const OpportunitiesFilters = ({
+  onApplyFilters,
+  clients = [],
+  showMyOpportunities = false,
+  onShowMyOpportunitiesChange,
+}: OpportunitiesFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,6 +97,13 @@ export const OpportunitiesFilters = ({ onApplyFilters, clients = [] }: Opportuni
               allowClear
             />
           </Form.Item>
+
+          {/* <Form.Item label="My Opportunities" className={styles.filterItem}>
+            <Switch
+              checked={showMyOpportunities}
+              onChange={onShowMyOpportunitiesChange}
+            />
+          </Form.Item> */}
 
           <Form.Item label=" " className={styles.filterItem}>
             <Button type="primary" onClick={handleApply} block>

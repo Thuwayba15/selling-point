@@ -153,19 +153,8 @@ export const opportunitiesReducer = handleActions<
 
     [OpportunitiesActionEnums.deleteOpportunitySuccess]: (
       state: IOpportunitiesStateContext,
-      action: Action<string>
-    ) => {
-      const deletedId = action.payload;
-      return {
-        ...state,
-        opportunities: state.opportunities?.filter((item) => item.id !== deletedId),
-        opportunity: state.opportunity?.id === deletedId ? undefined : state.opportunity,
-        isPending: false,
-        isLoadingDetails: false,
-        isSuccess: true,
-        isError: false,
-      };
-    },
+      action: Action<IOpportunitiesStateContext>
+    ) => ({ ...state, ...action.payload }),
 
     [OpportunitiesActionEnums.deleteOpportunityError]: (
       state: IOpportunitiesStateContext,
