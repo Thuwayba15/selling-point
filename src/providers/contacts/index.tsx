@@ -63,10 +63,10 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
           getContactsSuccess({
             contacts: data.items || [],
             pagination: {
-              currentPage: data.currentPage || 1,
-              pageSize: data.pageSize || 10,
-              totalCount: data.totalCount || 0,
-              totalPages: data.totalPages || 0,
+              currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
+              pageSize: data.pageSize ?? params?.pageSize ?? 10,
+              totalCount: data.totalCount ?? 0,
+              totalPages: data.totalPages ?? 0,
             },
           })
         );

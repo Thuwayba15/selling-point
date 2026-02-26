@@ -55,7 +55,7 @@ export const OpportunitiesPipeline = ({ pipeline, loading }: OpportunitiesPipeli
       <Table
         columns={columns}
         dataSource={stages}
-        rowKey={(record, index) => `${record.stage ?? "stage"}-${index}`}
+        rowKey={(record) => String(record.stage ?? "unknown")}
         pagination={false}
         size="small"
       />

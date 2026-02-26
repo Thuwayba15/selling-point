@@ -70,10 +70,10 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
           getOpportunitiesSuccess({
             opportunities: data.items || [],
             pagination: {
-              currentPage: data.currentPage || 1,
-              pageSize: data.pageSize || 10,
-              totalCount: data.totalCount || 0,
-              totalPages: data.totalPages || 0,
+              currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
+              pageSize: data.pageSize ?? params?.pageSize ?? 10,
+              totalCount: data.totalCount ?? 0,
+              totalPages: data.totalPages ?? 0,
             },
           })
         );
@@ -101,10 +101,10 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
           getMyOpportunitiesSuccess({
             opportunities: data.items || [],
             pagination: {
-              currentPage: data.currentPage || 1,
-              pageSize: data.pageSize || 10,
-              totalCount: data.totalCount || 0,
-              totalPages: data.totalPages || 0,
+              currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
+              pageSize: data.pageSize ?? params?.pageSize ?? 10,
+              totalCount: data.totalCount ?? 0,
+              totalPages: data.totalPages ?? 0,
             },
           })
         );

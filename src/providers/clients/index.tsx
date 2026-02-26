@@ -54,10 +54,16 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
       const response = await api.get("/api/clients", { 
         params: { ...params, isDeleted: false } 
       });
+      const data = response.data;
       dispatch(
         getClientsSuccess({
-          clients: response.data.items || response.data,
-          pagination: response.data.pagination,
+          clients: data.items || data,
+          pagination: {
+            currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
+            pageSize: data.pageSize ?? params?.pageSize ?? 10,
+            totalCount: data.totalCount ?? 0,
+            totalPages: data.totalPages ?? 0,
+          },
         })
       );
     } catch (error: any) {
