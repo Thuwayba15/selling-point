@@ -2,7 +2,6 @@
 
 import { Card, Typography } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
-import { withRoleGuard } from "@/hoc/withRoleGuard";
 
 const { Title } = Typography;
 
@@ -12,6 +11,6 @@ const AdminContractsPage = () => {
       <Title level={3}>Admin • Contracts</Title>
     </Card>
   );
-}
+};
 
-export default withAuthGuard(withRoleGuard(AdminContractsPage, ["admin"]));
+export default withAuthGuard(AdminContractsPage, { allowedRoles: ["Admin"] });

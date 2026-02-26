@@ -1,7 +1,14 @@
+
 import type { ReactNode } from "react";
+import { Inter } from "next/font/google";
+import { ConfigProvider } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import "antd/dist/reset.css";
+import "./globals.css";
 
 import { AuthProvider } from "@/providers/auth";
+import { antdTheme } from "@/theme/theme";
+// import { OpportunitiesProvider } from "@/providers/opportunities";
 import { OpportunitiesProvider } from "@/providers/opportunities";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
@@ -10,29 +17,35 @@ import { OpportunitiesProvider } from "@/providers/opportunities";
 // import { ReportsProvider } from "@/providers/reports";
 // import { UsersProvider } from "@/providers/users";
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "500", "600", "700"],
+  display: "swap",
+});
+
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
-      <body>
-        <AntdRegistry>
-          <AuthProvider>
-             <OpportunitiesProvider>
-             {/* <ProposalsProvider>
-                <ContractsProvider>
-                    <ActivitiesProvider>
-                      <ClientsProvider>
-                        <ReportsProvider>
-                          <UsersProvider> */}
-                            {children}
-                            {/* </UsersProvider>
-                        </ReportsProvider>
-                      </ClientsProvider>
-                    </ActivitiesProvider>
-                </ContractsProvider>
-              </ProposalsProvider>*/}
-            </OpportunitiesProvider>
-          </AuthProvider>
-        </AntdRegistry> 
+      <body className={inter.className}>
+        <AuthProvider>
+          {/* <OpportunitiesProvider>
+            <ProposalsProvider>
+              <ContractsProvider>
+                <ActivitiesProvider>
+                  <ClientsProvider>
+                    <ReportsProvider>
+                      <UsersProvider> */}
+          <AntdRegistry>
+            <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
+          </AntdRegistry>
+          {/* </UsersProvider>
+                    </ReportsProvider>
+                  </ClientsProvider>
+                </ActivitiesProvider>
+              </ContractsProvider>
+            </ProposalsProvider>
+          </OpportunitiesProvider>*/}
+        </AuthProvider>
       </body>
     </html>
   );

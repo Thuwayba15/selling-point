@@ -1,20 +1,26 @@
-import { AuthActionType, type AuthUser, type AuthAction } from "./context";
+"use client";
 
-export const bootstrapSuccess = (user: AuthUser | null): AuthAction => ({
-  type: AuthActionType.BOOTSTRAP_SUCCESS,
-  payload: { user },
-});
+import { createAction } from "redux-actions";
+import type { AuthUser } from "./context";
 
-export const loginSuccess = (user: AuthUser): AuthAction => ({
-  type: AuthActionType.LOGIN_SUCCESS,
-  payload: { user },
-});
+export enum AuthActionTypes {
+  BOOTSTRAP_SUCCESS = "auth/BOOTSTRAP_SUCCESS",
+  LOGIN_SUCCESS = "auth/LOGIN_SUCCESS",
+  LOGOUT = "auth/LOGOUT",
+  SET_ERROR = "auth/SET_ERROR",
+  CLEAR_ERROR = "auth/CLEAR_ERROR",
+}
 
-export const logoutAction = (): AuthAction => ({ type: AuthActionType.LOGOUT });
+export const bootstrapSuccess = createAction<AuthUser | null>(
+  AuthActionTypes.BOOTSTRAP_SUCCESS,
+);
 
-export const setError = (message: string): AuthAction => ({
-  type: AuthActionType.SET_ERROR,
-  payload: { message },
-});
+export const loginSuccess = createAction<AuthUser>(
+  AuthActionTypes.LOGIN_SUCCESS,
+);
 
-export const clearError = (): AuthAction => ({ type: AuthActionType.CLEAR_ERROR });
+export const logoutAction = createAction<void>(AuthActionTypes.LOGOUT);
+
+export const setError = createAction<string>(AuthActionTypes.SET_ERROR);
+
+export const clearError = createAction<void>(AuthActionTypes.CLEAR_ERROR);

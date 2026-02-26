@@ -1,16 +1,16 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
-import { AUTH_STORAGE_KEY, type AuthUser } from "@/providers/auth/context";
+import { AUTH_STORAGE_KEY, type AuthUser, type UserRole } from "@/providers/auth/context";
 
 type WithAuthOptions = {
   redirectTo?: string;
-  allowedRoles?: Array<AuthUser["role"]>;
+  allowedRoles?: UserRole[];
 };
 
 export const withAuthGuard = <P extends object>(
@@ -21,37 +21,77 @@ export const withAuthGuard = <P extends object>(
 
   const Guarded = (props: P) => {
     const router = useRouter();
-
-    const raw = storage.get(AUTH_STORAGE_KEY);
-    let user: AuthUser | null = null;
-
-    if (raw) {
-      try {
-        user = JSON.parse(raw) as AuthUser;
-      } catch {
-        user = null;
-      }
-    }
-
-    const userRole = user?.role ?? null;
-    const isAuthenticated = Boolean(user);
+    const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
+      setIsHydrated(true);
+    }, []);
+
+    useEffect(() => {
+      if (!isHydrated) return;
+
+      const raw = storage.get(AUTH_STORAGE_KEY);
+      let user: AuthUser | null = null;
+
+      if (raw && raw !== "undefined" && raw !== "null") {
+        try {
+          user = JSON.parse(raw) as AuthUser;
+        } catch (error) {
+          console.error("Auth Guard - Failed to parse user:", error);
+          user = null;
+          storage.remove(AUTH_STORAGE_KEY);
+        }
+      } else {
+      }
+
+      const isAuthenticated = Boolean(user);
+      const userRoles = user?.roles ?? [];
+
+      // Redirect if not authenticated
       if (!isAuthenticated) {
         router.replace(redirectTo);
         return;
       }
 
-      if (allowedRoles.length > 0 && userRole && !allowedRoles.includes(userRole)) {
-        const fallback = userRole === "admin" ? ROUTES.admin : ROUTES.dashboard;
-        router.replace(fallback);
+      // Check role restrictions
+      if (allowedRoles.length > 0) {
+        const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
+        if (!hasRequiredRole) {
+          // Redirect to appropriate default route based on highest role
+          const fallback = userRoles.includes("Admin") ? ROUTES.admin : ROUTES.dashboard;
+          router.replace(fallback);
+        } else {
+        }
+      } else {
       }
-    }, [isAuthenticated, userRole, allowedRoles, router, redirectTo]);
+    }, [isHydrated, router, redirectTo, allowedRoles]);
 
-    if (!isAuthenticated) return null;
+    if (!isHydrated) return null;
 
-    if (allowedRoles.length > 0 && (!userRole || !allowedRoles.includes(userRole))) {
+    const raw = storage.get(AUTH_STORAGE_KEY);
+    let user: AuthUser | null = null;
+
+    if (raw && raw !== "undefined" && raw !== "null") {
+      try {
+        user = JSON.parse(raw) as AuthUser;
+      } catch (error) {
+        user = null;
+        storage.remove(AUTH_STORAGE_KEY);
+      }
+    }
+
+    const isAuthenticated = Boolean(user);
+    const userRoles = user?.roles ?? [];
+
+    if (!isAuthenticated) {
       return null;
+    }
+
+    if (allowedRoles.length > 0) {
+      const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
+      if (!hasRequiredRole) {
+        return null;
+      }
     }
 
     return <Wrapped {...props} />;

@@ -15,7 +15,6 @@ const ClientsPage = () => {
 
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Title level={3}>Clients</Title>
 
       <Card title="Filters">
         <Row gutter={[16, 16]}>
