@@ -41,12 +41,12 @@ export const useStyles = createStyles({
     min-height: 100vh;
   `,
   header: css`
-    height: 76px;
+    height: 88px;
     padding: 0 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: ${colors.secondary};
+    background: ${colors.primary};
     color: ${colors.bgLayout};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     @media (max-width: 768px) {
@@ -54,11 +54,10 @@ export const useStyles = createStyles({
     }
   `,
   headerTitle: css`
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 2.35rem;
+    font-weight: 200;
     color: ${colors.shellText};
     font-family: "Inter", sans-serif;
-    font-weight: 100;
     margin: 0;
     min-width: 0;
   `,
