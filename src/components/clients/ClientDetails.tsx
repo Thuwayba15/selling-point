@@ -24,12 +24,16 @@ export const ClientDetails: React.FC<ClientDetailsProps> = ({ client }) => {
     <Card className={styles.detailsCard}>
       <Descriptions title={client.name} column={1} bordered>
         <Descriptions.Item label="Type">
-          <Tag color={client.clientType === 1 ? "blue" : client.clientType === 2 ? "cyan" : "purple"}>
+          <Tag
+            color={client.clientType === 1 ? "blue" : client.clientType === 2 ? "cyan" : "purple"}
+          >
             {CLIENT_TYPE_MAP[client.clientType] || "Unknown"}
           </Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Status">
-          <Tag color={client.isActive ? "green" : "default"}>{client.isActive ? "Active" : "Inactive"}</Tag>
+          <Tag color={client.isActive ? "green" : "default"}>
+            {client.isActive ? "Active" : "Inactive"}
+          </Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Industry">{client.industry || "—"}</Descriptions.Item>
         <Descriptions.Item label="Company Size">{client.companySize || "—"}</Descriptions.Item>
@@ -42,7 +46,9 @@ export const ClientDetails: React.FC<ClientDetailsProps> = ({ client }) => {
             "—"
           )}
         </Descriptions.Item>
-        <Descriptions.Item label="Billing Address">{client.billingAddress || "—"}</Descriptions.Item>
+        <Descriptions.Item label="Billing Address">
+          {client.billingAddress || "—"}
+        </Descriptions.Item>
         <Descriptions.Item label="Tax Number">{client.taxNumber || "—"}</Descriptions.Item>
         <Descriptions.Item label="Created">
           {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : "—"}

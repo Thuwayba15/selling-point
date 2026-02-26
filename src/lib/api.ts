@@ -21,7 +21,7 @@ export const getAxiosInstance = (): AxiosInstance => {
       }
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   // Add response interceptor for error handling
@@ -34,7 +34,7 @@ export const getAxiosInstance = (): AxiosInstance => {
         window.location.href = "/login";
       }
       return Promise.reject(error);
-    }
+    },
   );
 
   return instance;

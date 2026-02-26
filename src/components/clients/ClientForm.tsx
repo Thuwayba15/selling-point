@@ -48,12 +48,19 @@ const COMPANY_SIZE_OPTIONS = [
   "5000+",
 ];
 
-export const ClientForm: React.FC<ClientFormProps> = ({ form, initialValues, loading, onSubmit, onCancel }) => {
+export const ClientForm: React.FC<ClientFormProps> = ({
+  form,
+  initialValues,
+  loading,
+  onSubmit,
+  onCancel,
+}) => {
   const handleFinish = (values: any) => {
     // Convert clientType to number if it's a string
     const clientData: Partial<IClient> = {
       ...values,
-      clientType: typeof values.clientType === "string" ? parseInt(values.clientType, 10) : values.clientType,
+      clientType:
+        typeof values.clientType === "string" ? parseInt(values.clientType, 10) : values.clientType,
     };
     onSubmit(clientData);
   };
@@ -105,7 +112,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({ form, initialValues, loa
         name="companySize"
         rules={[{ message: "Select a company size" }]}
       >
-        <Select options={COMPANY_SIZE_OPTIONS.map((size) => ({ label: size, value: size }))} placeholder="Select company size" />
+        <Select
+          options={COMPANY_SIZE_OPTIONS.map((size) => ({ label: size, value: size }))}
+          placeholder="Select company size"
+        />
       </Form.Item>
 
       <Form.Item
@@ -116,25 +126,15 @@ export const ClientForm: React.FC<ClientFormProps> = ({ form, initialValues, loa
         <Input type="url" placeholder="https://example.com" />
       </Form.Item>
 
-      <Form.Item
-        label="Billing Address"
-        name="billingAddress"
-      >
+      <Form.Item label="Billing Address" name="billingAddress">
         <Input placeholder="Enter billing address" />
       </Form.Item>
 
-      <Form.Item
-        label="Tax Number"
-        name="taxNumber"
-      >
+      <Form.Item label="Tax Number" name="taxNumber">
         <Input placeholder="Enter tax number" />
       </Form.Item>
 
-      <Form.Item
-        label="Active"
-        name="isActive"
-        valuePropName="checked"
-      >
+      <Form.Item label="Active" name="isActive" valuePropName="checked">
         <Switch />
       </Form.Item>
 
@@ -143,9 +143,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ form, initialValues, loa
           <Button type="primary" htmlType="submit" loading={loading}>
             {initialValues?.id ? "Update Client" : "Create Client"}
           </Button>
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </Space>
       </Form.Item>
     </Form>

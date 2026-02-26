@@ -24,12 +24,12 @@ const STAGE_LABELS: Record<number, string> = {
 };
 
 const STAGE_COLORS: Record<number, string> = {
-  1: "default",      // Lead - gray
-  2: "blue",         // Qualified - blue
-  3: "cyan",         // Proposal - cyan
-  4: "gold",         // Negotiation - gold
-  5: "success",      // Closed Won - green
-  6: "error",        // Closed Lost - red
+  1: "default", // Lead - gray
+  2: "blue", // Qualified - blue
+  3: "cyan", // Proposal - cyan
+  4: "gold", // Negotiation - gold
+  5: "success", // Closed Won - green
+  6: "error", // Closed Lost - red
 };
 
 export const OpportunitiesTable = ({
@@ -60,9 +60,7 @@ export const OpportunitiesTable = ({
       dataIndex: "stage",
       key: "stage",
       render: (stage) => (
-        <Tag color={STAGE_COLORS[stage] || "default"}>
-          {STAGE_LABELS[stage] || "—"}
-        </Tag>
+        <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
       ),
     },
     {

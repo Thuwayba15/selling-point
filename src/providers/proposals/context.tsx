@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -65,7 +65,11 @@ export interface IProposalsActionContext {
   createProposal: (proposal: Partial<IProposal>) => Promise<boolean>;
   updateProposal: (id: string, proposal: Partial<IProposal>) => Promise<boolean>;
   addLineItem: (proposalId: string, lineItem: Partial<IProposalLineItem>) => Promise<boolean>;
-  updateLineItem: (proposalId: string, lineItemId: string, lineItem: Partial<IProposalLineItem>) => Promise<boolean>;
+  updateLineItem: (
+    proposalId: string,
+    lineItemId: string,
+    lineItem: Partial<IProposalLineItem>,
+  ) => Promise<boolean>;
   deleteLineItem: (proposalId: string, lineItemId: string) => Promise<boolean>;
   submitProposal: (id: string) => Promise<boolean>;
   approveProposal: (id: string) => Promise<boolean>;

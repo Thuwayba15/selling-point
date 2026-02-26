@@ -42,8 +42,7 @@ export const decodeToken = (token: string): AuthUser | null => {
     const payload = JSON.parse(jsonPayload) as any;
 
     const roleClaim =
-      payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
-      payload.role;
+      payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? payload.role;
 
     const rolesFromToken: UserRole[] = Array.isArray(payload.roles)
       ? payload.roles

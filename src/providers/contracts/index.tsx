@@ -77,13 +77,11 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch contracts";
+          error?.response?.data?.message || error?.message || "Failed to fetch contracts";
         dispatch(getContractsError(message));
       }
     };
@@ -98,9 +96,7 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getContractSuccess(data));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch contract";
+          error?.response?.data?.message || error?.message || "Failed to fetch contract";
         dispatch(getContractError(message));
       }
     };
@@ -117,13 +113,11 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(
           getExpiringContractsSuccess({
             expiringContracts: Array.isArray(data) ? data : data.items || [],
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch expiring contracts";
+          error?.response?.data?.message || error?.message || "Failed to fetch expiring contracts";
         dispatch(getExpiringContractsError(message));
       }
     };
@@ -138,13 +132,11 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(
           getClientContractsSuccess({
             contracts: Array.isArray(data) ? data : data.items || [],
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch client contracts";
+          error?.response?.data?.message || error?.message || "Failed to fetch client contracts";
         dispatch(getClientContractsError(message));
       }
     };
@@ -160,18 +152,13 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create contract";
+          error?.response?.data?.message || error?.message || "Failed to create contract";
         dispatch(createContractError(message));
         return false;
       }
     };
 
-    const updateContract = async (
-      id: string,
-      contract: Partial<IContract>
-    ): Promise<boolean> => {
+    const updateContract = async (id: string, contract: Partial<IContract>): Promise<boolean> => {
       dispatch(updateContractPending());
 
       try {
@@ -182,9 +169,7 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update contract";
+          error?.response?.data?.message || error?.message || "Failed to update contract";
         dispatch(updateContractError(message));
         return false;
       }
@@ -201,9 +186,7 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to activate contract";
+          error?.response?.data?.message || error?.message || "Failed to activate contract";
         dispatch(activateContractError(message));
         return false;
       }
@@ -220,9 +203,7 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to cancel contract";
+          error?.response?.data?.message || error?.message || "Failed to cancel contract";
         dispatch(cancelContractError(message));
         return false;
       }
@@ -239,9 +220,7 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete contract";
+          error?.response?.data?.message || error?.message || "Failed to delete contract";
         dispatch(deleteContractError(message));
         return false;
       }
@@ -249,24 +228,19 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
     const createRenewal = async (
       contractId: string,
-      renewal: Partial<IContractRenewal>
+      renewal: Partial<IContractRenewal>,
     ): Promise<boolean> => {
       dispatch(createRenewalPending());
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.post(
-          `/api/contracts/${contractId}/renewals`,
-          renewal
-        );
+        const { data } = await api.post(`/api/contracts/${contractId}/renewals`, renewal);
 
         dispatch(createRenewalSuccess(data));
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create renewal";
+          error?.response?.data?.message || error?.message || "Failed to create renewal";
         dispatch(createRenewalError(message));
         return false;
       }
@@ -277,17 +251,13 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.put(
-          `/api/contracts/renewals/${renewalId}/complete`
-        );
+        const { data } = await api.put(`/api/contracts/renewals/${renewalId}/complete`);
 
         dispatch(completeRenewalSuccess(data));
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to complete renewal";
+          error?.response?.data?.message || error?.message || "Failed to complete renewal";
         dispatch(completeRenewalError(message));
         return false;
       }

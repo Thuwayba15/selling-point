@@ -45,10 +45,14 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
     const pricingRequestData: Partial<IPricingRequest> = {
       opportunityId: values.opportunityId,
       status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,
-      priority: typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
+      priority:
+        typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
       description: values.description,
       requiredByDate: values.requiredByDate,
-      estimatedValue: typeof values.estimatedValue === "string" ? parseFloat(values.estimatedValue) : values.estimatedValue,
+      estimatedValue:
+        typeof values.estimatedValue === "string"
+          ? parseFloat(values.estimatedValue)
+          : values.estimatedValue,
       currency: values.currency,
       ...(values.notes ? { notes: values.notes } : {}),
     };
@@ -102,10 +106,7 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
         <Select placeholder="Select status" options={STATUS_OPTIONS} />
       </Form.Item>
 
-      <Form.Item
-        label="Currency"
-        name="currency"
-      >
+      <Form.Item label="Currency" name="currency">
         <Select placeholder="Select currency" options={CURRENCY_OPTIONS} />
       </Form.Item>
 
@@ -122,10 +123,7 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
         name="description"
         rules={[{ required: true, message: "Description is required" }]}
       >
-        <Input.TextArea
-          placeholder="Enter request description"
-          rows={4}
-        />
+        <Input.TextArea placeholder="Enter request description" rows={4} />
       </Form.Item>
 
       <Form.Item>
@@ -133,9 +131,7 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
           <Button type="primary" htmlType="submit" loading={loading}>
             {initialValues?.id ? "Update Request" : "Create Request"}
           </Button>
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </Space>
       </Form.Item>
     </Form>

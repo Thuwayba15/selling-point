@@ -14,7 +14,10 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
     <div className={`${inter.className} ${styles.layout}`}>
       <div className={styles.left}>
         <h1 className={styles.brandTitle}>
-          Selling<br/>Point<span className="dot" />
+          Selling
+          <br />
+          Point
+          <span className="dot" />
         </h1>
         <span className={styles.subtitle}>Automated Sales Solution</span>
       </div>

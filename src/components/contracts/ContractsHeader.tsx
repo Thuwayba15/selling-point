@@ -20,12 +20,7 @@ export const ContractsHeader = ({ onCreateClick }: ContractsHeaderProps) => {
       </div>
       <Space>
         {can("create:contract") && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onCreateClick}
-            size="large"
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick} size="large">
             New Contract
           </Button>
         )}

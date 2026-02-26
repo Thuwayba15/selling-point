@@ -55,8 +55,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         // Add isDeleted=false to filter out soft-deleted contacts
-        const { data } = await api.get("/api/contacts", { 
-          params: { ...params, isDeleted: false } 
+        const { data } = await api.get("/api/contacts", {
+          params: { ...params, isDeleted: false },
         });
 
         dispatch(
@@ -68,13 +68,11 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch contacts";
+          error?.response?.data?.message || error?.message || "Failed to fetch contacts";
         dispatch(getContactsError(message));
       }
     };
@@ -87,15 +85,13 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         // Add isDeleted=false to filter out soft-deleted contacts
         const { data } = await api.get(`/api/contacts/by-client/${clientId}`, {
-          params: { isDeleted: false }
+          params: { isDeleted: false },
         });
 
         dispatch(getContactsByClientSuccess({ contacts: data || [] }));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch client contacts";
+          error?.response?.data?.message || error?.message || "Failed to fetch client contacts";
         dispatch(getContactsByClientError(message));
       }
     };
@@ -111,16 +107,14 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getContactSuccess(data));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch contact";
+          error?.response?.data?.message || error?.message || "Failed to fetch contact";
         dispatch(getContactError(message));
       }
     };
 
     // Create a new contact
     const createContact = async (
-      contact: Omit<IContact, "id" | "createdAt" | "updatedAt" | "clientName">
+      contact: Omit<IContact, "id" | "createdAt" | "updatedAt" | "clientName">,
     ): Promise<boolean> => {
       dispatch(createContactPending());
 
@@ -132,19 +126,14 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create contact";
+          error?.response?.data?.message || error?.message || "Failed to create contact";
         dispatch(createContactError(message));
         return false;
       }
     };
 
     // Update an existing contact
-    const updateContact = async (
-      id: string,
-      contact: Partial<IContact>
-    ): Promise<boolean> => {
+    const updateContact = async (id: string, contact: Partial<IContact>): Promise<boolean> => {
       dispatch(updateContactPending());
 
       try {
@@ -155,9 +144,7 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update contact";
+          error?.response?.data?.message || error?.message || "Failed to update contact";
         dispatch(updateContactError(message));
         return false;
       }
@@ -175,9 +162,7 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to set primary contact";
+          error?.response?.data?.message || error?.message || "Failed to set primary contact";
         dispatch(setPrimaryContactError(message));
         return false;
       }
@@ -195,9 +180,7 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete contact";
+          error?.response?.data?.message || error?.message || "Failed to delete contact";
         dispatch(deleteContactError(message));
         return false;
       }
@@ -218,9 +201,7 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ContactsStateContext.Provider value={state}>
-      <ContactsActionsContext.Provider value={actions}>
-        {children}
-      </ContactsActionsContext.Provider>
+      <ContactsActionsContext.Provider value={actions}>{children}</ContactsActionsContext.Provider>
     </ContactsStateContext.Provider>
   );
 };

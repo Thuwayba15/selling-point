@@ -1,12 +1,7 @@
 "use client";
 
 import { Card, Button, Space, Modal } from "antd";
-import {
-  EditOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, CheckOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRbac } from "@/hooks/useRbac";
 import { IContract } from "@/providers/contracts/context";
 import { useStyles } from "./style";
@@ -39,7 +34,8 @@ export const ContractActions = ({
     );
   }
 
-  const status = typeof contract.status === "string" ? parseInt(contract.status, 10) : contract.status ?? 1;
+  const status =
+    typeof contract.status === "string" ? parseInt(contract.status, 10) : (contract.status ?? 1);
   const isDraft = status === 1;
   const isActive = status === 2;
   const isExpired = status === 3;
@@ -84,12 +80,7 @@ export const ContractActions = ({
       <Card className={styles.actionsCard} title="Actions">
         <Space orientation="vertical" className={styles.actionsStack}>
           {can("update:contract") && isDraft && (
-            <Button
-              block
-              icon={<EditOutlined />}
-              onClick={onEdit}
-              loading={loading}
-            >
+            <Button block icon={<EditOutlined />} onClick={onEdit} loading={loading}>
               Edit Contract
             </Button>
           )}
@@ -108,12 +99,7 @@ export const ContractActions = ({
 
           {can("update:contract") && isActive && (
             <>
-              <Button
-                block
-                icon={<EditOutlined />}
-                onClick={onEdit}
-                loading={loading}
-              >
+              <Button block icon={<EditOutlined />} onClick={onEdit} loading={loading}>
                 Edit Contract
               </Button>
 
@@ -130,21 +116,13 @@ export const ContractActions = ({
           )}
 
           {can("delete:contract") && isDraft && (
-            <Button
-              block
-              danger
-              icon={<DeleteOutlined />}
-              onClick={handleDelete}
-              loading={loading}
-            >
+            <Button block danger icon={<DeleteOutlined />} onClick={handleDelete} loading={loading}>
               Delete Contract
             </Button>
           )}
 
           {(isDraft || isExpired || isRenewed || isCancelled) && (
-            <div className={styles.actionNotice}>
-              No actions available for this contract status
-            </div>
+            <div className={styles.actionNotice}>No actions available for this contract status</div>
           )}
         </Space>
       </Card>

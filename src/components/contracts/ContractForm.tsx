@@ -2,16 +2,7 @@
 
 import React from "react";
 import dayjs from "dayjs";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Button,
-  Space,
-  DatePicker,
-  Switch,
-} from "antd";
+import { Form, Input, InputNumber, Select, Button, Space, DatePicker, Switch } from "antd";
 import type { FormInstance } from "antd";
 import type { Dayjs } from "dayjs";
 import { IContract } from "@/providers/contracts/context";
@@ -75,12 +66,8 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       // Convert dates to ISO strings if they are dayjs objects
       const submittedValues: Partial<IContract> = {
         ...values,
-        startDate: values.startDate
-          ? (values.startDate as Dayjs).toISOString()
-          : undefined,
-        endDate: values.endDate
-          ? (values.endDate as Dayjs).toISOString()
-          : undefined,
+        startDate: values.startDate ? (values.startDate as Dayjs).toISOString() : undefined,
+        endDate: values.endDate ? (values.endDate as Dayjs).toISOString() : undefined,
       };
 
       onSubmit(submittedValues);
@@ -98,9 +85,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         currency: "ZAR",
         autoRenew: false,
         ...initialValues,
-        startDate: initialValues?.startDate
-          ? dayjs(initialValues.startDate)
-          : undefined,
+        startDate: initialValues?.startDate ? dayjs(initialValues.startDate) : undefined,
         endDate: initialValues?.endDate ? dayjs(initialValues.endDate) : undefined,
       }}
       autoComplete="off"
@@ -113,11 +98,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         <Input placeholder="e.g., Service Agreement with Acme Corp" />
       </Form.Item>
 
-      <Form.Item
-        label="Contract Number"
-        name="contractNumber"
-        rules={[{ required: false }]}
-      >
+      <Form.Item label="Contract Number" name="contractNumber" rules={[{ required: false }]}>
         <Input placeholder="e.g., C-2026-001" />
       </Form.Item>
 
@@ -126,57 +107,42 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         name="clientId"
         rules={[{ required: true, message: "Please select a client" }]}
       >
-        <Select 
-          options={clientOptions} 
-          placeholder="Select a client" 
+        <Select
+          options={clientOptions}
+          placeholder="Select a client"
           showSearch
           filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
         />
       </Form.Item>
 
-      <Form.Item
-        label="Opportunity (Optional)"
-        name="opportunityId"
-        rules={[{ required: false }]}
-      >
-        <Select 
-          options={opportunityOptions} 
-          placeholder="Link to an opportunity" 
+      <Form.Item label="Opportunity (Optional)" name="opportunityId" rules={[{ required: false }]}>
+        <Select
+          options={opportunityOptions}
+          placeholder="Link to an opportunity"
           allowClear
           showSearch
           filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
         />
       </Form.Item>
 
-      <Form.Item
-        label="Proposal (Optional)"
-        name="proposalId"
-        rules={[{ required: false }]}
-      >
-        <Select 
-          options={proposalOptions} 
-          placeholder="Link to a proposal" 
+      <Form.Item label="Proposal (Optional)" name="proposalId" rules={[{ required: false }]}>
+        <Select
+          options={proposalOptions}
+          placeholder="Link to a proposal"
           allowClear
           showSearch
           filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
         />
       </Form.Item>
 
-      <Form.Item
-        label="Description"
-        name="description"
-        rules={[{ required: false }]}
-      >
-        <Input.TextArea
-          rows={3}
-          placeholder="Brief description of the contract"
-        />
+      <Form.Item label="Description" name="description" rules={[{ required: false }]}>
+        <Input.TextArea rows={3} placeholder="Brief description of the contract" />
       </Form.Item>
 
       <Form.Item
@@ -200,19 +166,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         name="contractValue"
         rules={[{ required: true, message: "Please enter contract value" }]}
       >
-        <InputNumber
-          precision={2}
-          min={0}
-          placeholder="0.00"
-          className={styles.fullWidthControl}
-        />
+        <InputNumber precision={2} min={0} placeholder="0.00" className={styles.fullWidthControl} />
       </Form.Item>
 
-      <Form.Item
-        label="Currency"
-        name="currency"
-        rules={[{ required: true }]}
-      >
+      <Form.Item label="Currency" name="currency" rules={[{ required: true }]}>
         <Select options={CURRENCY_OPTIONS} />
       </Form.Item>
 
@@ -225,31 +182,16 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         <InputNumber min={0} placeholder="e.g., 90" className={styles.fullWidthControl} />
       </Form.Item>
 
-      <Form.Item
-        label="Auto Renew"
-        name="autoRenew"
-        valuePropName="checked"
-      >
+      <Form.Item label="Auto Renew" name="autoRenew" valuePropName="checked">
         <Switch />
       </Form.Item>
 
-      <Form.Item
-        label="Status"
-        name="status"
-        rules={[{ required: true }]}
-      >
+      <Form.Item label="Status" name="status" rules={[{ required: true }]}>
         <Select options={STATUS_OPTIONS} />
       </Form.Item>
 
-      <Form.Item
-        label="Terms & Conditions"
-        name="terms"
-        rules={[{ required: false }]}
-      >
-        <Input.TextArea
-          rows={4}
-          placeholder="Paste terms and conditions here"
-        />
+      <Form.Item label="Terms & Conditions" name="terms" rules={[{ required: false }]}>
+        <Input.TextArea rows={4} placeholder="Paste terms and conditions here" />
       </Form.Item>
 
       <Space className={styles.formActions}>

@@ -46,7 +46,8 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
     );
   }
 
-  const status = typeof contract.status === "string" ? parseInt(contract.status, 10) : contract.status ?? 1;
+  const status =
+    typeof contract.status === "string" ? parseInt(contract.status, 10) : (contract.status ?? 1);
 
   return (
     <Card className={styles.detailsCard} title="Contract Details">
@@ -56,9 +57,7 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
           {
             label: "Status",
             children: (
-              <Tag color={STATUS_COLORS[status] || "default"}>
-                {STATUS_LABELS[status] || "—"}
-              </Tag>
+              <Tag color={STATUS_COLORS[status] || "default"}>{STATUS_LABELS[status] || "—"}</Tag>
             ),
           },
           {
@@ -89,28 +88,20 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
           },
           {
             label: "Start Date",
-            children: contract.startDate
-              ? new Date(contract.startDate).toLocaleDateString()
-              : "—",
+            children: contract.startDate ? new Date(contract.startDate).toLocaleDateString() : "—",
           },
           {
             label: "End Date",
-            children: contract.endDate
-              ? new Date(contract.endDate).toLocaleDateString()
-              : "—",
+            children: contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "—",
           },
           {
             label: "Days Until Expiry",
             children:
-              contract.daysUntilExpiry !== undefined
-                ? `${contract.daysUntilExpiry} days`
-                : "—",
+              contract.daysUntilExpiry !== undefined ? `${contract.daysUntilExpiry} days` : "—",
           },
           {
             label: "Renewal Notice Period",
-            children: contract.renewalNoticePeriod
-              ? `${contract.renewalNoticePeriod} days`
-              : "—",
+            children: contract.renewalNoticePeriod ? `${contract.renewalNoticePeriod} days` : "—",
           },
           {
             label: "Expiring Soon",
@@ -122,9 +113,7 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
           },
           {
             label: "Created",
-            children: contract.createdAt
-              ? new Date(contract.createdAt).toLocaleDateString()
-              : "—",
+            children: contract.createdAt ? new Date(contract.createdAt).toLocaleDateString() : "—",
           },
         ]}
       />

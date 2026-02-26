@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -49,14 +49,8 @@ export interface IPricingRequestsActionContext {
     pageNumber?: number;
     pageSize?: number;
   }) => Promise<void>;
-  getPendingPricingRequests: (params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) => Promise<void>;
-  getMyPricingRequests: (params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) => Promise<void>;
+  getPendingPricingRequests: (params?: { pageNumber?: number; pageSize?: number }) => Promise<void>;
+  getMyPricingRequests: (params?: { pageNumber?: number; pageSize?: number }) => Promise<void>;
   getPricingRequest: (id: string) => Promise<void>;
   createPricingRequest: (pricingRequest: Partial<IPricingRequest>) => Promise<boolean>;
   updatePricingRequest: (id: string, pricingRequest: Partial<IPricingRequest>) => Promise<boolean>;
@@ -73,5 +67,8 @@ export const INITIAL_STATE: IPricingRequestsStateContext = {
   isError: false,
 };
 
-export const PricingRequestsStateContext = createContext<IPricingRequestsStateContext>(INITIAL_STATE);
-export const PricingRequestsActionsContext = createContext<IPricingRequestsActionContext | null>(null);
+export const PricingRequestsStateContext =
+  createContext<IPricingRequestsStateContext>(INITIAL_STATE);
+export const PricingRequestsActionsContext = createContext<IPricingRequestsActionContext | null>(
+  null,
+);

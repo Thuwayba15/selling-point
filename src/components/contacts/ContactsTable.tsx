@@ -39,9 +39,7 @@ export const ContactsTable = ({
         </span>
       ),
       sorter: (a, b) =>
-        `${a.firstName} ${a.lastName}`.localeCompare(
-          `${b.firstName} ${b.lastName}`
-        ),
+        `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
     },
     {
       title: "Email",
@@ -92,9 +90,7 @@ export const ContactsTable = ({
           onClick: () => onSelectContact(record),
           style: { cursor: "pointer" },
         })}
-        rowClassName={(record) =>
-          record.id === selectedContactId ? "ant-table-row-selected" : ""
-        }
+        rowClassName={(record) => (record.id === selectedContactId ? "ant-table-row-selected" : "")}
       />
     </Card>
   );

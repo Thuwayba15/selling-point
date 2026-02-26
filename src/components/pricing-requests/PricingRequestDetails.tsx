@@ -87,14 +87,10 @@ export const PricingRequestDetails = ({ pricingRequest, loading }: PricingReques
           {pricingRequest.description || "—"}
         </Descriptions.Item>
         <Descriptions.Item label="Created At">
-          {pricingRequest.createdAt
-            ? new Date(pricingRequest.createdAt).toLocaleString()
-            : "—"}
+          {pricingRequest.createdAt ? new Date(pricingRequest.createdAt).toLocaleString() : "—"}
         </Descriptions.Item>
         <Descriptions.Item label="Updated At">
-          {pricingRequest.updatedAt
-            ? new Date(pricingRequest.updatedAt).toLocaleString()
-            : "—"}
+          {pricingRequest.updatedAt ? new Date(pricingRequest.updatedAt).toLocaleString() : "—"}
         </Descriptions.Item>
       </Descriptions>
     </Card>
