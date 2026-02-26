@@ -1,16 +1,17 @@
 "use client";
 
-import { Table, Tag } from "antd";
+import { Button, Table, Tag } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Opportunity } from "../../domains/opportunities/types";
 
 type Props = {
   rows: Opportunity[];
   loading: boolean;
-  page: number; // UI page (1-based)
+  page: number; 
   pageSize: number;
   totalCount: number;
   onPaginationChange: (page: number, pageSize: number) => void;
+  onMoveStageClick: (opportunity: Opportunity) => void;
 };
 
 const formatMoney = (value: number, currency: string) => {
@@ -34,6 +35,7 @@ export const OpportunitiesTable = ({
   pageSize,
   totalCount,
   onPaginationChange,
+  onMoveStageClick,
 }: Props) => {
   const columns: ColumnsType<Opportunity> = [
     { title: "TITLE", dataIndex: "title", key: "title" },
@@ -62,6 +64,15 @@ export const OpportunitiesTable = ({
       render: (v: string) => formatDate(v),
     },
     { title: "OWNER", dataIndex: "ownerName", key: "ownerName" },
+    {
+      title: "",
+      key: "actions",
+      render: (_v, r) => (
+        <Button onClick={() => onMoveStageClick(r)}>
+          Move stage
+        </Button>
+      ),
+    },
   ];
 
   const pagination: TablePaginationConfig = {

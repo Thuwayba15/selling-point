@@ -54,3 +54,23 @@ export type OpportunitiesQuery = {
   page: number; // UI page (1-based)
   pageSize: number;
 };
+
+export type CreateOpportunityPayload = {
+  title: string;
+  clientId: string;
+  contactId?: string;
+  ownerId?: string;
+
+  estimatedValue?: number;
+  currency?: string;
+  probability?: number;
+  stage?: number;
+
+  expectedCloseDate?: string;
+  description?: string;
+};
+
+export type UpdateOpportunityStagePayload = {
+  stage: number;
+  reason?: string;
+};

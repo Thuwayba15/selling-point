@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext } from "react";
-import type { Opportunity, OpportunitiesQuery, PagedResponse } from "../../domains/opportunities/types";
+import type { Opportunity, OpportunitiesQuery, PagedResponse, CreateOpportunityPayload, UpdateOpportunityStagePayload } from "../../domains/opportunities/types";
 
 export type OpportunitiesState = {
   query: OpportunitiesQuery;
@@ -40,6 +40,9 @@ export type OpportunitiesActionsContext = {
   fetchCurrentTab: () => Promise<void>;
   fetchAll: () => Promise<void>;
   fetchMine: () => Promise<void>;
+
+  createOpportunity: (payload: CreateOpportunityPayload) => Promise<{ ok: boolean; data?: Opportunity }>;
+  updateStage: (id: string, payload: UpdateOpportunityStagePayload) => Promise<{ ok: boolean; data?: Opportunity }>;
 };
 
 export const OpportunitiesStateContext = createContext<OpportunitiesState>(INITIAL_STATE);
@@ -50,4 +53,6 @@ export const OpportunitiesActionsContext = createContext<OpportunitiesActionsCon
   fetchCurrentTab: async () => undefined,
   fetchAll: async () => undefined,
   fetchMine: async () => undefined,
+  createOpportunity: async () => ({ ok: false }),
+  updateStage: async () => ({ ok: false }),
 });
