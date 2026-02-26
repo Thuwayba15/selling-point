@@ -30,7 +30,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
   if (loading) {
     return (
       <Card className={styles.detailsCard} title="Proposal Details">
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <div className={styles.loadingState}>
           <Spin size="large" />
         </div>
       </Card>
@@ -141,6 +141,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
             loading={loading}
             rowKey="id"
             pagination={false}
+            scroll={{ x: "max-content" }}
             size="small"
             className={styles.lineItemsTable}
           />

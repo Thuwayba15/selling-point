@@ -71,6 +71,19 @@ const ClientsPage = () => {
     });
   }, [searchTerm, industry, clientType, isActive, pageSize, actions]);
 
+  // Handle filter clearing
+  const handleClearFilters = useCallback(() => {
+    setSearchTerm("");
+    setIndustry(undefined);
+    setClientType(undefined);
+    setIsActive(undefined);
+    setCurrentPage(1);
+    actions.getClients({
+      pageNumber: 1,
+      pageSize,
+    });
+  }, [pageSize, actions]);
+
   // Handle pagination change
   const handlePaginationChange = useCallback(
     (page: number, size: number) => {
@@ -223,6 +236,7 @@ const ClientsPage = () => {
         onClientTypeChange={setClientType}
         onActiveChange={setIsActive}
         onApplyFilters={handleApplyFilters}
+        onClear={handleClearFilters}
       />
 
       <div className={styles.mainContent}>

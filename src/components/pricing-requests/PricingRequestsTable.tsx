@@ -104,6 +104,7 @@ export const PricingRequestsTable = ({
         dataSource={pricingRequests}
         loading={loading}
         rowKey="id"
+        scroll={{ x: "max-content" }}
         pagination={
           pagination
             ? {

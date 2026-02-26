@@ -39,6 +39,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-size: ${token.fontSizeHeading2}px;
     font-weight: ${token.fontWeightStrong};
     color: ${token.colorText};
+    font-style: italic;
   `,
 
   subtitle: css`
@@ -71,6 +72,12 @@ export const useStyles = createStyles(({ token, css }) => ({
       width: 100%;
       min-width: 100%;
     }
+  `,
+
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
   `,
 
   tableCard: css`
@@ -137,5 +144,13 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   primaryTag: css`
     margin-left: ${token.marginXS}px;
+  `,
+
+  sectionSpacing: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  chartPlaceholder: css`
+    height: 320px;
   `,
 }));

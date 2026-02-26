@@ -72,6 +72,7 @@ export const useStyles = createStyles({
   userIcon: css`
     font-size: 1.25rem;
     color: ${colors.shellText};
+    cursor: pointer;
   `,
   logoutIcon: css`
     font-size: 1.25rem;

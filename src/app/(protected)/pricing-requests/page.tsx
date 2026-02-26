@@ -271,6 +271,20 @@ const PricingRequestsPage = () => {
     );
   };
 
+  const handleClearFilters = () => {
+    setStatus(undefined);
+    setPriority(undefined);
+    setAssignedToId(undefined);
+    setCurrentPage(1);
+    fetchPricingRequests(
+      {
+        pageNumber: 1,
+        pageSize,
+      },
+      viewMode
+    );
+  };
+
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
@@ -307,11 +321,11 @@ const PricingRequestsPage = () => {
         <PricingRequestsHeader onCreateClick={handleCreateClick} />
 
         {/* View mode buttons */}
-        <div style={{ marginBottom: 16 }}>
+        <div className={styles.viewModeButtons}>
           <Button
             type={viewMode === "all" ? "primary" : "default"}
             onClick={() => handleViewModeChange("all")}
-            style={{ marginRight: 8 }}
+            className={styles.buttonSpacing}
           >
             All Requests
           </Button>
@@ -319,7 +333,7 @@ const PricingRequestsPage = () => {
             <Button
               type={viewMode === "pending" ? "primary" : "default"}
               onClick={() => handleViewModeChange("pending")}
-              style={{ marginRight: 8 }}
+              className={styles.buttonSpacing}
             >
               Pending
             </Button>
@@ -333,7 +347,7 @@ const PricingRequestsPage = () => {
         </div>
 
         {viewMode === "all" && (
-          <PricingRequestsFilters onApplyFilters={handleApplyFilters} />
+          <PricingRequestsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} />
         )}
 
         <PricingRequestsTable

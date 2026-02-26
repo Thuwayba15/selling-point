@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Form, Input, Select, Button, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ClientsFiltersProps {
@@ -13,6 +13,7 @@ interface ClientsFiltersProps {
   onClientTypeChange: (value: number | undefined) => void;
   onActiveChange: (value: boolean | undefined) => void;
   onApplyFilters: () => void;
+  onClear: () => void;
 }
 
 const CLIENT_TYPES = [
@@ -47,6 +48,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
   onClientTypeChange,
   onActiveChange,
   onApplyFilters,
+  onClear,
 }) => {
   const { styles } = useStyles();
 
@@ -54,7 +56,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
     <Card className={styles.filtersCard}>
       <div className={styles.filtersRow}>
         <div className={styles.filterItem}>
-          <Form.Item label="Search" style={{ marginBottom: 0 }}>
+          <Form.Item label="Search" className={styles.formItemNoBorder}>
             <Input
               placeholder="Search by name..."
               prefix={<SearchOutlined />}
@@ -66,7 +68,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Industry" style={{ marginBottom: 0 }}>
+          <Form.Item label="Industry" className={styles.formItemNoBorder}>
             <Select
               placeholder="All industries"
               value={industry}
@@ -79,7 +81,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Type" style={{ marginBottom: 0 }}>
+          <Form.Item label="Type" className={styles.formItemNoBorder}>
             <Select
               placeholder="All types"
               value={clientType}
@@ -91,7 +93,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Status" style={{ marginBottom: 0 }}>
+          <Form.Item label="Status" className={styles.formItemNoBorder}>
             <Select
               placeholder="All statuses"
               value={isActive}
@@ -102,10 +104,15 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
           </Form.Item>
         </div>
 
-        <div style={{ display: "flex", alignItems: "flex-end" }}>
+        <div className={styles.filtersActions}>
           <Button type="primary" onClick={onApplyFilters}>
             Apply Filters
           </Button>
+          {(searchTerm || industry || clientType !== undefined || isActive !== undefined) && (
+            <Button icon={<ClearOutlined />} onClick={onClear} danger>
+              Clear Filters
+            </Button>
+          )}
         </div>
       </div>
     </Card>

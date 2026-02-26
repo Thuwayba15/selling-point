@@ -39,6 +39,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-size: ${token.fontSizeHeading2}px;
     font-weight: ${token.fontWeightStrong};
     color: ${token.colorText};
+    font-style: italic;
   `,
 
   subtitle: css`
@@ -73,6 +74,11 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+  `,
+
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
   `,
@@ -102,6 +108,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     @media (max-width: 768px) {
       min-width: 100%;
     }
+  `,
+
+  actionsStack: css`
+    width: 100%;
   `,
 
   primaryBadge: css`

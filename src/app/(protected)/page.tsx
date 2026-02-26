@@ -2,10 +2,12 @@
 
 import { Card, Col, List, Row, Space, Statistic, Table, Typography } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { useStyles } from "@/components/opportunities/style";
 
 const { Title } = Typography;
 
 const DashboardPage = () => {
+  const { styles } = useStyles();
 
   const leaderboardColumns = [
     { title: "Sales Rep", dataIndex: "rep", key: "rep" },
@@ -28,7 +30,7 @@ const DashboardPage = () => {
   ];
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
+    <Space orientation="vertical" className={styles.fullWidthControl} size="middle">
       {/* Top KPI cards: driven by dashboard endpoints */}
       <Row>
         <Col xs={24} md={12} lg={6}>
@@ -58,7 +60,7 @@ const DashboardPage = () => {
         <Col xs={24} lg={16}>
           <Card title="Pipeline Overview">
             {/* Placeholder chart for pipeline metrics endpoint */}
-            <div style={{ height: 320 }} />
+            <div className={styles.chartPlaceholder} />
           </Card>
         </Col>
       </Row>

@@ -42,7 +42,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-style: italic;
   `,
 
-
   subtitle: css`
     margin: ${token.marginXS}px 0 0;
     font-size: ${token.fontSize}px;
@@ -73,11 +72,6 @@ export const useStyles = createStyles(({ token, css }) => ({
       width: 100%;
       min-width: 100%;
     }
-  `,
-
-  filtersActions: css`
-    display: flex;
-    gap: ${token.marginXS}px;
   `,
 
   tableCard: css`
@@ -119,8 +113,29 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `,
 
+  actionButton: css`
+    width: 100%;
+  `,
+
+  buttonGroup: css`
+    display: flex;
+    gap: ${token.marginSM}px;
+    flex-wrap: wrap;
+  `,
+
   fullWidthControl: css`
     width: 100%;
+  `,
+
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
+  `,
+
+  formActions: css`
+    width: 100%;
+    margin-top: ${token.marginLG}px;
   `,
 
   loadingState: css`
@@ -128,17 +143,27 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding: ${token.paddingLG}px 0;
   `,
 
+  sectionBlock: css`
+    margin-top: ${token.marginLG}px;
+  `,
+
+  actionNotice: css`
+    margin-top: ${token.marginXS}px;
+    font-size: ${token.fontSizeSM}px;
+    color: ${token.colorTextSecondary};
+  `,
+
   emptyState: css`
     color: ${token.colorTextSecondary};
-    padding: ${token.paddingSM}px 0;
+    text-align: center;
+    padding: ${token.paddingLG}px;
   `,
 
-  viewModeButtons: css`
-    margin-bottom: ${token.marginSM}px;
+  renewalSection: css`
+    margin-top: ${token.marginLG}px;
   `,
 
-  buttonSpacing: css`
-    margin-right: ${token.marginXS}px;
+  statusBadge: css`
+    display: inline-block;
   `,
-
 }));

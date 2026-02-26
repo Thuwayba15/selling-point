@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Table } from "antd";
+import { Card, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IOpportunityStageHistory } from "@/providers/opportunities/context";
 import { useStyles } from "./style";
@@ -20,6 +20,15 @@ const STAGE_LABELS: Record<number, string> = {
   6: "Closed Lost",
 };
 
+const STAGE_COLORS: Record<number, string> = {
+  1: "default",      // Lead - gray
+  2: "blue",         // Qualified - blue
+  3: "cyan",         // Proposal - cyan
+  4: "gold",         // Negotiation - gold
+  5: "success",      // Closed Won - green
+  6: "error",        // Closed Lost - red
+};
+
 export const OpportunityStageHistory = ({
   stageHistory = [],
   loading,
@@ -32,7 +41,11 @@ export const OpportunityStageHistory = ({
       title: "Stage",
       dataIndex: "stage",
       key: "stage",
-      render: (stage) => STAGE_LABELS[stage] || "—",
+      render: (stage) => (
+        <Tag color={STAGE_COLORS[stage] || "default"}>
+          {STAGE_LABELS[stage] || "—"}
+        </Tag>
+      ),
     },
     {
       title: "Reason",
@@ -62,6 +75,7 @@ export const OpportunityStageHistory = ({
           dataSource={stageHistory}
           rowKey={(record, index) => record.id || `${record.stage ?? "stage"}-${index}`}
           pagination={false}
+          scroll={{ x: "max-content" }}
           size="small"
         />
       ) : (

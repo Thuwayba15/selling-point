@@ -87,6 +87,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
         dataSource={clients}
         rowKey="id"
         loading={loading}
+        scroll={{ x: "max-content" }}
         pagination={pagination}
         onRow={(record) => ({
           onClick: () => onSelect(record),

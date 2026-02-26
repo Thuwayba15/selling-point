@@ -44,7 +44,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
 
   return (
     <Card title="Actions" className={styles.actionsCard}>
-      <Space orientation="vertical" style={{ width: "100%" }}>
+      <Space orientation="vertical" className={styles.actionsStack}>
         {canEdit && (
           <Button
             type="primary"
@@ -67,7 +67,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
           </Button>
         )}
         {!canEdit && !canDelete && (
-          <div style={{ color: "#999", textAlign: "center" }}>
+          <div className={styles.noActionsMessage}>
             No actions available for your role
           </div>
         )}

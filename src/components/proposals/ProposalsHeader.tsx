@@ -17,8 +17,7 @@ export const ProposalsHeader = ({ onCreateClick }: ProposalsHeaderProps) => {
   return (
     <div className={styles.header}>
       <div className={styles.headerText}>
-        <h1 className={styles.title}>Proposals</h1>
-        <p className={styles.subtitle}>Create and manage sales proposals</p>
+        <h1 className={styles.title}>Create and manage sales proposals</h1>
       </div>
       {can("create:proposal") && (
         <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick}>

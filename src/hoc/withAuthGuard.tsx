@@ -57,9 +57,8 @@ export const withAuthGuard = <P extends object>(
       if (allowedRoles.length > 0) {
         const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
         if (!hasRequiredRole) {
-          // Redirect to appropriate default route based on highest role
-          const fallback = userRoles.includes("Admin") ? ROUTES.admin : ROUTES.dashboard;
-          router.replace(fallback);
+          // Redirect to dashboard as default fallback route
+          router.replace(ROUTES.dashboard);
         } else {
         }
       } else {

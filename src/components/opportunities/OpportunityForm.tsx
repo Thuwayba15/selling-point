@@ -4,6 +4,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IOpportunity } from "@/providers/opportunities/context";
+import { useStyles } from "./style";
 
 interface OpportunityFormProps {
   form: FormInstance;
@@ -45,6 +46,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   onCancel,
   clients = [],
 }) => {
+  const { styles } = useStyles();
   const handleFinish = (values: any) => {
     // Ensure all numeric fields are properly typed
     const opportunityData: Partial<IOpportunity> = {
@@ -110,7 +112,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           placeholder="Enter value"
           min={0}
           step={100}
-          style={{ width: "100%" }}
+          className={styles.fullWidthControl}
         />
       </Form.Item>
 
@@ -150,7 +152,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           placeholder="0 - 100"
           min={0}
           max={100}
-          style={{ width: "100%" }}
+          className={styles.fullWidthControl}
         />
       </Form.Item>
 

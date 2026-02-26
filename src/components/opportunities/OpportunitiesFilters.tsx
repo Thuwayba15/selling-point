@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, Form, Input, Button, Select, Switch } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface OpportunitiesFiltersProps {
@@ -12,6 +12,7 @@ interface OpportunitiesFiltersProps {
     stage?: number;
     ownerId?: string;
   }) => void;
+  onClear: () => void;
   clients?: Array<{ id: string; name: string }>;
   showMyOpportunities?: boolean;
   onShowMyOpportunitiesChange?: (value: boolean) => void;
@@ -28,6 +29,7 @@ const STAGE_OPTIONS = [
 
 export const OpportunitiesFilters = ({
   onApplyFilters,
+  onClear,
   clients = [],
   showMyOpportunities = false,
   onShowMyOpportunitiesChange,
@@ -47,6 +49,8 @@ export const OpportunitiesFilters = ({
       ownerId: ownerId || undefined,
     });
   };
+
+  const hasActiveFilters = searchTerm || clientId || stage || ownerId;
 
   return (
     <Card className={styles.filtersCard} title="Filters">
@@ -106,9 +110,16 @@ export const OpportunitiesFilters = ({
           </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
-            <Button type="primary" onClick={handleApply} block>
-              Apply Filters
-            </Button>
+            <div className={styles.filtersActions}>
+              <Button type="primary" onClick={handleApply}>
+                Apply Filters
+              </Button>
+              {hasActiveFilters && (
+                <Button icon={<ClearOutlined />} onClick={onClear} danger>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
           </Form.Item>
         </div>
       </Form>

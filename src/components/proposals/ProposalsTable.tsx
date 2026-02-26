@@ -95,6 +95,7 @@ export const ProposalsTable = ({
         dataSource={proposals}
         loading={loading}
         rowKey="id"
+        scroll={{ x: "max-content" }}
         pagination={
           pagination
             ? {
