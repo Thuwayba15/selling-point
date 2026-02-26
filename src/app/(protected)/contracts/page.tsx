@@ -226,57 +226,6 @@ const ContractsPage = () => {
     setCurrentPage(page);
   };
 
-  // Renewal columns for expiring contracts table
-  const renewalColumns: ColumnsType<IContractRenewal> = [
-    {
-      title: "Renewal Date",
-      dataIndex: "renewalDate",
-      key: "renewalDate",
-      render: (date) => (date ? new Date(date).toLocaleDateString() : "—"),
-    },
-    {
-      title: "New End Date",
-      dataIndex: "newEndDate",
-      key: "newEndDate",
-      render: (date) => (date ? new Date(date).toLocaleDateString() : "—"),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={status === 2 ? "success" : "processing"}>
-          {status === 1 ? "Pending" : "Completed"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, renewal) => (
-        can("activate:contract") && renewal.status === 1 ? (
-          <Button
-            type="link"
-            size="small"
-            onClick={() => handleCompleteRenewal(renewal.id)}
-          >
-            Complete
-          </Button>
-        ) : null
-      ),
-    },
-  ];
-
-  const handleCompleteRenewal = async (renewalId: string) => {
-    const success = await completeRenewal(renewalId);
-    if (success) {
-      message.success("Renewal completed successfully");
-      if (contract?.id) {
-        getContract(contract.id);
-      }
-    }
-  };
-
   // Fetch contracts when filters change
   useEffect(() => {
     getContracts({ pageNumber: currentPage, pageSize, status, clientId });
