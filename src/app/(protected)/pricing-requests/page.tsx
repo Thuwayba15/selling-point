@@ -1,85 +1,425 @@
 "use client";
 
-import { Button, Card, Col, Form, Input, Row, Select, Space, Table, Tabs, Typography } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { App, Button, Form, Input, Modal } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
-
-const { Title } = Typography;
+import { usePricingRequestsState, usePricingRequestsActions } from "@/providers/pricing-requests";
+import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
+import {
+  PricingRequestsHeader,
+  PricingRequestsFilters,
+  PricingRequestsTable,
+  PricingRequestDetails,
+  PricingRequestActions,
+  PricingRequestForm,
+} from "@/components/pricing-requests";
+import { useStyles } from "@/components/pricing-requests/style";
+import { IPricingRequest } from "@/providers/pricing-requests/context";
+import { useRbac } from "@/hooks/useRbac";
 
 const PricingRequestsPage = () => {
-  const columns = [
-    { title: "Request #", dataIndex: "requestNumber", key: "requestNumber" },
-    { title: "Opportunity", dataIndex: "opportunityTitle", key: "opportunityTitle" },
-    { title: "Assigned To", dataIndex: "assignedToName", key: "assignedToName" },
-    { title: "Priority", dataIndex: "priority", key: "priority" },
-    { title: "Status", dataIndex: "status", key: "status" },
-  ];
+  const { styles } = useStyles();
+  const { message } = App.useApp();
+  const { can } = useRbac();
+  
+  const {
+    isPending,
+    isLoadingDetails,
+    isError,
+    errorMessage,
+    pricingRequests,
+    pricingRequest,
+    pagination,
+  } = usePricingRequestsState();
+  
+  const {
+    getPricingRequests,
+    getPendingPricingRequests,
+    getMyPricingRequests,
+    getPricingRequest,
+    createPricingRequest,
+    updatePricingRequest,
+    assignPricingRequest,
+    completePricingRequest,
+    clearError,
+    clearPricingRequest,
+  } = usePricingRequestsActions();
 
-  const listView = (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Card title="Filters">
-        <Row gutter={[16, 16]}>
-          <Col xs={24} md={8}>
-            <Form layout="vertical">
-              <Form.Item label="Search">
-                <Input placeholder="searchTerm" />
-              </Form.Item>
-            </Form>
-          </Col>
-          <Col xs={24} md={8}>
-            <Form layout="vertical">
-              <Form.Item label="Status">
-                <Select placeholder="status" options={[]} />
-              </Form.Item>
-            </Form>
-          </Col>
-          <Col xs={24} md={8}>
-            <Form layout="vertical">
-              <Form.Item label="Priority">
-                <Select placeholder="priority" options={[]} />
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
+  // Opportunities provider for dropdown
+  const opportunitiesState = useOpportunitiesState();
+  const opportunitiesActions = useOpportunitiesActions();
 
-        <Space>
-          <Button type="primary">Create Pricing Request</Button>
-          <Button>Assign</Button>
-        </Space>
-      </Card>
+  const [status, setStatus] = useState<number | undefined>(undefined);
+  const [priority, setPriority] = useState<number | undefined>(undefined);
+  const [assignedToId, setAssignedToId] = useState<string | undefined>(undefined);
+  const [selectedPricingRequest, setSelectedPricingRequest] = useState<IPricingRequest | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [viewMode, setViewMode] = useState<"all" | "pending" | "mine">("all");
 
-      <Card title="Pricing Requests">
-        <Table columns={columns} dataSource={[]} rowKey={() => crypto.randomUUID()} />
-      </Card>
-    </Space>
-  );
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [createForm] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [assignForm] = Form.useForm();
+
+  const initializedRef = useRef(false);
+
+  // Initialize data on mount
+  useEffect(() => {
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      // Fetch opportunities for dropdown
+      opportunitiesActions.getOpportunities({
+        pageNumber: 1,
+        pageSize: 1000,
+      });
+      // Fetch pricing requests
+      getPricingRequests({ pageNumber: currentPage, pageSize });
+    }
+  }, []);
+
+  // Load pricing request details when selected
+  useEffect(() => {
+    if (selectedPricingRequest?.id) {
+      getPricingRequest(selectedPricingRequest.id);
+    }
+  }, [selectedPricingRequest?.id]);
+
+  // Show error messages
+  useEffect(() => {
+    if (isError && errorMessage) {
+      message.error(errorMessage);
+      clearError();
+    }
+  }, [isError, errorMessage]);
+
+  // Map opportunities for the form
+  const opportunitiesList = (opportunitiesState.opportunities || []).map((opp) => ({
+    id: opp.id,
+    title: opp.title,
+  }));
+
+  const fetchPricingRequests = async (
+    params: {
+      status?: number;
+      priority?: number;
+      assignedToId?: string;
+      pageNumber: number;
+      pageSize: number;
+    },
+    mode: "all" | "pending" | "mine" = viewMode
+  ) => {
+    if (mode === "pending") {
+      await getPendingPricingRequests({
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+      });
+      return;
+    }
+
+    if (mode === "mine") {
+      await getMyPricingRequests({
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+      });
+      return;
+    }
+
+    await getPricingRequests(params);
+  };
+
+  const handleCreateClick = () => {
+    createForm.resetFields();
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateSubmit = async (values: Partial<IPricingRequest>) => {
+    const success = await createPricingRequest(values);
+    if (success) {
+      message.success("Pricing request created successfully");
+      setIsCreateModalOpen(false);
+      createForm.resetFields();
+      await fetchPricingRequests(
+        {
+          status,
+          priority,
+          assignedToId,
+          pageNumber: 1,
+          pageSize,
+        },
+        viewMode
+      );
+      setCurrentPage(1);
+    }
+  };
+
+  const handleCreateCancel = () => {
+    setIsCreateModalOpen(false);
+    createForm.resetFields();
+  };
+
+  const handleEdit = () => {
+    if (!selectedPricingRequest) return;
+    editForm.setFieldsValue(selectedPricingRequest);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (values: Partial<IPricingRequest>) => {
+    if (!selectedPricingRequest) return;
+
+    const success = await updatePricingRequest(selectedPricingRequest.id, values);
+    if (success) {
+      message.success("Pricing request updated successfully");
+      setIsEditModalOpen(false);
+      editForm.resetFields();
+      await fetchPricingRequests(
+        {
+          status,
+          priority,
+          assignedToId,
+          pageNumber: currentPage,
+          pageSize,
+        },
+        viewMode
+      );
+      if (selectedPricingRequest.id === pricingRequest?.id) {
+        await getPricingRequest(selectedPricingRequest.id);
+      }
+    }
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    editForm.resetFields();
+  };
+
+  const handleAssign = () => {
+    if (!selectedPricingRequest) return;
+    assignForm.resetFields();
+    setIsAssignModalOpen(true);
+  };
+
+  const handleAssignSubmit = async (values: { userId: string }) => {
+    if (!selectedPricingRequest) return;
+
+    const success = await assignPricingRequest(selectedPricingRequest.id, values.userId);
+    if (success) {
+      message.success("Pricing request assigned successfully");
+      setIsAssignModalOpen(false);
+      assignForm.resetFields();
+      await fetchPricingRequests(
+        {
+          status,
+          priority,
+          assignedToId,
+          pageNumber: currentPage,
+          pageSize,
+        },
+        viewMode
+      );
+      await getPricingRequest(selectedPricingRequest.id);
+    }
+  };
+
+  const handleAssignCancel = () => {
+    setIsAssignModalOpen(false);
+    assignForm.resetFields();
+  };
+
+  const handleComplete = async () => {
+    if (!selectedPricingRequest) return;
+
+    const success = await completePricingRequest(selectedPricingRequest.id);
+    if (success) {
+      message.success("Pricing request marked as complete");
+      await fetchPricingRequests(
+        {
+          status,
+          priority,
+          assignedToId,
+          pageNumber: currentPage,
+          pageSize,
+        },
+        viewMode
+      );
+      await getPricingRequest(selectedPricingRequest.id);
+    }
+  };
+
+  const handleSelectPricingRequest = (item: IPricingRequest) => {
+    setSelectedPricingRequest(item);
+  };
+
+  const handleApplyFilters = (filters: {
+    status?: number;
+    priority?: number;
+    assignedToId?: string;
+  }) => {
+    setStatus(filters.status);
+    setPriority(filters.priority);
+    setAssignedToId(filters.assignedToId);
+    setCurrentPage(1);
+    fetchPricingRequests(
+      {
+        ...filters,
+        pageNumber: 1,
+        pageSize,
+      },
+      viewMode
+    );
+  };
+
+  const handlePaginationChange = (page: number, newPageSize: number) => {
+    setCurrentPage(page);
+    setPageSize(newPageSize);
+    fetchPricingRequests(
+      {
+        status,
+        priority,
+        assignedToId,
+        pageNumber: page,
+        pageSize: newPageSize,
+      },
+      viewMode
+    );
+  };
+
+  const handleViewModeChange = (mode: "all" | "pending" | "mine") => {
+    setViewMode(mode);
+    setCurrentPage(1);
+    fetchPricingRequests(
+      {
+        status,
+        priority,
+        assignedToId,
+        pageNumber: 1,
+        pageSize,
+      },
+      mode
+    );
+  };
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
+    <div className={styles.pageContainer}>
+      <div className={styles.mainContent}>
+        <PricingRequestsHeader onCreateClick={handleCreateClick} />
 
-      <Tabs
-        items={[
-          { key: "all", label: "All", children: listView },
-          {
-            key: "pending",
-            label: "Pending",
-            children: (
-              <Card title="Pending Pricing Requests">
-                <Table columns={columns} dataSource={[]} rowKey={() => crypto.randomUUID()} />
-              </Card>
-            ),
-          },
-          {
-            key: "mine",
-            label: "My Requests",
-            children: (
-              <Card title="My Pricing Requests">
-                <Table columns={columns} dataSource={[]} rowKey={() => crypto.randomUUID()} />
-              </Card>
-            ),
-          },
-        ]}
-      />
-    </Space>
+        {/* View mode buttons */}
+        <div style={{ marginBottom: 16 }}>
+          <Button
+            type={viewMode === "all" ? "primary" : "default"}
+            onClick={() => handleViewModeChange("all")}
+            style={{ marginRight: 8 }}
+          >
+            All Requests
+          </Button>
+          {can("view:all-pricing-requests") && (
+            <Button
+              type={viewMode === "pending" ? "primary" : "default"}
+              onClick={() => handleViewModeChange("pending")}
+              style={{ marginRight: 8 }}
+            >
+              Pending
+            </Button>
+          )}
+          <Button
+            type={viewMode === "mine" ? "primary" : "default"}
+            onClick={() => handleViewModeChange("mine")}
+          >
+            My Requests
+          </Button>
+        </div>
+
+        {viewMode === "all" && (
+          <PricingRequestsFilters onApplyFilters={handleApplyFilters} />
+        )}
+
+        <PricingRequestsTable
+          pricingRequests={pricingRequests || []}
+          loading={isPending}
+          pagination={pagination}
+          selectedPricingRequestId={selectedPricingRequest?.id}
+          onSelectPricingRequest={handleSelectPricingRequest}
+          onPaginationChange={handlePaginationChange}
+        />
+
+        {selectedPricingRequest && (
+          <div className={styles.selectedRow}>
+            <div className={styles.detailsPanel}>
+              <PricingRequestDetails pricingRequest={pricingRequest || null} loading={isLoadingDetails} />
+            </div>
+            <PricingRequestActions
+              pricingRequest={selectedPricingRequest}
+              onEdit={handleEdit}
+              onAssign={handleAssign}
+              onComplete={handleComplete}
+            />
+          </div>
+        )}
+
+        {/* Create Modal */}
+        <Modal
+          title="Create Pricing Request"
+          open={isCreateModalOpen}
+          onCancel={handleCreateCancel}
+          footer={null}
+          width={640}
+        >
+          <PricingRequestForm
+            form={createForm}
+            onSubmit={handleCreateSubmit}
+            onCancel={handleCreateCancel}
+            loading={isPending}
+            opportunities={opportunitiesList}
+          />
+        </Modal>
+
+        {/* Edit Modal */}
+        <Modal
+          title="Edit Pricing Request"
+          open={isEditModalOpen}
+          onCancel={handleEditCancel}
+          footer={null}
+          width={640}
+        >
+          <PricingRequestForm
+            form={editForm}
+            initialValues={selectedPricingRequest || undefined}
+            onSubmit={handleEditSubmit}
+            onCancel={handleEditCancel}
+            loading={isPending}
+            opportunities={opportunitiesList}
+          />
+        </Modal>
+
+        {/* Assign Modal */}
+        <Modal
+          title="Assign Pricing Request"
+          open={isAssignModalOpen}
+          onCancel={handleAssignCancel}
+          footer={null}
+          width={480}
+        >
+          <Form form={assignForm} layout="vertical" onFinish={handleAssignSubmit}>
+            <Form.Item
+              name="userId"
+              label="User ID"
+              rules={[{ required: true, message: "Please enter a user id" }]}
+            >
+              <Input placeholder="User id to assign" />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={isPending} block>
+                Assign Request
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    </div>
   );
 };
 
