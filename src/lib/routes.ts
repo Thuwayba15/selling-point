@@ -8,6 +8,7 @@ export const ROUTES = {
   pricingRequests: "/pricing-requests",
   activities: "/activities",
   clients: "/clients",
+  contacts: "/contacts",
   reports: "/reports",
 
   admin: "/admin",

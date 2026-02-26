@@ -50,7 +50,10 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
   }) => {
     dispatch(getClientsPending());
     try {
-      const response = await api.get("/api/clients", { params });
+      // Add isDeleted=false to filter out soft-deleted clients
+      const response = await api.get("/api/clients", { 
+        params: { ...params, isDeleted: false } 
+      });
       dispatch(
         getClientsSuccess({
           clients: response.data.items || response.data,
