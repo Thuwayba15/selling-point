@@ -134,6 +134,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     // Pricing Requests
     "create:pricing-request",
     "update:pricing-request",
+    "complete:pricing-request",
 
     // Contracts
     "create:contract",
@@ -163,7 +164,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
 
     // Pricing Requests
     "create:pricing-request",
-    "update:pricing-request",
 
     // Activities
     "create:activity",
