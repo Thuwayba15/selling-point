@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 import { AuthProvider } from "@/providers/auth";
-// import { OpportunitiesProvider } from "@/providers/opportunities";
+import { OpportunitiesProvider } from "@/providers/opportunities";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
 // import { ActivitiesProvider } from "@/providers/activities";
@@ -16,8 +16,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body>
         <AntdRegistry>
           <AuthProvider>
-            {/* <OpportunitiesProvider>
-              <ProposalsProvider>
+             <OpportunitiesProvider>
+             {/* <ProposalsProvider>
                 <ContractsProvider>
                     <ActivitiesProvider>
                       <ClientsProvider>
@@ -29,8 +29,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                       </ClientsProvider>
                     </ActivitiesProvider>
                 </ContractsProvider>
-              </ProposalsProvider>
-            </OpportunitiesProvider>*/}
+              </ProposalsProvider>*/}
+            </OpportunitiesProvider>
           </AuthProvider>
         </AntdRegistry> 
       </body>
