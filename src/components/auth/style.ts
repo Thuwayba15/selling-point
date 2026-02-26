@@ -111,7 +111,7 @@ export const useStyles = createStyles({
     border-radius: 6px;
     font-size: 0.9rem;
     height: 36px;
-    border-color: ${colors.border};
+    border-color: ${colors.inputBorder};
 
     &:hover {
       border-color: ${colors.darkGreen};
