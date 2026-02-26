@@ -1,156 +1,124 @@
 import { createStyles } from "antd-style";
-import { colors } from "@/theme/colors";
 
-export const useStyles = createStyles(({ css, token }) => {
-  return {
-    pageContainer: css`
-      display: flex;
+export const useStyles = createStyles(({ token, css }) => ({
+  pageContainer: css`
+    padding: ${token.paddingSM}px;
+    background-color: ${token.colorBgLayout};
+    min-height: 100vh;
+
+    @media (max-width: 768px) {
+      padding: ${token.paddingXS}px;
+    }
+  `,
+
+  mainContent: css`
+    max-width: 1400px;
+    margin: 0 auto;
+  `,
+
+  header: css`
+    margin-bottom: ${token.marginLG}px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
       flex-direction: column;
-      gap: 24px;
-      padding: 24px;
-      background-color: ${token.colorBgContainer};
-      min-height: 100vh;
-    `,
+      align-items: flex-start;
+    }
+  `,
 
-    mainContent: css`
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 24px;
+  headerText: css`
+    flex: 1;
+  `,
 
-      @media (max-width: 1200px) {
-        grid-template-columns: 1fr;
-      }
-    `,
+  title: css`
+    margin: 0;
+    font-size: ${token.fontSizeHeading2}px;
+    font-weight: ${token.fontWeightStrong};
+    color: ${token.colorText};
+    font-style: italic;
+  `,
 
-    // Header styles
-    header: css`
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+  subtitle: css`
+    margin: ${token.marginXS}px 0 0;
+    font-size: ${token.fontSize}px;
+    color: ${token.colorTextSecondary};
+  `,
 
-      @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-      }
-    `,
+  filtersCard: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
 
-    title: css`
-      font-size: 32px;
-      font-weight: 700;
-      margin: 0;
-      color: ${token.colorText};
-    `,
+  filtersRow: css`
+    display: flex;
+    gap: ${token.margin}px;
+    flex-wrap: wrap;
+    align-items: flex-end;
 
-    subtitle: css`
-      font-size: 14px;
-      color: ${token.colorTextSecondary};
-      margin: 4px 0 0 0;
-    `,
-
-    // Filters styles
-    filtersCard: css`
-      background-color: ${token.colorBgContainer};
-      border: 1px solid ${token.colorBorder};
-    `,
-
-    filtersRow: css`
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    `,
-
-    filterItem: css`
-      flex: 1;
-      min-width: 180px;
-
-      .ant-form-item {
-        margin-bottom: 0;
-      }
-    `,
-
-    // Table styles
-    tableCard: css`
-      background-color: ${token.colorBgContainer};
-      border: 1px solid ${token.colorBorder};
-
-      .ant-table {
-        background-color: ${token.colorBgContainer};
-      }
-
-      .ant-table-cell {
-        padding: 12px 16px;
-      }
-    `,
-
-    selectedRow: css`
-      background-color: ${token.colorPrimaryBg} !important;
-      cursor: pointer;
-    `,
-
-    // Details panel styles
-    detailsPanel: css`
-      display: flex;
+    @media (max-width: 768px) {
       flex-direction: column;
-      gap: 16px;
-    `,
+      gap: ${token.marginSM}px;
+    }
+  `,
 
-    detailsCard: css`
-      background-color: ${token.colorBgContainer};
-      border: 1px solid ${token.colorBorder};
+  filterItem: css`
+    flex: 1;
+    min-width: 200px;
 
-      .ant-descriptions-item-label {
-        font-weight: 600;
-      }
-    `,
+    @media (max-width: 768px) {
+      width: 100%;
+      min-width: 100%;
+    }
+  `,
 
-    // Stats card styles
-    statsCard: css`
-      background-color: ${token.colorBgContainer};
-      border: 1px solid ${token.colorBorder};
+  tableCard: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
 
-      .ant-statistic-title {
-        font-size: 12px;
-        color: ${token.colorTextSecondary};
-        margin-bottom: 8px;
-      }
+  tableRow: css`
+    cursor: pointer;
+  `,
 
-      .ant-statistic-content {
-        font-size: 24px;
-        font-weight: 600;
-        color: ${token.colorPrimary};
-      }
-    `,
+  selectedRow: css`
+    display: flex;
+    gap: ${token.marginLG}px;
+    margin-bottom: ${token.marginLG}px;
 
-    // Actions card styles
-    actionsCard: css`
-      background-color: ${token.colorBgContainer};
-      border: 1px solid ${token.colorBorder};
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  `,
 
-      .ant-btn {
-        border-radius: ${token.borderRadius}px;
-      }
-    `,
+  detailsPanel: css`
+    flex: 2;
+  `,
 
-    // Responsive adjustments
-    "@media (max-width: 768px)": {
-      filtersRow: css`
-        flex-direction: column;
-      `,
+  detailsCard: css`
+    height: 100%;
+  `,
 
-      filterItem: css`
-        width: 100%;
-      `,
+  statsCard: css`
+    flex: 1;
+  `,
 
-      mainContent: css`
-        grid-template-columns: 1fr;
-      `,
+  actionsCard: css`
+    flex: 1;
+    min-width: 300px;
 
-      detailsPanel: css`
-        grid-column: 1;
-      `,
-    },
-  };
-});
+    @media (max-width: 768px) {
+      min-width: 100%;
+    }
+  `,
+
+  fullWidthControl: css`
+    width: 100%;
+  `,
+
+  emptyState: css`
+    color: ${token.colorTextSecondary};
+    padding: ${token.paddingSM}px 0;
+  `,
+}));

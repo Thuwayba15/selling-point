@@ -16,8 +16,7 @@ export const ContractsHeader = ({ onCreateClick }: ContractsHeaderProps) => {
   return (
     <div className={styles.header}>
       <div className={styles.headerText}>
-        <h1 className={styles.title}>Contracts</h1>
-        <p className={styles.subtitle}>Manage and track all your contracts and renewals</p>
+        <h1 className={styles.title}>Manage and track all your contracts and renewals</h1>
       </div>
       <Space>
         {can("create:contract") && (

@@ -39,7 +39,9 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-size: ${token.fontSizeHeading2}px;
     font-weight: ${token.fontWeightStrong};
     color: ${token.colorText};
+    font-style: italic;
   `,
+
 
   subtitle: css`
     margin: ${token.marginXS}px 0 0;

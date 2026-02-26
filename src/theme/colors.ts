@@ -12,7 +12,7 @@ export const colors = {
   shellSelected: "#2a6b54",
 
   // Background colors
-  bgLayout: "#cdcda9",      
+  bgLayout: "#e3dbcd",      
   bgContainer: "#ffffff",    
   
   // Text colors

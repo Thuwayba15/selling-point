@@ -75,6 +75,7 @@ export const ContactsTable = ({
         dataSource={contacts}
         loading={loading}
         rowKey="id"
+        scroll={{ x: "max-content" }}
         pagination={
           pagination
             ? {

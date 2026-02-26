@@ -262,6 +262,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           dataSource={lineItems}
           rowKey="id"
           pagination={false}
+          scroll={{ x: "max-content" }}
           size="small"
         />
 

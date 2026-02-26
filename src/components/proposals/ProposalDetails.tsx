@@ -141,6 +141,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
             loading={loading}
             rowKey="id"
             pagination={false}
+            scroll={{ x: "max-content" }}
             size="small"
             className={styles.lineItemsTable}
           />
