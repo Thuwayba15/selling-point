@@ -12,7 +12,6 @@ const { Text } = Typography;
 
 const PAGE_NAMES: Record<string, string> = {
   [ROUTES.dashboard]: "Dashboard",
-  [ROUTES.opportunities]: "Opportunities",
   [ROUTES.proposals]: "Proposals",
   [ROUTES.contracts]: "Contracts",
   [ROUTES.pricingRequests]: "Pricing Requests",

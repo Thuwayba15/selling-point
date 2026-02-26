@@ -3,7 +3,6 @@ export const ROUTES = {
   register: "/register",
 
   dashboard: "/",
-  opportunities: "/opportunities",
   proposals: "/proposals",
   contracts: "/contracts",
   pricingRequests: "/pricing-requests",

@@ -1,0 +1,113 @@
+import React from "react";
+import { Card, Form, Input, Select, Button, Space } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { useStyles } from "./style";
+
+interface ClientsFiltersProps {
+  searchTerm: string;
+  industry: string | undefined;
+  clientType: number | undefined;
+  isActive: boolean | undefined;
+  onSearchChange: (value: string) => void;
+  onIndustryChange: (value: string | undefined) => void;
+  onClientTypeChange: (value: number | undefined) => void;
+  onActiveChange: (value: boolean | undefined) => void;
+  onApplyFilters: () => void;
+}
+
+const CLIENT_TYPES = [
+  { label: "Government", value: 1 },
+  { label: "Private", value: 2 },
+  { label: "Partner", value: 3 },
+];
+
+const ACTIVE_OPTIONS = [
+  { label: "Active", value: true },
+  { label: "Inactive", value: false },
+];
+
+// Common industries - can be extended
+const INDUSTRY_OPTIONS = [
+  { label: "Technology", value: "Technology" },
+  { label: "Finance", value: "Finance" },
+  { label: "Healthcare", value: "Healthcare" },
+  { label: "Manufacturing", value: "Manufacturing" },
+  { label: "Retail", value: "Retail" },
+  { label: "Education", value: "Education" },
+  { label: "Other", value: "Other" },
+];
+
+export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
+  searchTerm,
+  industry,
+  clientType,
+  isActive,
+  onSearchChange,
+  onIndustryChange,
+  onClientTypeChange,
+  onActiveChange,
+  onApplyFilters,
+}) => {
+  const { styles } = useStyles();
+
+  return (
+    <Card className={styles.filtersCard}>
+      <div className={styles.filtersRow}>
+        <div className={styles.filterItem}>
+          <Form.Item label="Search" style={{ marginBottom: 0 }}>
+            <Input
+              placeholder="Search by name..."
+              prefix={<SearchOutlined />}
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              allowClear
+            />
+          </Form.Item>
+        </div>
+
+        <div className={styles.filterItem}>
+          <Form.Item label="Industry" style={{ marginBottom: 0 }}>
+            <Select
+              placeholder="All industries"
+              value={industry}
+              onChange={onIndustryChange}
+              options={INDUSTRY_OPTIONS}
+              allowClear
+              showSearch
+            />
+          </Form.Item>
+        </div>
+
+        <div className={styles.filterItem}>
+          <Form.Item label="Type" style={{ marginBottom: 0 }}>
+            <Select
+              placeholder="All types"
+              value={clientType}
+              onChange={onClientTypeChange}
+              options={CLIENT_TYPES}
+              allowClear
+            />
+          </Form.Item>
+        </div>
+
+        <div className={styles.filterItem}>
+          <Form.Item label="Status" style={{ marginBottom: 0 }}>
+            <Select
+              placeholder="All statuses"
+              value={isActive}
+              onChange={onActiveChange}
+              options={ACTIVE_OPTIONS}
+              allowClear
+            />
+          </Form.Item>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "flex-end" }}>
+          <Button type="primary" onClick={onApplyFilters}>
+            Apply Filters
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+};

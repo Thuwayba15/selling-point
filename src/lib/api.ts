@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from "axios";
 import { storage } from "./storage";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const TOKEN_STORAGE_KEY = "sales.auth.token";
+export const TOKEN_STORAGE_KEY = "sales.auth.token";
 
 export const getAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
@@ -39,5 +39,3 @@ export const getAxiosInstance = (): AxiosInstance => {
 
   return instance;
 };
-
-export { TOKEN_STORAGE_KEY };
