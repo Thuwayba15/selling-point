@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Button, Space, Modal, Form, Input, DatePicker } from "antd";
+import { Card, Button, Space, Modal, Form, Input, Select } from "antd";
 import {
   EditOutlined,
   CheckOutlined,
@@ -9,11 +9,9 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
-import dayjs from "dayjs";
 import { useRbac } from "@/hooks/useRbac";
 import { IContract } from "@/providers/contracts/context";
 import { useStyles } from "./style";
-import type { Dayjs } from "dayjs";
 
 interface ContractActionsProps {
   contract: IContract | null;
@@ -22,6 +20,7 @@ interface ContractActionsProps {
   onCancel: () => void;
   onDelete: () => void;
   onCreateRenewal: (renewalData: any) => void;
+  opportunities?: Array<{ id: string; title: string }>;
   loading?: boolean;
 }
 
@@ -32,12 +31,18 @@ export const ContractActions = ({
   onCancel,
   onDelete,
   onCreateRenewal,
+  opportunities = [],
   loading = false,
 }: ContractActionsProps) => {
   const { can } = useRbac();
   const { styles } = useStyles();
   const [isRenewalModalOpen, setIsRenewalModalOpen] = useState(false);
   const [renewalForm] = Form.useForm();
+
+  const opportunityOptions = opportunities.map((opp) => ({
+    label: opp.title,
+    value: opp.id,
+  }));
 
   if (!contract) {
     return (
@@ -95,13 +100,8 @@ export const ContractActions = ({
     try {
       const values = await renewalForm.validateFields();
       const renewalData = {
-        ...values,
-        renewalDate: values.renewalDate
-          ? (values.renewalDate as Dayjs).toISOString()
-          : undefined,
-        newEndDate: values.newEndDate
-          ? (values.newEndDate as Dayjs).toISOString()
-          : undefined,
+        renewalOpportunityId: values.renewalOpportunityId || undefined,
+        notes: values.notes || undefined,
       };
       onCreateRenewal(renewalData);
       setIsRenewalModalOpen(false);
@@ -211,19 +211,20 @@ export const ContractActions = ({
           autoComplete="off"
         >
           <Form.Item
-            label="Renewal Date"
-            name="renewalDate"
-            rules={[{ required: true, message: "Please select renewal date" }]}
+            label="Renewal Opportunity (Optional)"
+            name="renewalOpportunityId"
+            rules={[{ required: false }]}
+            tooltip="Link this renewal to an existing opportunity"
           >
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            label="New End Date"
-            name="newEndDate"
-            rules={[{ required: true, message: "Please select new end date" }]}
-          >
-            <DatePicker style={{ width: "100%" }} />
+            <Select
+              options={opportunityOptions}
+              placeholder="Select an opportunity"
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+            />
           </Form.Item>
 
           <Form.Item
@@ -232,8 +233,8 @@ export const ContractActions = ({
             rules={[{ required: false }]}
           >
             <Input.TextArea
-              rows={3}
-              placeholder="Add renewal notes (e.g., price adjustments, changes)"
+              rows={4}
+              placeholder="Add renewal notes (e.g., Annual CPI adjustment of 8%, price changes, etc.)"
             />
           </Form.Item>
         </Form>

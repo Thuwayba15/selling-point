@@ -45,28 +45,27 @@ export const ContractsTable = ({
       title: "Contract Number",
       dataIndex: "contractNumber",
       key: "contractNumber",
-      width: 150,
+      ellipsis: true,
       render: (number) => number || "—",
     },
     {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      width: 180,
+      ellipsis: true,
       render: (title) => title || "—",
     },
     {
       title: "Client",
       dataIndex: "clientName",
       key: "clientName",
-      width: 150,
+      ellipsis: true,
       render: (clientName) => clientName || "—",
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: 110,
       render: (status) => (
         <Tag color={STATUS_COLORS[status] || "default"}>
           {STATUS_LABELS[status] || "—"}
@@ -77,46 +76,34 @@ export const ContractsTable = ({
       title: "Start Date",
       dataIndex: "startDate",
       key: "startDate",
-      width: 120,
       render: (date) => (date ? new Date(date).toLocaleDateString() : "—"),
     },
     {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
-      width: 120,
       render: (date, record) => {
         const dateStr = date ? new Date(date).toLocaleDateString() : "—";
-        if (record.isExpiringSoon) {
-          return <Tag color="orange">{dateStr}</Tag>;
-        }
-        return dateStr;
+        return record.isExpiringSoon ? <Tag color="orange">{dateStr}</Tag> : dateStr;
       },
     },
     {
       title: "Value",
       dataIndex: "contractValue",
       key: "contractValue",
-      width: 140,
-      render: (value, record) => {
-        const currency = record.currency || "ZAR";
-        return value ? `${currency} ${value.toLocaleString()}` : "—";
-      },
+      render: (value, record) =>
+        value != null ? `${record.currency || "ZAR"} ${value.toLocaleString()}` : "—",
     },
   ];
 
-  const handleRowClick = (record: IContract) => {
-    onSelectContract(record);
-  };
-
   return (
     <Card className={styles.tableCard} title="Contracts">
-      <Table
+      <Table<IContract>
         columns={columns}
         dataSource={contracts}
         loading={loading}
         rowKey="id"
-        scroll={{ x: 1200 }}
+        scroll={{ x: "max-content" }}
         pagination={
           pagination
             ? {
@@ -124,16 +111,16 @@ export const ContractsTable = ({
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
                 onChange: onPaginationChange,
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} contracts`,
               }
             : false
         }
+        rowClassName={(record) =>
+          record.id === selectedContractId ? styles.selectedRow : ""
+        }
         onRow={(record) => ({
-          onClick: () => handleRowClick(record),
-          className: selectedContractId === record.id ? styles.selectedRow : styles.tableRow,
-          style: {
-            backgroundColor:
-              selectedContractId === record.id ? "rgba(13, 110, 253, 0.08)" : undefined,
-          },
+          onClick: () => onSelectContract(record),
         })}
       />
     </Card>

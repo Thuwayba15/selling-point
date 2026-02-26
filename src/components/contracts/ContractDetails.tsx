@@ -116,6 +116,10 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
             children: contract.clientName || "—",
           },
           {
+            label: "Owner",
+            children: contract.ownerName || "—",
+          },
+          {
             label: "Currency",
             children: contract.currency || "—",
           },

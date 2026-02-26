@@ -11,6 +11,12 @@ import {
 } from "@/providers/contracts";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import {
+  useOpportunitiesState,
+  useOpportunitiesActions,
+} from "@/providers/opportunities";
+import { useProposalsState, useProposalsActions } from "@/providers/proposals";
+import { useAuthState } from "@/providers/auth";
+import {
   ContractsHeader,
   ContractsFilters,
   ContractsTable,
@@ -26,6 +32,7 @@ const ContractsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { can } = useRbac();
+  const { user } = useAuthState();
 
   const {
     isPending,
@@ -57,6 +64,14 @@ const ContractsPage = () => {
   const clientsState = useClientsState();
   const clientsActions = useClientsActions();
 
+  // Opportunities provider for dropdown
+  const opportunitiesState = useOpportunitiesState();
+  const opportunitiesActions = useOpportunitiesActions();
+
+  // Proposals provider for dropdown
+  const proposalsState = useProposalsState();
+  const proposalsActions = useProposalsActions();
+
   const [status, setStatus] = useState<number | undefined>(undefined);
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [selectedContract, setSelectedContract] = useState<IContract | null>(null);
@@ -77,6 +92,10 @@ const ContractsPage = () => {
       initializedRef.current = true;
       // Fetch clients for dropdown
       clientsActions.getClients({ pageNumber: 1, pageSize: 1000 });
+      // Fetch opportunities for dropdown
+      opportunitiesActions.getOpportunities({ pageNumber: 1, pageSize: 1000 });
+      // Fetch proposals for dropdown
+      proposalsActions.getProposals({ pageNumber: 1, pageSize: 1000 });
       // Fetch all contracts
       getContracts({ pageNumber: currentPage, pageSize });
       // Fetch expiring contracts
@@ -105,7 +124,12 @@ const ContractsPage = () => {
   };
 
   const handleCreateSubmit = async (values: any) => {
-    const success = await createContract(values);
+    // Automatically set ownerId to current user if not set
+    const contractData = {
+      ...values,
+      ownerId: values.ownerId || user?.id,
+    };
+    const success = await createContract(contractData);
     if (success) {
       message.success("Contract created successfully");
       setIsCreateModalOpen(false);
@@ -130,7 +154,12 @@ const ContractsPage = () => {
   const handleEditSubmit = async (values: any) => {
     if (!contract?.id) return;
 
-    const success = await updateContract(contract.id, values);
+    // Automatically set ownerId to current user if not set
+    const contractData = {
+      ...values,
+      ownerId: values.ownerId || user?.id,
+    };
+    const success = await updateContract(contract.id, contractData);
     if (success) {
       message.success("Contract updated successfully");
       setIsEditModalOpen(false);
@@ -267,6 +296,14 @@ const ContractsPage = () => {
     ? clientsState.clients.map((client) => ({ id: client.id || "", name: client.name || "" }))
     : [];
 
+  const opportunityOptions = opportunitiesState.opportunities
+    ? opportunitiesState.opportunities.map((opp) => ({ id: opp.id || "", title: opp.title || "" }))
+    : [];
+
+  const proposalOptions = proposalsState.proposals
+    ? proposalsState.proposals.map((prop) => ({ id: prop.id || "", title: prop.title || "" }))
+    : [];
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
@@ -315,6 +352,7 @@ const ContractsPage = () => {
                           onCancel={handleCancel}
                           onDelete={handleDelete}
                           onCreateRenewal={handleCreateRenewal}
+                          opportunities={opportunityOptions}
                           loading={isPending}
                         />
                       </div>
@@ -424,6 +462,8 @@ const ContractsPage = () => {
             createForm.resetFields();
           }}
           clients={clientOptions}
+          opportunities={opportunityOptions}
+          proposals={proposalOptions}
         />
       </Modal>
 
@@ -447,6 +487,8 @@ const ContractsPage = () => {
             editForm.resetFields();
           }}
           clients={clientOptions}
+          opportunities={opportunityOptions}
+          proposals={proposalOptions}
         />
       </Modal>
     </div>

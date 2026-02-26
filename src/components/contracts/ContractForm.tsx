@@ -10,7 +10,7 @@ import {
   Button,
   Space,
   DatePicker,
-  Modal,
+  Switch,
 } from "antd";
 import type { FormInstance } from "antd";
 import type { Dayjs } from "dayjs";
@@ -23,6 +23,8 @@ interface ContractFormProps {
   onSubmit: (values: Partial<IContract>) => void;
   onCancel: () => void;
   clients?: Array<{ id: string; name: string }>;
+  opportunities?: Array<{ id: string; title: string }>;
+  proposals?: Array<{ id: string; title: string }>;
 }
 
 const STATUS_OPTIONS = [
@@ -46,10 +48,22 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   onSubmit,
   onCancel,
   clients = [],
+  opportunities = [],
+  proposals = [],
 }) => {
   const clientOptions = clients.map((client) => ({
     label: client.name,
     value: client.id,
+  }));
+
+  const opportunityOptions = opportunities.map((opp) => ({
+    label: opp.title,
+    value: opp.id,
+  }));
+
+  const proposalOptions = proposals.map((proposal) => ({
+    label: proposal.title,
+    value: proposal.id,
   }));
 
   const handleSubmit = async () => {
@@ -80,6 +94,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       initialValues={{
         status: 1,
         currency: "ZAR",
+        autoRenew: false,
         ...initialValues,
         startDate: initialValues?.startDate
           ? dayjs(initialValues.startDate)
@@ -109,7 +124,46 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         name="clientId"
         rules={[{ required: true, message: "Please select a client" }]}
       >
-        <Select options={clientOptions} placeholder="Select a client" />
+        <Select 
+          options={clientOptions} 
+          placeholder="Select a client" 
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </Form.Item>
+
+      <Form.Item
+        label="Opportunity (Optional)"
+        name="opportunityId"
+        rules={[{ required: false }]}
+      >
+        <Select 
+          options={opportunityOptions} 
+          placeholder="Link to an opportunity" 
+          allowClear
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </Form.Item>
+
+      <Form.Item
+        label="Proposal (Optional)"
+        name="proposalId"
+        rules={[{ required: false }]}
+      >
+        <Select 
+          options={proposalOptions} 
+          placeholder="Link to a proposal" 
+          allowClear
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+        />
       </Form.Item>
 
       <Form.Item
@@ -164,8 +218,17 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         label="Renewal Notice Period (days)"
         name="renewalNoticePeriod"
         rules={[{ required: false }]}
+        tooltip="Number of days before end date to trigger renewal reminder"
       >
-        <InputNumber min={0} placeholder="e.g., 30" style={{ width: "100%" }} />
+        <InputNumber min={0} placeholder="e.g., 90" style={{ width: "100%" }} />
+      </Form.Item>
+
+      <Form.Item
+        label="Auto Renew"
+        name="autoRenew"
+        valuePropName="checked"
+      >
+        <Switch />
       </Form.Item>
 
       <Form.Item

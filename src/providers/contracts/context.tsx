@@ -5,6 +5,7 @@ import { createContext } from "react";
 export interface IContractRenewal {
   id: string;
   contractId?: string;
+  renewalOpportunityId?: string;
   renewalDate?: string;
   newEndDate?: string;
   status?: number; // 1=Pending, 2=Completed
@@ -17,6 +18,10 @@ export interface IContract {
   id: string;
   clientId?: string;
   clientName?: string;
+  opportunityId?: string;
+  proposalId?: string;
+  ownerId?: string;
+  ownerName?: string;
   contractNumber?: string;
   title?: string;
   description?: string;
@@ -27,6 +32,7 @@ export interface IContract {
   currency?: string;
   terms?: string;
   renewalNoticePeriod?: number;
+  autoRenew?: boolean;
   isExpiringSoon?: boolean;
   daysUntilExpiry?: number;
   renewals?: IContractRenewal[];
