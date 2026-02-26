@@ -9,13 +9,10 @@ export interface Client {
   industry: string;
   clientType: number;
   isActive: boolean;
-  contactEmail?: string;
-  phoneNumber?: string;
-  address?: string;
-  city?: string;
-  country?: string;
-  websiteUrl?: string;
   companySize?: string;
+  website?: string;
+  billingAddress?: string;
+  taxNumber?: string;
   createdAt?: string;
 }
 
