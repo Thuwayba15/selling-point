@@ -16,6 +16,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "update:client",
     "delete:client",
 
+    // Contacts
+    "create:contact",
+    "update:contact",
+    "delete:contact",
+
     // Opportunities
     "create:opportunity",
     "update:opportunity",
@@ -62,6 +67,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "update:client",
     "delete:client",
 
+    // Contacts
+    "create:contact",
+    "update:contact",
+    "delete:contact",
+
     // Proposals
     "create:proposal",
     "update:proposal",
@@ -99,6 +109,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "create:client",
     "update:client",
 
+    // Contacts
+    "create:contact",
+    "update:contact",
+    "delete:contact",
+
     // Proposals
     "create:proposal",
     "update:proposal",
@@ -124,6 +139,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     // Clients
     "create:client",
     "update:client",
+
+    // Contacts
+    "create:contact",
+    "update:contact",
 
     // Pricing Requests
     "create:pricing-request",

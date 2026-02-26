@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Space, Modal, message } from "antd";
+import { Card, Button, Space, App } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRbac } from "@/hooks/useRbac";
 import { useStyles } from "./style";
@@ -14,6 +14,7 @@ interface ClientActionsProps {
 export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientName, onEdit, onDelete }) => {
   const { styles } = useStyles();
   const { can } = useRbac();
+  const { modal, message } = App.useApp();
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Only Admin and SalesManager can delete
@@ -21,7 +22,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
   const canEdit = can("update:client");
 
   const handleDeleteClick = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "Delete Client",
       content: `Are you sure you want to delete "${clientName}"? This action cannot be undone.`,
       okText: "Delete",
