@@ -56,7 +56,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
     <Card className={styles.filtersCard}>
       <div className={styles.filtersRow}>
         <div className={styles.filterItem}>
-          <Form.Item label="Search" style={{ marginBottom: 0 }}>
+          <Form.Item label="Search" className={styles.formItemNoBorder}>
             <Input
               placeholder="Search by name..."
               prefix={<SearchOutlined />}
@@ -68,7 +68,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Industry" style={{ marginBottom: 0 }}>
+          <Form.Item label="Industry" className={styles.formItemNoBorder}>
             <Select
               placeholder="All industries"
               value={industry}
@@ -81,7 +81,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Type" style={{ marginBottom: 0 }}>
+          <Form.Item label="Type" className={styles.formItemNoBorder}>
             <Select
               placeholder="All types"
               value={clientType}
@@ -93,7 +93,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
         </div>
 
         <div className={styles.filterItem}>
-          <Form.Item label="Status" style={{ marginBottom: 0 }}>
+          <Form.Item label="Status" className={styles.formItemNoBorder}>
             <Select
               placeholder="All statuses"
               value={isActive}
@@ -104,7 +104,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
           </Form.Item>
         </div>
 
-        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+        <div className={styles.filtersActions}>
           <Button type="primary" onClick={onApplyFilters}>
             Apply Filters
           </Button>

@@ -30,7 +30,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
   if (loading) {
     return (
       <Card className={styles.detailsCard} title="Proposal Details">
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <div className={styles.loadingState}>
           <Spin size="large" />
         </div>
       </Card>

@@ -15,6 +15,7 @@ import {
 import type { FormInstance } from "antd";
 import type { Dayjs } from "dayjs";
 import { IContract } from "@/providers/contracts/context";
+import { useStyles } from "./style";
 
 interface ContractFormProps {
   form: FormInstance;
@@ -51,6 +52,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   opportunities = [],
   proposals = [],
 }) => {
+  const { styles } = useStyles();
   const clientOptions = clients.map((client) => ({
     label: client.name,
     value: client.id,
@@ -182,7 +184,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         name="startDate"
         rules={[{ required: true, message: "Please select start date" }]}
       >
-        <DatePicker style={{ width: "100%" }} />
+        <DatePicker className={styles.fullWidthControl} />
       </Form.Item>
 
       <Form.Item
@@ -190,7 +192,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         name="endDate"
         rules={[{ required: true, message: "Please select end date" }]}
       >
-        <DatePicker style={{ width: "100%" }} />
+        <DatePicker className={styles.fullWidthControl} />
       </Form.Item>
 
       <Form.Item
@@ -202,7 +204,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
           precision={2}
           min={0}
           placeholder="0.00"
-          style={{ width: "100%" }}
+          className={styles.fullWidthControl}
         />
       </Form.Item>
 
@@ -220,7 +222,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         rules={[{ required: false }]}
         tooltip="Number of days before end date to trigger renewal reminder"
       >
-        <InputNumber min={0} placeholder="e.g., 90" style={{ width: "100%" }} />
+        <InputNumber min={0} placeholder="e.g., 90" className={styles.fullWidthControl} />
       </Form.Item>
 
       <Form.Item
@@ -250,7 +252,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         />
       </Form.Item>
 
-      <Space style={{ width: "100%", marginTop: "24px" }}>
+      <Space className={styles.formActions}>
         <Button onClick={onCancel}>Cancel</Button>
         <Button type="primary" loading={loading} onClick={handleSubmit}>
           {initialValues?.id ? "Update Contract" : "Create Contract"}

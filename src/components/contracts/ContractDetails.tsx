@@ -31,7 +31,7 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
   if (loading) {
     return (
       <Card className={styles.detailsCard} title="Contract Details">
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <div className={styles.loadingState}>
           <Spin size="large" />
         </div>
       </Card>
@@ -130,14 +130,14 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
       />
 
       {contract.description && (
-        <div style={{ marginTop: 20 }}>
+        <div className={styles.sectionBlock}>
           <h4>Description</h4>
           <p>{contract.description}</p>
         </div>
       )}
 
       {contract.terms && (
-        <div style={{ marginTop: 20 }}>
+        <div className={styles.sectionBlock}>
           <h4>Terms & Conditions</h4>
           <p>{contract.terms}</p>
         </div>

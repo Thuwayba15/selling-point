@@ -96,7 +96,7 @@ export const ProposalActions = ({
               icon={<SendOutlined />}
               onClick={onSubmit}
               block
-              style={{ backgroundColor: "#1890ff" }}
+              className={styles.primarySubmitButton}
             >
               Submit for Approval
             </Button>
@@ -108,7 +108,7 @@ export const ProposalActions = ({
               icon={<CheckOutlined />}
               onClick={onApprove}
               block
-              style={{ backgroundColor: "#52c41a" }}
+              className={styles.approveButton}
             >
               Approve Proposal
             </Button>

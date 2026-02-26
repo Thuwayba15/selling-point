@@ -74,6 +74,12 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
+  `,
+
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
   `,
@@ -138,5 +144,17 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   primaryTag: css`
     margin-left: ${token.marginXS}px;
+  `,
+
+  sectionSpacing: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  chartPlaceholder: css`
+    height: 320px;
+  `,
+
+  sectionSpacing: css`
+    margin-bottom: ${token.marginLG}px;
   `,
 }));

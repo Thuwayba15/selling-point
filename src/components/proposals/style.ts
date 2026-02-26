@@ -113,8 +113,26 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `,
 
+  primarySubmitButton: css`
+    background-color: ${token.colorPrimary};
+  `,
+
+  approveButton: css`
+    background-color: ${token.colorSuccess};
+  `,
+
   fullWidthControl: css`
     width: 100%;
+  `,
+
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+  `,
+
+  loadingState: css`
+    text-align: center;
+    padding: ${token.paddingLG}px 0;
   `,
 
   emptyState: css`
@@ -130,6 +148,21 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-top: ${token.marginLG}px;
     margin-bottom: ${token.marginSM}px;
     font-weight: ${token.fontWeightStrong};
+  `,
+
+  lineItemsSection: css`
+    margin-top: ${token.marginLG}px;
+  `,
+
+  lineItemsAddButton: css`
+    width: 100%;
+    margin-top: ${token.marginSM}px;
+  `,
+
+  lineItemEditor: css`
+    margin-top: ${token.marginSM}px;
+    padding: ${token.paddingSM}px;
+    border: 1px dashed ${token.colorBorder};
   `,
 
   summarySection: css`

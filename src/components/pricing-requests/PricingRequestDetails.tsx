@@ -41,7 +41,7 @@ export const PricingRequestDetails = ({ pricingRequest, loading }: PricingReques
   if (loading) {
     return (
       <Card className={styles.detailsCard} title="Pricing Request Details">
-        <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <div className={styles.loadingState}>
           <Spin size="large" />
         </div>
       </Card>

@@ -74,6 +74,11 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+  `,
+
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
   `,
@@ -103,6 +108,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     @media (max-width: 768px) {
       min-width: 100%;
     }
+  `,
+
+  actionsStack: css`
+    width: 100%;
   `,
 
   primaryBadge: css`

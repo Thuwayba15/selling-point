@@ -123,6 +123,36 @@ export const useStyles = createStyles(({ token, css }) => ({
     flex-wrap: wrap;
   `,
 
+  fullWidthControl: css`
+    width: 100%;
+  `,
+
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
+  `,
+
+  formActions: css`
+    width: 100%;
+    margin-top: ${token.marginLG}px;
+  `,
+
+  loadingState: css`
+    text-align: center;
+    padding: ${token.paddingLG}px 0;
+  `,
+
+  sectionBlock: css`
+    margin-top: ${token.marginLG}px;
+  `,
+
+  actionNotice: css`
+    margin-top: ${token.marginXS}px;
+    font-size: ${token.fontSizeSM}px;
+    color: ${token.colorTextSecondary};
+  `,
+
   emptyState: css`
     color: ${token.colorTextSecondary};
     text-align: center;

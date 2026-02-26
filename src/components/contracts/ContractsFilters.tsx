@@ -50,7 +50,7 @@ export const ContractsFilters = ({
             options={STATUS_OPTIONS}
             value={status}
             onChange={onStatusChange}
-            style={{ width: "100%" }}
+            className={styles.fullWidthControl}
           />
         </div>
         <div className={styles.filterItem}>
@@ -61,10 +61,10 @@ export const ContractsFilters = ({
             onChange={onClientIdChange}
             placeholder="Select a client"
             allowClear
-            style={{ width: "100%" }}
+            className={styles.fullWidthControl}
           />
         </div>
-        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+        <div className={styles.filtersActions}>
           <Button type="primary" onClick={onApplyFilters}>
             Apply Filters
           </Button>

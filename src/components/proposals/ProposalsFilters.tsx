@@ -71,8 +71,8 @@ export const ProposalsFilters = ({ onApplyFilters, onClear }: ProposalsFiltersPr
           </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <Button type="primary" onClick={handleApply} flex={1}>
+            <div className={styles.filtersActions}>
+              <Button type="primary" onClick={handleApply}>
                 Apply Filters
               </Button>
               {hasActiveFilters && (

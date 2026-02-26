@@ -74,6 +74,16 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
+  `,
+
+  formItemNoBorder: css`
+    margin-bottom: 0;
+  `,
+
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
   `,
@@ -111,6 +121,15 @@ export const useStyles = createStyles(({ token, css }) => ({
     @media (max-width: 768px) {
       min-width: 100%;
     }
+  `,
+
+  actionsStack: css`
+    width: 100%;
+  `,
+
+  noActionsMessage: css`
+    color: ${token.colorTextSecondary};
+    text-align: center;
   `,
 
   fullWidthControl: css`

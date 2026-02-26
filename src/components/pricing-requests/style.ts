@@ -75,6 +75,11 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+  `,
+
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
   `,
@@ -118,8 +123,29 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `,
 
+  loadingState: css`
+    text-align: center;
+    padding: ${token.paddingLG}px 0;
+  `,
+
   emptyState: css`
     color: ${token.colorTextSecondary};
     padding: ${token.paddingSM}px 0;
+  `,
+
+  viewModeButtons: css`
+    margin-bottom: ${token.marginSM}px;
+  `,
+
+  buttonSpacing: css`
+    margin-right: ${token.marginXS}px;
+  `,
+
+  viewModeButtons: css`
+    margin-bottom: ${token.marginSM}px;
+  `,
+
+  buttonSpacing: css`
+    margin-right: ${token.marginXS}px;
   `,
 }));

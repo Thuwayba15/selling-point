@@ -67,7 +67,7 @@ export const ContactActions = ({
 
   return (
     <Card className={styles.actionsCard} title="Actions">
-      <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="middle" className={styles.actionsStack}>
         {can("update:contact") && (
           <Button
             type="default"

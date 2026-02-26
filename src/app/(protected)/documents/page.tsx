@@ -15,7 +15,7 @@ const DocumentsPage = () => {
   ];
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
+    <Space orientation="vertical"size="middle">
 
       <Card title="Filters">
         <Row gutter={[16, 16]}>
@@ -54,7 +54,7 @@ const DocumentsPage = () => {
       </Card>
 
       <Card title="Document List">
-        <Space style={{ marginBottom: 16 }}>
+        <Space>
           <Button>Download</Button>
           <Button danger>Delete</Button>
         </Space>

@@ -10,14 +10,13 @@ import {
   Button,
   Space,
   Table,
-  Modal,
   DatePicker,
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { FormInstance } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { Dayjs } from "dayjs";
 import { IProposal, IProposalLineItem } from "@/providers/proposals/context";
+import { useStyles } from "./style";
 
 interface ProposalFormProps {
   form: FormInstance;
@@ -51,6 +50,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
   opportunities = [],
   clients = [],
 }) => {
+  const { styles } = useStyles();
   const [lineItems, setLineItems] = React.useState<IProposalLineItem[]>(
     initialValues?.lineItems || []
   );
@@ -219,7 +219,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           label="Valid Until"
           name="validUntil"
         >
-          <DatePicker style={{ width: "100%" }} />
+          <DatePicker className={styles.fullWidthControl} />
         </Form.Item>
 
         <Form.Item
@@ -255,7 +255,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
         </Form.Item>
       </Form>
 
-      <div style={{ marginTop: "24px" }}>
+      <div className={styles.lineItemsSection}>
         <h3>Line Items</h3>
         <Table
           columns={lineItemColumns}
@@ -271,12 +271,12 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
             type="dashed"
             icon={<PlusOutlined />}
             onClick={() => setIsAddingLineItem(true)}
-            style={{ width: "100%", marginTop: "16px" }}
+            className={styles.lineItemsAddButton}
           >
             Add Line Item
           </Button>
         ) : (
-          <div style={{ marginTop: "16px", padding: "16px", border: "1px dashed #d9d9d9" }}>
+          <div className={styles.lineItemEditor}>
             <Form form={lineItemForm} layout="vertical" onFinish={handleAddLineItem}>
               <Form.Item
                 label="Product/Service Name"

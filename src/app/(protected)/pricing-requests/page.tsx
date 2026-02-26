@@ -321,11 +321,11 @@ const PricingRequestsPage = () => {
         <PricingRequestsHeader onCreateClick={handleCreateClick} />
 
         {/* View mode buttons */}
-        <div style={{ marginBottom: 16 }}>
+        <div className={styles.viewModeButtons}>
           <Button
             type={viewMode === "all" ? "primary" : "default"}
             onClick={() => handleViewModeChange("all")}
-            style={{ marginRight: 8 }}
+            className={styles.buttonSpacing}
           >
             All Requests
           </Button>
@@ -333,7 +333,7 @@ const PricingRequestsPage = () => {
             <Button
               type={viewMode === "pending" ? "primary" : "default"}
               onClick={() => handleViewModeChange("pending")}
-              style={{ marginRight: 8 }}
+              className={styles.buttonSpacing}
             >
               Pending
             </Button>

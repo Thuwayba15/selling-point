@@ -82,7 +82,7 @@ export const ContractActions = ({
   return (
     <>
       <Card className={styles.actionsCard} title="Actions">
-        <Space orientation="vertical" style={{ width: "100%" }}>
+        <Space orientation="vertical" className={styles.actionsStack}>
           {can("update:contract") && isDraft && (
             <Button
               block
@@ -142,7 +142,7 @@ export const ContractActions = ({
           )}
 
           {(isDraft || isExpired || isRenewed || isCancelled) && (
-            <div style={{ marginTop: "12px", fontSize: "12px", color: "#999" }}>
+            <div className={styles.actionNotice}>
               No actions available for this contract status
             </div>
           )}

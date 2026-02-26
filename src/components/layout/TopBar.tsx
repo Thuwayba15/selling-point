@@ -15,14 +15,9 @@ const PAGE_NAMES: Record<string, string> = {
   [ROUTES.proposals]: "Proposals",
   [ROUTES.contracts]: "Contracts",
   [ROUTES.pricingRequests]: "Pricing Requests",
-  [ROUTES.activities]: "Activities",
   [ROUTES.clients]: "Clients",
   [ROUTES.contacts]: "Contacts",
   [ROUTES.opportunities]: "Opportunities",
-  [ROUTES.reports]: "Reports",
-  [ROUTES.admin]: "Admin",
-  [ROUTES.adminUsers]: "Admin • Users",
-  [ROUTES.adminConfig]: "Admin • Config",
 };
 
 export const TopBar = () => {
@@ -65,7 +60,7 @@ export const TopBar = () => {
 
       <div className={styles.headerRight}>
         <Dropdown popupRender={() => userMenuContent} trigger={['click']} placement="bottomRight">
-          <UserOutlined className={styles.userIcon} style={{ cursor: 'pointer' }} />
+        <UserOutlined className={styles.userIcon} />
         </Dropdown>
         <LogoutOutlined className={styles.logoutIcon} onClick={handleLogout} />
       </div>
