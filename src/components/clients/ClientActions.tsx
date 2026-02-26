@@ -43,7 +43,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
 
   return (
     <Card title="Actions" className={styles.actionsCard}>
-      <Space direction="vertical" style={{ width: "100%" }}>
+      <Space orientation="vertical" style={{ width: "100%" }}>
         {canEdit && (
           <Button
             type="primary"

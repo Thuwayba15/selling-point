@@ -1,5 +1,5 @@
 import { createStyles } from "antd-style";
-import { COLORS } from "@/theme/colors";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ css, token }) => {
   return {

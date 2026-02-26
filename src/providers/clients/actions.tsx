@@ -48,7 +48,7 @@ export enum ClientsActionEnums {
 // ============================================================================
 export const getClientsPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientsPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
 );
 
 export const getClientsSuccess = createAction<
@@ -56,6 +56,7 @@ export const getClientsSuccess = createAction<
   { clients: IClient[]; pagination?: IPaginationInfo }
 >(ClientsActionEnums.getClientsSuccess, ({ clients, pagination }) => ({
   isPending: false,
+  isLoadingDetails: false,
   isSuccess: true,
   isError: false,
   clients,
@@ -66,6 +67,7 @@ export const getClientsError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.getClientsError,
   (errorMessage: string) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: false,
     isError: true,
     errorMessage,
@@ -77,12 +79,13 @@ export const getClientsError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const getClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientPending,
-  () => ({ isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
 );
 
 export const getClientSuccess = createAction<IClientsStateContext, IClient>(
   ClientsActionEnums.getClientSuccess,
   (client: IClient) => ({
+    isPending: false,
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
@@ -93,6 +96,7 @@ export const getClientSuccess = createAction<IClientsStateContext, IClient>(
 export const getClientError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.getClientError,
   (errorMessage: string) => ({
+    isPending: false,
     isLoadingDetails: false,
     isSuccess: false,
     isError: true,
@@ -105,12 +109,13 @@ export const getClientError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const getClientStatsPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientStatsPending,
-  () => ({ isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
 );
 
 export const getClientStatsSuccess = createAction<IClientsStateContext, IClientStats>(
   ClientsActionEnums.getClientStatsSuccess,
   (clientStats: IClientStats) => ({
+    isPending: false,
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
@@ -121,6 +126,7 @@ export const getClientStatsSuccess = createAction<IClientsStateContext, IClientS
 export const getClientStatsError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.getClientStatsError,
   (errorMessage: string) => ({
+    isPending: false,
     isLoadingDetails: false,
     isSuccess: false,
     isError: true,
@@ -133,13 +139,14 @@ export const getClientStatsError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const createClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.createClientPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
 );
 
 export const createClientSuccess = createAction<IClientsStateContext, IClient>(
   ClientsActionEnums.createClientSuccess,
   (client: IClient) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: true,
     isError: false,
     client,
@@ -150,6 +157,7 @@ export const createClientError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.createClientError,
   (errorMessage: string) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: false,
     isError: true,
     errorMessage,
@@ -161,13 +169,14 @@ export const createClientError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const updateClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.updateClientPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
 );
 
 export const updateClientSuccess = createAction<IClientsStateContext, IClient>(
   ClientsActionEnums.updateClientSuccess,
   (client: IClient) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: true,
     isError: false,
     client,
@@ -178,6 +187,7 @@ export const updateClientError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.updateClientError,
   (errorMessage: string) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: false,
     isError: true,
     errorMessage,
@@ -189,13 +199,14 @@ export const updateClientError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const deleteClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.deleteClientPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
 );
 
 export const deleteClientSuccess = createAction<IClientsStateContext>(
   ClientsActionEnums.deleteClientSuccess,
   () => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: true,
     isError: false,
     client: undefined,
@@ -206,6 +217,7 @@ export const deleteClientError = createAction<IClientsStateContext, string>(
   ClientsActionEnums.deleteClientError,
   (errorMessage: string) => ({
     isPending: false,
+    isLoadingDetails: false,
     isSuccess: false,
     isError: true,
     errorMessage,
@@ -217,10 +229,23 @@ export const deleteClientError = createAction<IClientsStateContext, string>(
 // ============================================================================
 export const clearError = createAction<IClientsStateContext>(
   ClientsActionEnums.clearError,
-  () => ({ isError: false, errorMessage: undefined })
+  () => ({
+    isPending: false,
+    isLoadingDetails: false,
+    isSuccess: false,
+    isError: false,
+    errorMessage: undefined,
+  })
 );
 
 export const clearClient = createAction<IClientsStateContext>(
   ClientsActionEnums.clearClient,
-  () => ({ client: undefined, clientStats: undefined })
+  () => ({
+    isPending: false,
+    isLoadingDetails: false,
+    isSuccess: false,
+    isError: false,
+    client: undefined,
+    clientStats: undefined,
+  })
 );

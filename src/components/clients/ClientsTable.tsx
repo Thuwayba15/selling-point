@@ -78,13 +78,6 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
         <Tag color={isActive ? "green" : "default"}>{isActive ? "Active" : "Inactive"}</Tag>
       ),
     },
-    {
-      title: "Email",
-      dataIndex: "contactEmail",
-      key: "contactEmail",
-      width: "20%",
-      ellipsis: true,
-    },
   ];
 
   return (
