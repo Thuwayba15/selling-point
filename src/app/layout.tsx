@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { ConfigProvider } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { antdTheme } from "../theme/theme";
 
 import { AuthProvider } from "@/providers/auth";
 // import { OpportunitiesProvider } from "@/providers/opportunities";
@@ -23,7 +25,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                       <ClientsProvider>
                         <ReportsProvider>
                           <UsersProvider> */}
-                            {children}
+                            <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
                             {/* </UsersProvider>
                         </ReportsProvider>
                       </ClientsProvider>

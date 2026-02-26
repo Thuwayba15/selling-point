@@ -1,24 +1,47 @@
 "use client";
 
-import { Layout, Button, Space, Typography } from "antd";
-import { useAuthActions, useAuthState } from "@/providers/auth";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthActions } from "@/providers/auth";
+import { ROUTES } from "@/lib/routes";
 
-const { Header } = Layout;
-const { Text } = Typography;
+import { useStyles } from "./style";
+
+const PAGE_NAMES: Record<string, string> = {
+  [ROUTES.dashboard]: "Dashboard",
+  [ROUTES.opportunities]: "Opportunities",
+  [ROUTES.proposals]: "Proposals",
+  [ROUTES.contracts]: "Contracts",
+  [ROUTES.pricingRequests]: "Pricing Requests",
+  [ROUTES.activities]: "Activities",
+  [ROUTES.clients]: "Clients",
+  [ROUTES.reports]: "Reports",
+  [ROUTES.admin]: "Admin",
+  [ROUTES.adminUsers]: "Admin • Users",
+  [ROUTES.adminConfig]: "Admin • Config",
+};
 
 export const TopBar = () => {
-  const { user } = useAuthState();
+  const pathname = usePathname();
+  const router = useRouter();
   const { logout } = useAuthActions();
+  const { styles } = useStyles();
+
+  const handleLogout = () => {
+    logout();
+    router.push(ROUTES.login);
+  };
+
+  const pageName = PAGE_NAMES[pathname] || "Page";
 
   return (
-    <Header>
-      <Text style={{ color: "white" }}>
-        {user ? `Signed in as ${user.email}` : "Not signed in"}
-      </Text>
+    <>
+      <h1 className={styles.headerTitle}>{pageName}</h1>
 
-      <Space>
-        <Button onClick={logout}>Logout</Button>
-      </Space>
-    </Header>
+      <div className={styles.headerRight}>
+        <UserOutlined className={styles.userIcon} />
+        <LogoutOutlined className={styles.logoutIcon} onClick={handleLogout} />
+      </div>
+    </>
   );
 };

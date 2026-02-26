@@ -16,7 +16,6 @@ const ContractsPage = () => {
 
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Title level={3}>Contracts</Title>
 
       <Tabs
         items={[
