@@ -211,6 +211,16 @@ const ContactsPage = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm(undefined);
+    setClientId(undefined);
+    setCurrentPage(1);
+    getContacts({
+      pageNumber: 1,
+      pageSize,
+    });
+  };
+
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
@@ -227,7 +237,7 @@ const ContactsPage = () => {
       <div className={styles.mainContent}>
         <ContactsHeader onCreateClick={handleCreateClick} />
 
-        <ContactsFilters onApplyFilters={handleApplyFilters} clients={clients} />
+        <ContactsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} clients={clients} />
 
         <ContactsTable
           contacts={contacts || []}

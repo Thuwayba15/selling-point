@@ -271,6 +271,20 @@ const PricingRequestsPage = () => {
     );
   };
 
+  const handleClearFilters = () => {
+    setStatus(undefined);
+    setPriority(undefined);
+    setAssignedToId(undefined);
+    setCurrentPage(1);
+    fetchPricingRequests(
+      {
+        pageNumber: 1,
+        pageSize,
+      },
+      viewMode
+    );
+  };
+
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
@@ -333,7 +347,7 @@ const PricingRequestsPage = () => {
         </div>
 
         {viewMode === "all" && (
-          <PricingRequestsFilters onApplyFilters={handleApplyFilters} />
+          <PricingRequestsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} />
         )}
 
         <PricingRequestsTable

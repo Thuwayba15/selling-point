@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, Form, Input, Button, Select } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface PricingRequestsFiltersProps {
@@ -11,6 +11,7 @@ interface PricingRequestsFiltersProps {
     priority?: number;
     assignedToId?: string;
   }) => void;
+  onClear: () => void;
 }
 
 const STATUS_OPTIONS = [
@@ -26,7 +27,7 @@ const PRIORITY_OPTIONS = [
   { label: "Urgent", value: 4 },
 ];
 
-export const PricingRequestsFilters = ({ onApplyFilters }: PricingRequestsFiltersProps) => {
+export const PricingRequestsFilters = ({ onApplyFilters, onClear }: PricingRequestsFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const [status, setStatus] = useState<number | undefined>(undefined);
@@ -40,6 +41,8 @@ export const PricingRequestsFilters = ({ onApplyFilters }: PricingRequestsFilter
       assignedToId: assignedToId || undefined,
     });
   };
+
+  const hasActiveFilters = status || priority || assignedToId;
 
   return (
     <Card className={styles.filtersCard} title="Filters">
@@ -75,9 +78,16 @@ export const PricingRequestsFilters = ({ onApplyFilters }: PricingRequestsFilter
           </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
-            <Button type="primary" onClick={handleApply} block>
-              Apply Filters
-            </Button>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <Button type="primary" onClick={handleApply} flex={1}>
+                Apply Filters
+              </Button>
+              {hasActiveFilters && (
+                <Button icon={<ClearOutlined />} onClick={onClear} danger>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
           </Form.Item>
         </div>
       </Form>

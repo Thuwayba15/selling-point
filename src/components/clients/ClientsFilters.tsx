@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Form, Input, Select, Button, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ClientsFiltersProps {
@@ -13,6 +13,7 @@ interface ClientsFiltersProps {
   onClientTypeChange: (value: number | undefined) => void;
   onActiveChange: (value: boolean | undefined) => void;
   onApplyFilters: () => void;
+  onClear: () => void;
 }
 
 const CLIENT_TYPES = [
@@ -47,6 +48,7 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
   onClientTypeChange,
   onActiveChange,
   onApplyFilters,
+  onClear,
 }) => {
   const { styles } = useStyles();
 
@@ -102,10 +104,15 @@ export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
           </Form.Item>
         </div>
 
-        <div style={{ display: "flex", alignItems: "flex-end" }}>
+        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
           <Button type="primary" onClick={onApplyFilters}>
             Apply Filters
           </Button>
+          {(searchTerm || industry || clientType !== undefined || isActive !== undefined) && (
+            <Button icon={<ClearOutlined />} onClick={onClear} danger>
+              Clear Filters
+            </Button>
+          )}
         </div>
       </div>
     </Card>

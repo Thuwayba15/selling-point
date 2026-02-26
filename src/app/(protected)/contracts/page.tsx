@@ -208,28 +208,33 @@ const ContractsPage = () => {
 
   const handleStatusChange = (newStatus: number | undefined) => {
     setStatus(newStatus);
-    setCurrentPage(1);
   };
 
   const handleClientIdChange = (newClientId: string | undefined) => {
     setClientId(newClientId);
+  };
+
+  const handleApplyFilters = () => {
     setCurrentPage(1);
+    getContracts({ pageNumber: 1, pageSize, status, clientId });
   };
 
   const handleClearFilters = () => {
     setStatus(undefined);
     setClientId(undefined);
     setCurrentPage(1);
+    getContracts({ pageNumber: 1, pageSize, status: undefined, clientId: undefined });
   };
 
   const handlePaginationChange = (page: number, pageSize: number) => {
     setCurrentPage(page);
+    getContracts({ pageNumber: page, pageSize, status, clientId });
   };
 
-  // Fetch contracts when filters change
+  // Initialize contracts on mount
   useEffect(() => {
-    getContracts({ pageNumber: currentPage, pageSize, status, clientId });
-  }, [status, clientId, currentPage, pageSize]);
+    getContracts({ pageNumber: 1, pageSize });
+  }, []);
 
   const clientOptions = clientsState.clients
     ? clientsState.clients.map((client) => ({ id: client.id || "", name: client.name || "" }))
@@ -262,6 +267,7 @@ const ContractsPage = () => {
                     clientId={clientId}
                     onStatusChange={handleStatusChange}
                     onClientIdChange={handleClientIdChange}
+                    onApplyFilters={handleApplyFilters}
                     onClear={handleClearFilters}
                     clients={clientOptions}
                   />

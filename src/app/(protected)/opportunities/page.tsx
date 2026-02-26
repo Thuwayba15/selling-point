@@ -336,6 +336,22 @@ const OpportunitiesPage = () => {
     fetchPipeline(filters.ownerId, showMyOpportunities);
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm(undefined);
+    setClientId(undefined);
+    setStage(undefined);
+    setOwnerId(undefined);
+    setCurrentPage(1);
+    fetchOpportunities(
+      {
+        pageNumber: 1,
+        pageSize,
+      },
+      showMyOpportunities
+    );
+    fetchPipeline(undefined, showMyOpportunities);
+  };
+
   const handleShowMyOpportunitiesChange = (value: boolean) => {
     setShowMyOpportunities(value);
     if (value) setOwnerId(undefined);
@@ -377,6 +393,7 @@ const OpportunitiesPage = () => {
 
         <OpportunitiesFilters
           onApplyFilters={handleApplyFilters}
+          onClear={handleClearFilters}
           clients={clientsList}
           showMyOpportunities={showMyOpportunities}
           onShowMyOpportunitiesChange={handleShowMyOpportunitiesChange}
@@ -406,8 +423,17 @@ const OpportunitiesPage = () => {
           </div>
         )}
 
-        <div className={styles.insightsRow}>
+        {/* Pipeline Overview shows statistics by stage */}
+        {/* <div className={styles.insightsRow}>
           <OpportunitiesPipeline pipeline={pipeline} loading={isLoadingDetails} />
+          <OpportunityStageHistory
+            stageHistory={stageHistory}
+            loading={isLoadingDetails}
+            hasSelection={Boolean(selectedOpportunity)}
+          />
+        </div> */}
+
+        <div style={{ marginBottom: "24px" }}>
           <OpportunityStageHistory
             stageHistory={stageHistory}
             loading={isLoadingDetails}

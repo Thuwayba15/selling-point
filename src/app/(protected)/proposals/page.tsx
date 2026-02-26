@@ -314,6 +314,17 @@ const ProposalsPage = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setStatus(undefined);
+    setClientId(undefined);
+    setOpportunityId(undefined);
+    setCurrentPage(1);
+    fetchProposals({
+      pageNumber: 1,
+      pageSize,
+    });
+  };
+
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
@@ -331,7 +342,7 @@ const ProposalsPage = () => {
       <div className={styles.mainContent}>
         <ProposalsHeader onCreateClick={handleCreateClick} />
 
-        <ProposalsFilters onApplyFilters={handleApplyFilters} />
+        <ProposalsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} />
 
         <ProposalsTable
           proposals={proposals || []}

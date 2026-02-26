@@ -9,6 +9,7 @@ interface ContractsFiltersProps {
   clientId?: string;
   onStatusChange: (status: number | undefined) => void;
   onClientIdChange: (clientId: string | undefined) => void;
+  onApplyFilters: () => void;
   onClear: () => void;
   clients?: Array<{ id: string; name: string }>;
 }
@@ -27,6 +28,7 @@ export const ContractsFilters = ({
   clientId,
   onStatusChange,
   onClientIdChange,
+  onApplyFilters,
   onClear,
   clients = [],
 }: ContractsFiltersProps) => {
@@ -62,15 +64,20 @@ export const ContractsFilters = ({
             style={{ width: "100%" }}
           />
         </div>
-        {hasActiveFilters && (
-          <Button
-            icon={<ClearOutlined />}
-            onClick={onClear}
-            danger
-          >
-            Clear Filters
+        <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+          <Button type="primary" onClick={onApplyFilters}>
+            Apply Filters
           </Button>
-        )}
+          {hasActiveFilters && (
+            <Button
+              icon={<ClearOutlined />}
+              onClick={onClear}
+              danger
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );
