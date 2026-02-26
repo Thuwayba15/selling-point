@@ -10,6 +10,7 @@ import { AuthProvider } from "@/providers/auth";
 import { ClientsProvider } from "@/providers/clients";
 import { ContactsProvider } from "@/providers/contacts";
 import { OpportunitiesProvider } from "@/providers/opportunities";
+import { PricingRequestsProvider } from "@/providers/pricing-requests";
 import { antdTheme } from "@/theme/theme";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
@@ -31,11 +32,13 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <ClientsProvider>
             <ContactsProvider>
               <OpportunitiesProvider>
-                <AntdRegistry>
-                  <ConfigProvider theme={antdTheme}>
-                    <App>{children}</App>
-                  </ConfigProvider>
-                </AntdRegistry>
+                <PricingRequestsProvider>
+                  <AntdRegistry>
+                    <ConfigProvider theme={antdTheme}>
+                      <App>{children}</App>
+                    </ConfigProvider>
+                  </AntdRegistry>
+                </PricingRequestsProvider>
               </OpportunitiesProvider>
             </ContactsProvider>
           </ClientsProvider>

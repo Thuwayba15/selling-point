@@ -98,12 +98,12 @@ export const OpportunitiesFilters = ({
             />
           </Form.Item>
 
-          {/* <Form.Item label="My Opportunities" className={styles.filterItem}>
+          <Form.Item label="My Opportunities" className={styles.filterItem}>
             <Switch
               checked={showMyOpportunities}
               onChange={onShowMyOpportunitiesChange}
             />
-          </Form.Item> */}
+          </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
             <Button type="primary" onClick={handleApply} block>

@@ -63,12 +63,11 @@ export const OpportunityActions = ({
           </Button>
         )}
 
-        {/* Add back if endpoint is added */}
-        {/* {can("assign:opportunity") && (
+        {can("assign:opportunity") && (
           <Button type="default" icon={<UserAddOutlined />} onClick={onAssign} block>
             Assign Opportunity
           </Button>
-        )} */}
+        )}
 
         {can("delete:opportunity") && (
           <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleDelete} block>
