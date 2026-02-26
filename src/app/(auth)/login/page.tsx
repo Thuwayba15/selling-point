@@ -1,6 +1,7 @@
 "use client";
 
-import { Form } from "antd";
+import { useState } from "react";
+import { Form, message } from "antd";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@/providers/auth";
 import AuthLayout from "@/components/auth/AuthLayout";
@@ -15,10 +16,23 @@ const LoginPage = () => {
   const router = useRouter();
   const { login } = useAuthActions();
   const { styles } = useStyles();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: { email: string; password: string }) => {
-    const ok = await login(values.email, values.password);
-    if (ok) router.replace("/");
+    setLoading(true);
+    try {
+      const ok = await login(values.email, values.password);
+      if (ok) {
+        message.success("Login successful!");
+        window.location.href = "/";
+      } else {
+        message.error("Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      message.error("An error occurred during login.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,7 +46,7 @@ const LoginPage = () => {
             name="email"
             rules={[{ required: true, type: "email", message: "Please enter a valid email" }]}
           >
-            <AuthInput placeholder="Value" />
+            <AuthInput placeholder="admin@salesautomation.com" />
           </Form.Item>
 
           <Form.Item
@@ -40,10 +54,10 @@ const LoginPage = () => {
             name="password"
             rules={[{ required: true, min: 6, message: "Password must be at least 6 characters" }]}
           >
-            <AuthInput type="password" placeholder="Value" />
+            <AuthInput type="password" placeholder="••••••" />
           </Form.Item>
 
-          <AuthButton type="primary" htmlType="submit" block>
+          <AuthButton type="primary" htmlType="submit" block loading={loading}>
             Sign in
           </AuthButton>
 

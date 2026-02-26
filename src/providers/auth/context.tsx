@@ -1,9 +1,23 @@
-export type UserRole = "admin" | "client";
+"use client";
+
+import { createContext } from "react";
+
+export const AUTH_STORAGE_KEY = "auth.user";
+
+export type UserRole =
+  | "Admin"
+  | "SalesManager"
+  | "BusinessDevelopmentManager"
+  | "SalesRep";
 
 export type AuthUser = {
   id: string;
   email: string;
-  role: UserRole;
+  firstName: string;
+  lastName: string;
+  roles: UserRole[];
+  tenantId: string;
+  expiresAt?: string;
 };
 
 export type AuthState = {
@@ -13,8 +27,6 @@ export type AuthState = {
   errorMessage: string | null;
 };
 
-export const AUTH_STORAGE_KEY = "sales.auth.user";
-
 export const INITIAL_STATE: AuthState = {
   isBootstrapped: false,
   isAuthenticated: false,
@@ -22,17 +34,22 @@ export const INITIAL_STATE: AuthState = {
   errorMessage: null,
 };
 
-export enum AuthActionType {
-  BOOTSTRAP_SUCCESS = "AUTH/BOOTSTRAP_SUCCESS",
-  LOGIN_SUCCESS = "AUTH/LOGIN_SUCCESS",
-  LOGOUT = "AUTH/LOGOUT",
-  SET_ERROR = "AUTH/SET_ERROR",
-  CLEAR_ERROR = "AUTH/CLEAR_ERROR",
-}
+export type RegisterPayload = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  tenantName?: string;
+  tenantId?: string;
+  role?: UserRole;
+};
 
-export type AuthAction =
-  | { type: AuthActionType.BOOTSTRAP_SUCCESS; payload: { user: AuthUser | null } }
-  | { type: AuthActionType.LOGIN_SUCCESS; payload: { user: AuthUser } }
-  | { type: AuthActionType.LOGOUT }
-  | { type: AuthActionType.SET_ERROR; payload: { message: string } }
-  | { type: AuthActionType.CLEAR_ERROR };
+export type AuthActions = {
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (payload: RegisterPayload) => Promise<boolean>;
+  logout: () => void;
+};
+
+export const AuthStateContext = createContext<AuthState | null>(null);
+export const AuthActionsContext = createContext<AuthActions | null>(null);

@@ -35,7 +35,7 @@ export const SideNav = () => {
   ];
 
   const adminItems =
-    user?.role === "admin"
+    user?.roles === "admin"
       ? [
           { key: ROUTES.admin, icon: <CrownOutlined />, label: <Link href={ROUTES.admin}>Admin</Link> },
           { key: ROUTES.adminUsers, icon: <TeamOutlined />, label: <Link href={ROUTES.adminUsers}>Admin • Users</Link> },
