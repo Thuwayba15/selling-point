@@ -39,6 +39,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "create:pricing-request",
     "update:pricing-request",
     "assign:pricing-request",
+    "complete:pricing-request",
     "view:all-pricing-requests",
 
     // Contracts
@@ -90,6 +91,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "create:pricing-request",
     "update:pricing-request",
     "assign:pricing-request",
+    "complete:pricing-request",
     "view:all-pricing-requests",
 
     // Contracts
@@ -132,6 +134,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     // Pricing Requests
     "create:pricing-request",
     "update:pricing-request",
+    "complete:pricing-request",
 
     // Contracts
     "create:contract",
@@ -161,7 +164,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
 
     // Pricing Requests
     "create:pricing-request",
-    "update:pricing-request",
 
     // Activities
     "create:activity",
