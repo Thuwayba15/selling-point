@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { message } from "antd";
+import { message, Modal, Form } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useStyles } from "@/components/clients/style";
 import {
@@ -11,9 +11,11 @@ import {
   ClientDetails,
   ClientStatsComponent,
   ClientActions,
+  ClientForm,
   type Client,
 } from "@/components/clients";
 import { useClientsState, useClientsActions } from "@/providers/clients";
+import type { IClient } from "@/providers/clients/context";
 
 const ClientsPage = () => {
   const { styles } = useStyles();
@@ -37,6 +39,12 @@ const ClientsPage = () => {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Modal states
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [createForm] = Form.useForm();
+  const [editForm] = Form.useForm();
 
   // Initialize data on mount ONLY
   useEffect(() => {
@@ -98,17 +106,75 @@ const ClientsPage = () => {
 
   // Handlers
   const handleCreateClick = () => {
-    console.log("Create client");
-    message.info("Create client modal will be implemented next");
+    createForm.resetFields();
+    setIsCreateModalOpen(true);
   };
 
+  const handleCreateSubmit = async (values: Partial<IClient>) => {
+    try {
+      await actions.createClient(values);
+      message.success("Client created successfully");
+      setIsCreateModalOpen(false);
+      createForm.resetFields();
+      // Refresh list
+      await actions.getClients({
+        searchTerm,
+        industry,
+        clientType,
+        isActive,
+        pageNumber: 1,
+        pageSize,
+      });
+      setCurrentPage(1);
+    } catch (error) {
+      message.error("Failed to create client");
+    }
+  };
+
+  const handleCreateCancel = () => {
+    setIsCreateModalOpen(false);
+    createForm.resetFields();
+  };
+
+  // Edit handlers
+  const handleEdit = () => {
+    if (!selectedClient) return;
+    editForm.setFieldsValue(selectedClient);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (values: Partial<IClient>) => {
+    if (!selectedClient?.id) return;
+
+    try {
+      await actions.updateClient(selectedClient.id, values);
+      message.success("Client updated successfully");
+      setIsEditModalOpen(false);
+      editForm.resetFields();
+      // Refresh the selected client's details
+      await actions.getClient(selectedClient.id);
+      // Refresh list
+      await actions.getClients({
+        searchTerm,
+        industry,
+        clientType,
+        isActive,
+        pageNumber: currentPage,
+        pageSize,
+      });
+    } catch (error) {
+      message.error("Failed to update client");
+    }
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    editForm.resetFields();
+  };
+
+  // Delete and select handlers
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
-  };
-
-  const handleEdit = () => {
-    console.log("Edit client", selectedClient?.id);
-    message.info("Edit client modal will be implemented next");
   };
 
   const handleDelete = async () => {
@@ -135,13 +201,10 @@ const ClientsPage = () => {
     industry: client.industry,
     clientType: client.clientType,
     isActive: client.isActive,
-    contactEmail: client.contactEmail,
-    phoneNumber: client.phoneNumber,
-    address: client.address,
-    city: client.city,
-    country: client.country,
-    websiteUrl: client.websiteUrl,
     companySize: client.companySize,
+    website: client.website,
+    billingAddress: client.billingAddress,
+    taxNumber: client.taxNumber,
     createdAt: client.createdAt,
   }));
 
@@ -192,6 +255,39 @@ const ClientsPage = () => {
           )}
         </div>
       </div>
+
+      {/* Create Modal */}
+      <Modal
+        title="Create New Client"
+        open={isCreateModalOpen}
+        onCancel={handleCreateCancel}
+        footer={null}
+        width={600}
+      >
+        <ClientForm
+          form={createForm}
+          loading={state.isPending}
+          onSubmit={handleCreateSubmit}
+          onCancel={handleCreateCancel}
+        />
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        title="Edit Client"
+        open={isEditModalOpen}
+        onCancel={handleEditCancel}
+        footer={null}
+        width={600}
+      >
+        <ClientForm
+          form={editForm}
+          initialValues={selectedClient || undefined}
+          loading={state.isPending}
+          onSubmit={handleEditSubmit}
+          onCancel={handleEditCancel}
+        />
+      </Modal>
     </div>
   );
 };
