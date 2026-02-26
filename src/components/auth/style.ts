@@ -1,12 +1,13 @@
 
 import { createStyles, css } from "antd-style";
 import { colors } from "@/theme/colors";
+import { antdTheme } from "@/theme/theme";
 
 export const useStyles = createStyles({
   layout: css`
     display: flex;
     min-height: 100vh;
-    background: ${colors.darkGreen};
+    background: ${colors.shell};
     padding: 54px;
     @media (max-width: 900px) {
       flex-direction: column;
@@ -19,7 +20,7 @@ export const useStyles = createStyles({
     justify-content: right;
     align-items: flex-start;
     padding: 126px 48px;
-    background: ${colors.lightGreen};
+    background: ${colors.bgLayout};
     border-radius: 12px 0 0 12px;
     @media (max-width: 900px) {
       border-radius: 12px 12px 0 0;
@@ -34,7 +35,6 @@ export const useStyles = createStyles({
     background: ${colors.lightGreen};
     border-radius: 0 12px 12px 0;
     padding: 20px;
-    border-left: 3px solid ${colors.darkGreen};
     @media (max-width: 900px) {
       border-radius: 0 0 12px 12px;
       padding: 24px 12px;
@@ -48,7 +48,6 @@ export const useStyles = createStyles({
     padding: 40px 36px;
     background: ${colors.white};
 
-    /* Remove antd Card default padding */
     .ant-card-body {
       padding: 0 !important;
     }
@@ -70,7 +69,7 @@ export const useStyles = createStyles({
       display: inline-block;
       width: 26px;
       height: 26px;
-      background: ${colors.darkGreen};
+      background: ${colors.shell};
       border-radius: 50%;
       margin-left: 15px;
       vertical-align: bottom;
@@ -112,7 +111,7 @@ export const useStyles = createStyles({
     border-radius: 6px;
     font-size: 0.9rem;
     height: 36px;
-    border-color: ${colors.inputBorder};
+    border-color: ${colors.border};
 
     &:hover {
       border-color: ${colors.darkGreen};
@@ -131,8 +130,8 @@ export const useStyles = createStyles({
     font-size: 0.9rem;
     font-weight: 500;
     height: 40px;
-    background: ${colors.darkGreen};
-    border-color: ${colors.darkGreen};
+    background: ${colors.shell};
+    border-color: ${colors.shell};
     color: ${colors.white};
     letter-spacing: 0.01em;
 
@@ -152,7 +151,7 @@ export const useStyles = createStyles({
   `,
 
   link: css`
-    color: ${colors.darkGreen};
+    color: ${colors.shell};
     font-weight: 600;
     text-decoration: underline;
     cursor: pointer;

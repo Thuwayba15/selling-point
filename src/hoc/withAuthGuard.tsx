@@ -21,36 +21,79 @@ export const withAuthGuard = <P extends object>(
 
   const Guarded = (props: P) => {
     const router = useRouter();
-
-    const raw = storage.get(AUTH_STORAGE_KEY);
-    let user: AuthUser | null = null;
-
-    if (raw) {
-      try {
-        user = JSON.parse(raw) as AuthUser;
-      } catch {
-        user = null;
-      }
-    }, []);
-
-    const isAuthenticated = Boolean(user);
-    const userRoles = user?.roles ?? [];
+    const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
+      setIsHydrated(true);
+    }, []);
+
+    useEffect(() => {
+      if (!isHydrated) return;
+
+      const raw = storage.get(AUTH_STORAGE_KEY);
+      let user: AuthUser | null = null;
+
+      if (raw && raw !== "undefined" && raw !== "null") {
+        try {
+          user = JSON.parse(raw) as AuthUser;
+          console.log("Auth Guard - User from storage:", user);
+        } catch (error) {
+          console.error("Auth Guard - Failed to parse user:", error);
+          user = null;
+          storage.remove(AUTH_STORAGE_KEY);
+        }
+      } else {
+        console.log("Auth Guard - No valid user in storage, raw value:", raw);
+      }
+
+      const isAuthenticated = Boolean(user);
+      const userRoles = user?.roles ?? [];
+
+      console.log("Auth Guard - isAuthenticated:", isAuthenticated, "roles:", userRoles);
+
+      // Redirect if not authenticated
       if (!isAuthenticated) {
+        console.log("Auth Guard - Not authenticated, redirecting to:", redirectTo);
         router.replace(redirectTo);
         return;
       }
 
-      if (allowedRoles.length > 0 && userRole && !allowedRoles.includes(userRole)) {
-        const fallback = userRole === "admin" ? ROUTES.admin : ROUTES.dashboard;
-        router.replace(fallback);
+      // Check role restrictions
+      if (allowedRoles.length > 0) {
+        const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
+        if (!hasRequiredRole) {
+          // Redirect to appropriate default route based on highest role
+          const fallback = userRoles.includes("Admin") ? ROUTES.admin : ROUTES.dashboard;
+          console.log("Auth Guard - Role not allowed, redirecting to:", fallback);
+          router.replace(fallback);
+        } else {
+          console.log("Auth Guard - Access granted");
+        }
+      } else {
+        console.log("Auth Guard - No role restrictions, access granted");
       }
-    }, [isAuthenticated, userRole, allowedRoles, router, redirectTo]);
+    }, [isHydrated, router, redirectTo, allowedRoles]);
 
-    if (!isAuthenticated) return null;
+    if (!isHydrated) return null;
 
-    if (allowedRoles.length > 0 && (!userRole || !allowedRoles.includes(userRole))) {
+    const raw = storage.get(AUTH_STORAGE_KEY);
+    let user: AuthUser | null = null;
+
+    if (raw && raw !== "undefined" && raw !== "null") {
+      try {
+        user = JSON.parse(raw) as AuthUser;
+      } catch (error) {
+        console.error("Auth Guard (render) - Failed to parse user:", error);
+        user = null;
+        storage.remove(AUTH_STORAGE_KEY);
+      }
+    }
+
+    const isAuthenticated = Boolean(user);
+    const userRoles = user?.roles ?? [];
+
+    if (!isAuthenticated) {
+      console.log("Auth Guard (render) - Not authenticated, returning null");
       return null;
     }
 
