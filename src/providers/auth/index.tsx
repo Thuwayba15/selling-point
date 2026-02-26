@@ -73,9 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!token) throw new Error("Login response missing token");
 
         const userFromResponse =
-          data?.userId && data?.email && data?.tenantId
-            ? toAuthUserFromLoginResponse(data)
-            : null;
+          data?.userId && data?.email && data?.tenantId ? toAuthUserFromLoginResponse(data) : null;
 
         // Fallback: decode JWT (only if needed)
         const user = userFromResponse ?? decodeToken(token);
@@ -111,9 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!token) throw new Error("Registration response missing token");
 
         const userFromResponse =
-          data?.userId && data?.email && data?.tenantId
-            ? toAuthUserFromLoginResponse(data)
-            : null;
+          data?.userId && data?.email && data?.tenantId ? toAuthUserFromLoginResponse(data) : null;
 
         const user = userFromResponse ?? decodeToken(token);
 
@@ -151,9 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthActionsContext.Provider value={actions}>
-        {children}
-      </AuthActionsContext.Provider>
+      <AuthActionsContext.Provider value={actions}>{children}</AuthActionsContext.Provider>
     </AuthStateContext.Provider>
   );
 };

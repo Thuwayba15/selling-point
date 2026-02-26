@@ -6,11 +6,7 @@ import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface PricingRequestsFiltersProps {
-  onApplyFilters: (filters: {
-    status?: number;
-    priority?: number;
-    assignedToId?: string;
-  }) => void;
+  onApplyFilters: (filters: { status?: number; priority?: number; assignedToId?: string }) => void;
   onClear: () => void;
 }
 
@@ -27,7 +23,10 @@ const PRIORITY_OPTIONS = [
   { label: "Urgent", value: 4 },
 ];
 
-export const PricingRequestsFilters = ({ onApplyFilters, onClear }: PricingRequestsFiltersProps) => {
+export const PricingRequestsFilters = ({
+  onApplyFilters,
+  onClear,
+}: PricingRequestsFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const [status, setStatus] = useState<number | undefined>(undefined);

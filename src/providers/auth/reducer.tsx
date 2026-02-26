@@ -10,10 +10,7 @@ type PayloadAction<T> = Action<T>;
 
 export const authReducer = handleActions<AuthState, any>(
   {
-    [AuthActionTypes.BOOTSTRAP_SUCCESS]: (
-      state,
-      action: PayloadAction<AuthUser | null>,
-    ) => {
+    [AuthActionTypes.BOOTSTRAP_SUCCESS]: (state, action: PayloadAction<AuthUser | null>) => {
       const user = action.payload ?? null;
 
       return {
@@ -25,10 +22,7 @@ export const authReducer = handleActions<AuthState, any>(
       };
     },
 
-    [AuthActionTypes.LOGIN_SUCCESS]: (
-      state,
-      action: PayloadAction<AuthUser>,
-    ) => {
+    [AuthActionTypes.LOGIN_SUCCESS]: (state, action: PayloadAction<AuthUser>) => {
       const user = action.payload ?? null;
 
       return {

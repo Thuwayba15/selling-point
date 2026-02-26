@@ -51,9 +51,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getDashboardOverviewSuccess({ overview: data }));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch dashboard overview";
+          error?.response?.data?.message || error?.message || "Failed to fetch dashboard overview";
         dispatch(getDashboardOverviewError(message));
       }
     };
@@ -69,9 +67,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getPipelineMetricsSuccess({ pipelineMetrics: data }));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch pipeline metrics";
+          error?.response?.data?.message || error?.message || "Failed to fetch pipeline metrics";
         dispatch(getPipelineMetricsError(message));
       }
     };
@@ -89,9 +85,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getSalesPerformanceSuccess({ salesPerformance: data || [] }));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch sales performance";
+          error?.response?.data?.message || error?.message || "Failed to fetch sales performance";
         dispatch(getSalesPerformanceError(message));
       }
     };
@@ -107,9 +101,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getActivitySummarySuccess({ activitySummary: data }));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch activity summary";
+          error?.response?.data?.message || error?.message || "Failed to fetch activity summary";
         dispatch(getActivitySummaryError(message));
       }
     };
@@ -130,13 +122,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
               contracts: data?.contracts || data || [],
               totalCount: data?.totalCount || (Array.isArray(data) ? data.length : 0),
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch expiring contracts";
+          error?.response?.data?.message || error?.message || "Failed to fetch expiring contracts";
         dispatch(getExpiringContractsError(message));
       }
     };

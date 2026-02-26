@@ -6,11 +6,7 @@ import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ProposalsFiltersProps {
-  onApplyFilters: (filters: {
-    status?: number;
-    clientId?: string;
-    opportunityId?: string;
-  }) => void;
+  onApplyFilters: (filters: { status?: number; clientId?: string; opportunityId?: string }) => void;
   onClear: () => void;
 }
 

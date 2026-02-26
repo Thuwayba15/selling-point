@@ -11,13 +11,9 @@ export enum AuthActionTypes {
   CLEAR_ERROR = "auth/CLEAR_ERROR",
 }
 
-export const bootstrapSuccess = createAction<AuthUser | null>(
-  AuthActionTypes.BOOTSTRAP_SUCCESS,
-);
+export const bootstrapSuccess = createAction<AuthUser | null>(AuthActionTypes.BOOTSTRAP_SUCCESS);
 
-export const loginSuccess = createAction<AuthUser>(
-  AuthActionTypes.LOGIN_SUCCESS,
-);
+export const loginSuccess = createAction<AuthUser>(AuthActionTypes.LOGIN_SUCCESS);
 
 export const logoutAction = createAction<void>(AuthActionTypes.LOGOUT);
 

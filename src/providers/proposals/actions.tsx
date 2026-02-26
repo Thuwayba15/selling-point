@@ -1,9 +1,5 @@
 import { createAction } from "redux-actions";
-import {
-  IProposal,
-  IProposalsStateContext,
-  IPaginationInfo,
-} from "./context";
+import { IProposal, IProposalsStateContext, IPaginationInfo } from "./context";
 
 export enum ProposalsActionEnums {
   getProposalsPending = "GET_PROPOSALS_PENDING",
@@ -57,7 +53,7 @@ export enum ProposalsActionEnums {
 // Get Proposals
 export const getProposalsPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.getProposalsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getProposalsSuccess = createAction<
@@ -80,13 +76,13 @@ export const getProposalsError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Single Proposal
 export const getProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.getProposalPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -97,7 +93,7 @@ export const getProposalSuccess = createAction<IProposalsStateContext, IProposal
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const getProposalError = createAction<IProposalsStateContext, string>(
@@ -108,13 +104,13 @@ export const getProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Create Proposal
 export const createProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.createProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const createProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -125,7 +121,7 @@ export const createProposalSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const createProposalError = createAction<IProposalsStateContext, string>(
@@ -136,13 +132,13 @@ export const createProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Update Proposal
 export const updateProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.updateProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -153,7 +149,7 @@ export const updateProposalSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const updateProposalError = createAction<IProposalsStateContext, string>(
@@ -164,13 +160,13 @@ export const updateProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Add Line Item
 export const addLineItemPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.addLineItemPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const addLineItemSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -181,7 +177,7 @@ export const addLineItemSuccess = createAction<IProposalsStateContext, IProposal
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const addLineItemError = createAction<IProposalsStateContext, string>(
@@ -192,13 +188,13 @@ export const addLineItemError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Update Line Item
 export const updateLineItemPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.updateLineItemPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateLineItemSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -209,7 +205,7 @@ export const updateLineItemSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const updateLineItemError = createAction<IProposalsStateContext, string>(
@@ -220,13 +216,13 @@ export const updateLineItemError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Delete Line Item
 export const deleteLineItemPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.deleteLineItemPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteLineItemSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -237,7 +233,7 @@ export const deleteLineItemSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const deleteLineItemError = createAction<IProposalsStateContext, string>(
@@ -248,13 +244,13 @@ export const deleteLineItemError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Submit Proposal
 export const submitProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.submitProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const submitProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -265,7 +261,7 @@ export const submitProposalSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const submitProposalError = createAction<IProposalsStateContext, string>(
@@ -276,13 +272,13 @@ export const submitProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Approve Proposal
 export const approveProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.approveProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const approveProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -293,7 +289,7 @@ export const approveProposalSuccess = createAction<IProposalsStateContext, IProp
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const approveProposalError = createAction<IProposalsStateContext, string>(
@@ -304,13 +300,13 @@ export const approveProposalError = createAction<IProposalsStateContext, string>
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Reject Proposal
 export const rejectProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.rejectProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const rejectProposalSuccess = createAction<IProposalsStateContext, IProposal>(
@@ -321,7 +317,7 @@ export const rejectProposalSuccess = createAction<IProposalsStateContext, IPropo
     isSuccess: true,
     isError: false,
     proposal,
-  })
+  }),
 );
 
 export const rejectProposalError = createAction<IProposalsStateContext, string>(
@@ -332,13 +328,13 @@ export const rejectProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Delete Proposal
 export const deleteProposalPending = createAction<IProposalsStateContext>(
   ProposalsActionEnums.deleteProposalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteProposalSuccess = createAction<IProposalsStateContext>(
@@ -349,7 +345,7 @@ export const deleteProposalSuccess = createAction<IProposalsStateContext>(
     isSuccess: true,
     isError: false,
     proposal: undefined,
-  })
+  }),
 );
 
 export const deleteProposalError = createAction<IProposalsStateContext, string>(
@@ -360,7 +356,7 @@ export const deleteProposalError = createAction<IProposalsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Clear Error
@@ -372,7 +368,7 @@ export const clearError = createAction<IProposalsStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 // Clear Proposal
@@ -384,5 +380,5 @@ export const clearProposal = createAction<IProposalsStateContext>(
     isSuccess: false,
     isError: false,
     proposal: undefined,
-  })
+  }),
 );

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -91,10 +91,8 @@ export const INITIAL_STATE: IContractsStateContext = {
   isError: false,
 };
 
-export const ContractsStateContext = createContext<IContractsStateContext>(
-  INITIAL_STATE
-);
+export const ContractsStateContext = createContext<IContractsStateContext>(INITIAL_STATE);
 
-export const ContractsActionsContext = createContext<
-  IContractsActionContext | undefined
->(undefined);
+export const ContractsActionsContext = createContext<IContractsActionContext | undefined>(
+  undefined,
+);

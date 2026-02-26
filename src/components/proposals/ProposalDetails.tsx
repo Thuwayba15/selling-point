@@ -68,37 +68,33 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       title: "Unit Price",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (price) => price ? `${proposal.currency || "ZAR"} ${price.toLocaleString()}` : "—",
+      render: (price) => (price ? `${proposal.currency || "ZAR"} ${price.toLocaleString()}` : "—"),
     },
     {
       title: "Discount %",
       dataIndex: "discount",
       key: "discount",
-      render: (discount) => discount ? `${discount}%` : "0%",
+      render: (discount) => (discount ? `${discount}%` : "0%"),
     },
     {
       title: "Tax %",
       dataIndex: "taxRate",
       key: "taxRate",
-      render: (tax) => tax ? `${tax}%` : "0%",
+      render: (tax) => (tax ? `${tax}%` : "0%"),
     },
     {
       title: "Total",
       dataIndex: "total",
       key: "total",
-      render: (total) => total ? `${proposal.currency || "ZAR"} ${total.toLocaleString()}` : "—",
+      render: (total) => (total ? `${proposal.currency || "ZAR"} ${total.toLocaleString()}` : "—"),
     },
   ];
 
   return (
     <Card className={styles.detailsCard} title="Proposal Details">
       <Descriptions column={1} bordered>
-        <Descriptions.Item label="Title">
-          {proposal.title || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Client">
-          {proposal.clientName || "—"}
-        </Descriptions.Item>
+        <Descriptions.Item label="Title">{proposal.title || "—"}</Descriptions.Item>
+        <Descriptions.Item label="Client">{proposal.clientName || "—"}</Descriptions.Item>
         <Descriptions.Item label="Opportunity">
           {proposal.opportunityTitle || "—"}
         </Descriptions.Item>
@@ -107,28 +103,18 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
             {STATUS_LABELS[proposal.status ?? 1]}
           </Tag>
         </Descriptions.Item>
-        <Descriptions.Item label="Description">
-          {proposal.description || "—"}
-        </Descriptions.Item>
+        <Descriptions.Item label="Description">{proposal.description || "—"}</Descriptions.Item>
         <Descriptions.Item label="Valid Until">
-          {proposal.validUntil
-            ? new Date(proposal.validUntil).toLocaleDateString()
-            : "—"}
+          {proposal.validUntil ? new Date(proposal.validUntil).toLocaleDateString() : "—"}
         </Descriptions.Item>
         {proposal.status === 3 && proposal.rejectionReason && (
-          <Descriptions.Item label="Rejection Reason">
-            {proposal.rejectionReason}
-          </Descriptions.Item>
+          <Descriptions.Item label="Rejection Reason">{proposal.rejectionReason}</Descriptions.Item>
         )}
         <Descriptions.Item label="Created At">
-          {proposal.createdAt
-            ? new Date(proposal.createdAt).toLocaleString()
-            : "—"}
+          {proposal.createdAt ? new Date(proposal.createdAt).toLocaleString() : "—"}
         </Descriptions.Item>
         <Descriptions.Item label="Updated At">
-          {proposal.updatedAt
-            ? new Date(proposal.updatedAt).toLocaleString()
-            : "—"}
+          {proposal.updatedAt ? new Date(proposal.updatedAt).toLocaleString() : "—"}
         </Descriptions.Item>
       </Descriptions>
 
@@ -171,4 +157,3 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
     </Card>
   );
 };
-

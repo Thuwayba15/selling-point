@@ -1,13 +1,8 @@
-'use client';
+"use client";
 
 import { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
-import {
-  INITIAL_STATE,
-  IClient,
-  ClientsActionContext,
-  ClientsStateContext,
-} from "./context";
+import { INITIAL_STATE, IClient, ClientsActionContext, ClientsStateContext } from "./context";
 import { ClientsReducer } from "./reducer";
 import {
   getClientsPending,
@@ -51,8 +46,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     dispatch(getClientsPending());
     try {
       // Add isDeleted=false to filter out soft-deleted clients
-      const response = await api.get("/api/clients", { 
-        params: { ...params, isDeleted: false } 
+      const response = await api.get("/api/clients", {
+        params: { ...params, isDeleted: false },
       });
       const data = response.data;
       dispatch(
@@ -64,7 +59,7 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
             totalCount: data.totalCount ?? 0,
             totalPages: data.totalPages ?? 0,
           },
-        })
+        }),
       );
     } catch (error: any) {
       console.error("Error fetching clients:", error);
@@ -98,7 +93,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
       dispatch(getClientStatsSuccess(response.data));
     } catch (error: any) {
       console.error("Error fetching client stats:", error);
-      dispatch(getClientStatsError(error.response?.data?.message || "Failed to fetch client stats"));
+      dispatch(
+        getClientStatsError(error.response?.data?.message || "Failed to fetch client stats"),
+      );
     }
   };
 

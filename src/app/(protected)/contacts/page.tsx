@@ -3,10 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Modal, Form, App } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
-import {
-  useContactsState,
-  useContactsActions,
-} from "@/providers/contacts";
+import { useContactsState, useContactsActions } from "@/providers/contacts";
 import {
   ContactsHeader,
   ContactsFilters,
@@ -22,15 +19,8 @@ import { getAxiosInstance } from "@/lib/api";
 const ContactsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
-  const {
-    isPending,
-    isLoadingDetails,
-    isError,
-    errorMessage,
-    contacts,
-    contact,
-    pagination,
-  } = useContactsState();
+  const { isPending, isLoadingDetails, isError, errorMessage, contacts, contact, pagination } =
+    useContactsState();
   const {
     getContacts,
     getContact,
@@ -197,10 +187,7 @@ const ContactsPage = () => {
     setSelectedContact(contact);
   };
 
-  const handleApplyFilters = (filters: {
-    searchTerm?: string;
-    clientId?: string;
-  }) => {
+  const handleApplyFilters = (filters: { searchTerm?: string; clientId?: string }) => {
     setSearchTerm(filters.searchTerm);
     setClientId(filters.clientId);
     setCurrentPage(1); // Reset to first page
@@ -237,7 +224,11 @@ const ContactsPage = () => {
       <div className={styles.mainContent}>
         <ContactsHeader onCreateClick={handleCreateClick} />
 
-        <ContactsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} clients={clients} />
+        <ContactsFilters
+          onApplyFilters={handleApplyFilters}
+          onClear={handleClearFilters}
+          clients={clients}
+        />
 
         <ContactsTable
           contacts={contacts || []}

@@ -26,12 +26,7 @@ export const ContactForm = ({
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      initialValues={initialValues}
-      onFinish={onSubmit}
-    >
+    <Form form={form} layout="vertical" initialValues={initialValues} onFinish={onSubmit}>
       <Form.Item
         name="clientId"
         label="Client"
@@ -85,11 +80,7 @@ export const ContactForm = ({
         <Input placeholder="e.g., CEO, Manager" />
       </Form.Item>
 
-      <Form.Item
-        name="isPrimaryContact"
-        label="Primary Contact"
-        valuePropName="checked"
-      >
+      <Form.Item name="isPrimaryContact" label="Primary Contact" valuePropName="checked">
         <Switch />
       </Form.Item>
 

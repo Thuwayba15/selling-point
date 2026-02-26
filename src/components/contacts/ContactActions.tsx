@@ -69,12 +69,7 @@ export const ContactActions = ({
     <Card className={styles.actionsCard} title="Actions">
       <Space orientation="vertical" size="middle" className={styles.actionsStack}>
         {can("update:contact") && (
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={onEdit}
-            block
-          >
+          <Button type="default" icon={<EditOutlined />} onClick={onEdit} block>
             Edit Contact
           </Button>
         )}
@@ -92,13 +87,7 @@ export const ContactActions = ({
         )}
 
         {can("delete:contact") && (
-          <Button
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={handleDelete}
-            block
-          >
+          <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleDelete} block>
             Delete Contact
           </Button>
         )}

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -99,4 +99,6 @@ export const INITIAL_STATE: IOpportunitiesStateContext = {
 };
 
 export const OpportunitiesStateContext = createContext<IOpportunitiesStateContext>(INITIAL_STATE);
-export const OpportunitiesActionsContext = createContext<IOpportunitiesActionContext | undefined>(undefined);
+export const OpportunitiesActionsContext = createContext<IOpportunitiesActionContext | undefined>(
+  undefined,
+);

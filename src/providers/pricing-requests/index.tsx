@@ -68,13 +68,11 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch pricing requests";
+          error?.response?.data?.message || error?.message || "Failed to fetch pricing requests";
         dispatch(getPricingRequestsError(message));
       }
     };
@@ -98,7 +96,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
@@ -109,10 +107,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
       }
     };
 
-    const getMyPricingRequests = async (params?: {
-      pageNumber?: number;
-      pageSize?: number;
-    }) => {
+    const getMyPricingRequests = async (params?: { pageNumber?: number; pageSize?: number }) => {
       dispatch(getMyPricingRequestsPending());
 
       try {
@@ -128,13 +123,11 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch my pricing requests";
+          error?.response?.data?.message || error?.message || "Failed to fetch my pricing requests";
         dispatch(getMyPricingRequestsError(message));
       }
     };
@@ -149,14 +142,14 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         dispatch(getPricingRequestSuccess(data));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch pricing request";
+          error?.response?.data?.message || error?.message || "Failed to fetch pricing request";
         dispatch(getPricingRequestError(message));
       }
     };
 
-    const createPricingRequest = async (pricingRequest: Partial<IPricingRequest>): Promise<boolean> => {
+    const createPricingRequest = async (
+      pricingRequest: Partial<IPricingRequest>,
+    ): Promise<boolean> => {
       dispatch(createPricingRequestPending());
 
       try {
@@ -167,9 +160,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create pricing request";
+          error?.response?.data?.message || error?.message || "Failed to create pricing request";
         dispatch(createPricingRequestError(message));
         return false;
       }
@@ -177,7 +168,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
 
     const updatePricingRequest = async (
       id: string,
-      pricingRequest: Partial<IPricingRequest>
+      pricingRequest: Partial<IPricingRequest>,
     ): Promise<boolean> => {
       dispatch(updatePricingRequestPending());
 
@@ -189,9 +180,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update pricing request";
+          error?.response?.data?.message || error?.message || "Failed to update pricing request";
         dispatch(updatePricingRequestError(message));
         return false;
       }
@@ -208,9 +197,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to assign pricing request";
+          error?.response?.data?.message || error?.message || "Failed to assign pricing request";
         dispatch(assignPricingRequestError(message));
         return false;
       }
@@ -227,9 +214,7 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to complete pricing request";
+          error?.response?.data?.message || error?.message || "Failed to complete pricing request";
         dispatch(completePricingRequestError(message));
         return false;
       }
@@ -266,6 +251,7 @@ export const usePricingRequestsState = () => {
 
 export const usePricingRequestsActions = () => {
   const ctx = useContext(PricingRequestsActionsContext);
-  if (!ctx) throw new Error("usePricingRequestsActions must be used within PricingRequestsProvider");
+  if (!ctx)
+    throw new Error("usePricingRequestsActions must be used within PricingRequestsProvider");
   return ctx;
 };

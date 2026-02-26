@@ -1,7 +1,12 @@
 "use client";
 
 import { Row, Col, Card, Statistic, Empty, Skeleton, Space } from "antd";
-import { PhoneOutlined, MailOutlined, CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  PhoneOutlined,
+  MailOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import { IActivitySummary } from "@/providers/dashboard/context";
 import { useStyles } from "./style";
 
@@ -61,9 +66,7 @@ export const DashboardActivitySummary = ({
         ))}
       </div>
 
-      <h3 className={`${styles.sectionTitle} ${styles.spaceBetweenSections}`}>
-        Activity Status
-      </h3>
+      <h3 className={`${styles.sectionTitle} ${styles.spaceBetweenSections}`}>Activity Status</h3>
       <div className={styles.kpiGrid}>
         {activityStatus.map((status) => (
           <div key={status.key} className={styles.card}>

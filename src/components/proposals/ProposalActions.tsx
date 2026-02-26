@@ -44,7 +44,8 @@ export const ProposalActions = ({
     );
   }
 
-  const status = typeof proposal.status === "string" ? parseInt(proposal.status, 10) : proposal.status ?? 1;
+  const status =
+    typeof proposal.status === "string" ? parseInt(proposal.status, 10) : (proposal.status ?? 1);
   const isDraft = status === 1;
   const isSubmitted = status === 2;
   const isRejected = status === 3;
@@ -115,23 +116,13 @@ export const ProposalActions = ({
           )}
 
           {can("reject:proposal") && isSubmitted && (
-            <Button
-              danger
-              icon={<CloseOutlined />}
-              onClick={handleRejectClick}
-              block
-            >
+            <Button danger icon={<CloseOutlined />} onClick={handleRejectClick} block>
               Reject Proposal
             </Button>
           )}
 
           {can("delete:proposal") && (isDraft || isRejected) && (
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              onClick={handleDelete}
-              block
-            >
+            <Button danger icon={<DeleteOutlined />} onClick={handleDelete} block>
               Delete Proposal
             </Button>
           )}

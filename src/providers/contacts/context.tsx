@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -49,7 +49,9 @@ export interface IContactsActionContext {
   }) => Promise<void>;
   getContactsByClient: (clientId: string) => Promise<void>;
   getContact: (id: string) => Promise<void>;
-  createContact: (contact: Omit<IContact, "id" | "createdAt" | "updatedAt" | "clientName">) => Promise<boolean>;
+  createContact: (
+    contact: Omit<IContact, "id" | "createdAt" | "updatedAt" | "clientName">,
+  ) => Promise<boolean>;
   updateContact: (id: string, contact: Partial<IContact>) => Promise<boolean>;
   setPrimaryContact: (id: string) => Promise<boolean>;
   deleteContact: (id: string) => Promise<boolean>;

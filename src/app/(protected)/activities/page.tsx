@@ -26,8 +26,7 @@ const ActivitiesPage = () => {
   );
 
   return (
-    <Space orientation="vertical"size="middle">
-
+    <Space orientation="vertical" size="middle">
       <Tabs
         items={[
           { key: "mine", label: "My Activities", children: tableCard("My Activities") },

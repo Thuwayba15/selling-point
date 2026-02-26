@@ -62,9 +62,7 @@ export const ProposalsTable = ({
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={STATUS_COLORS[status] || "default"}>
-          {STATUS_LABELS[status] || "—"}
-        </Tag>
+        <Tag color={STATUS_COLORS[status] || "default"}>{STATUS_LABELS[status] || "—"}</Tag>
       ),
     },
     {

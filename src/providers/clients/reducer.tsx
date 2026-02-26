@@ -98,5 +98,5 @@ export const ClientsReducer = handleActions<IClientsStateContext, IClientsStateC
       ...action.payload,
     }),
   },
-  INITIAL_STATE
+  INITIAL_STATE,
 );

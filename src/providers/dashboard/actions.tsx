@@ -44,7 +44,7 @@ export enum DashboardActionEnums {
 // ============================================================================
 export const getDashboardOverviewPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getDashboardOverviewPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isSuccess: false, isError: false }),
 );
 
 export const getDashboardOverviewSuccess = createAction<
@@ -64,7 +64,7 @@ export const getDashboardOverviewError = createAction<IDashboardStateContext, st
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -72,7 +72,7 @@ export const getDashboardOverviewError = createAction<IDashboardStateContext, st
 // ============================================================================
 export const getPipelineMetricsPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getPipelineMetricsPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isSuccess: false, isError: false }),
 );
 
 export const getPipelineMetricsSuccess = createAction<
@@ -92,7 +92,7 @@ export const getPipelineMetricsError = createAction<IDashboardStateContext, stri
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -100,7 +100,7 @@ export const getPipelineMetricsError = createAction<IDashboardStateContext, stri
 // ============================================================================
 export const getSalesPerformancePending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getSalesPerformancePending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isSuccess: false, isError: false }),
 );
 
 export const getSalesPerformanceSuccess = createAction<
@@ -120,7 +120,7 @@ export const getSalesPerformanceError = createAction<IDashboardStateContext, str
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -128,7 +128,7 @@ export const getSalesPerformanceError = createAction<IDashboardStateContext, str
 // ============================================================================
 export const getActivitySummaryPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getActivitySummaryPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isSuccess: false, isError: false }),
 );
 
 export const getActivitySummarySuccess = createAction<
@@ -148,7 +148,7 @@ export const getActivitySummaryError = createAction<IDashboardStateContext, stri
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -156,7 +156,7 @@ export const getActivitySummaryError = createAction<IDashboardStateContext, stri
 // ============================================================================
 export const getExpiringContractsPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getExpiringContractsPending,
-  () => ({ isPending: true, isSuccess: false, isError: false })
+  () => ({ isPending: true, isSuccess: false, isError: false }),
 );
 
 export const getExpiringContractsSuccess = createAction<
@@ -176,7 +176,7 @@ export const getExpiringContractsError = createAction<IDashboardStateContext, st
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -184,5 +184,5 @@ export const getExpiringContractsError = createAction<IDashboardStateContext, st
 // ============================================================================
 export const clearError = createAction<IDashboardStateContext>(
   DashboardActionEnums.clearError,
-  () => ({ isPending: false, isSuccess: false, isError: false, errorMessage: undefined })
+  () => ({ isPending: false, isSuccess: false, isError: false, errorMessage: undefined }),
 );

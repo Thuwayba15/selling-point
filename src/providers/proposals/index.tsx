@@ -77,13 +77,11 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch proposals";
+          error?.response?.data?.message || error?.message || "Failed to fetch proposals";
         dispatch(getProposalsError(message));
       }
     };
@@ -98,9 +96,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getProposalSuccess(data));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch proposal";
+          error?.response?.data?.message || error?.message || "Failed to fetch proposal";
         dispatch(getProposalError(message));
       }
     };
@@ -116,18 +112,13 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create proposal";
+          error?.response?.data?.message || error?.message || "Failed to create proposal";
         dispatch(createProposalError(message));
         return false;
       }
     };
 
-    const updateProposal = async (
-      id: string,
-      proposal: Partial<IProposal>
-    ): Promise<boolean> => {
+    const updateProposal = async (id: string, proposal: Partial<IProposal>): Promise<boolean> => {
       dispatch(updateProposalPending());
 
       try {
@@ -138,34 +129,24 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update proposal";
+          error?.response?.data?.message || error?.message || "Failed to update proposal";
         dispatch(updateProposalError(message));
         return false;
       }
     };
 
-    const addLineItem = async (
-      proposalId: string,
-      lineItem: any
-    ): Promise<boolean> => {
+    const addLineItem = async (proposalId: string, lineItem: any): Promise<boolean> => {
       dispatch(addLineItemPending());
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.post(
-          `/api/proposals/${proposalId}/line-items`,
-          lineItem
-        );
+        const { data } = await api.post(`/api/proposals/${proposalId}/line-items`, lineItem);
 
         dispatch(addLineItemSuccess(data));
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to add line item";
+          error?.response?.data?.message || error?.message || "Failed to add line item";
         dispatch(addLineItemError(message));
         return false;
       }
@@ -174,7 +155,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
     const updateLineItem = async (
       proposalId: string,
       lineItemId: string,
-      lineItem: any
+      lineItem: any,
     ): Promise<boolean> => {
       dispatch(updateLineItemPending());
 
@@ -182,40 +163,31 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         const { data } = await api.put(
           `/api/proposals/${proposalId}/line-items/${lineItemId}`,
-          lineItem
+          lineItem,
         );
 
         dispatch(updateLineItemSuccess(data));
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update line item";
+          error?.response?.data?.message || error?.message || "Failed to update line item";
         dispatch(updateLineItemError(message));
         return false;
       }
     };
 
-    const deleteLineItem = async (
-      proposalId: string,
-      lineItemId: string
-    ): Promise<boolean> => {
+    const deleteLineItem = async (proposalId: string, lineItemId: string): Promise<boolean> => {
       dispatch(deleteLineItemPending());
 
       try {
         const api = getAxiosInstance();
-        await api.delete(
-          `/api/proposals/${proposalId}/line-items/${lineItemId}`
-        );
+        await api.delete(`/api/proposals/${proposalId}/line-items/${lineItemId}`);
 
         dispatch(deleteLineItemSuccess({ id: proposalId } as any));
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete line item";
+          error?.response?.data?.message || error?.message || "Failed to delete line item";
         dispatch(deleteLineItemError(message));
         return false;
       }
@@ -232,9 +204,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to submit proposal";
+          error?.response?.data?.message || error?.message || "Failed to submit proposal";
         dispatch(submitProposalError(message));
         return false;
       }
@@ -251,9 +221,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to approve proposal";
+          error?.response?.data?.message || error?.message || "Failed to approve proposal";
         dispatch(approveProposalError(message));
         return false;
       }
@@ -270,9 +238,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to reject proposal";
+          error?.response?.data?.message || error?.message || "Failed to reject proposal";
         dispatch(rejectProposalError(message));
         return false;
       }
@@ -289,9 +255,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete proposal";
+          error?.response?.data?.message || error?.message || "Failed to delete proposal";
         dispatch(deleteProposalError(message));
         return false;
       }

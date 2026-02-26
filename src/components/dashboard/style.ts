@@ -206,34 +206,34 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   barContainer: css`
-  width: 100%;
-  height: 220px;          /* fixed height so % works */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;  /* bars grow upward */
-  position: relative;
-`,
+    width: 100%;
+    height: 220px; /* fixed height so % works */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* bars grow upward */
+    position: relative;
+  `,
 
-barWrapper: css`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${token.marginXS}px;
-  min-width: 60px;
-`,
+  barWrapper: css`
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: ${token.marginXS}px;
+    min-width: 60px;
+  `,
 
-bar: css`
-  width: 100%;
-  background: linear-gradient(180deg, ${token.colorPrimary} 0%, ${token.colorPrimaryBorder} 100%);
-  border-radius: ${token.borderRadius}px ${token.borderRadius}px 0 0;
-  transition: height 0.3s ease;
-  min-height: 4px;          /* shows a sliver even for 0-value bars */
+  bar: css`
+    width: 100%;
+    background: linear-gradient(180deg, ${token.colorPrimary} 0%, ${token.colorPrimaryBorder} 100%);
+    border-radius: ${token.borderRadius}px ${token.borderRadius}px 0 0;
+    transition: height 0.3s ease;
+    min-height: 4px; /* shows a sliver even for 0-value bars */
 
-  &:hover {
-    opacity: 0.8;
-  }
-`,
+    &:hover {
+      opacity: 0.8;
+    }
+  `,
   barValue: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};

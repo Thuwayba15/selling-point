@@ -45,7 +45,7 @@ export const TopBar = () => {
       </Text>
       <Divider className={styles.userMenuDivider} />
       <Text type="secondary" className={styles.userMenuTextSecondary}>
-        <strong>Role:</strong> {user?.roles.join(', ')}
+        <strong>Role:</strong> {user?.roles.join(", ")}
       </Text>
       <br />
       <Text type="secondary" className={styles.userMenuTextSecondary}>
@@ -59,8 +59,8 @@ export const TopBar = () => {
       <h1 className={styles.headerTitle}>{pageName}</h1>
 
       <div className={styles.headerRight}>
-        <Dropdown popupRender={() => userMenuContent} trigger={['click']} placement="bottomRight">
-        <UserOutlined className={styles.userIcon} />
+        <Dropdown popupRender={() => userMenuContent} trigger={["click"]} placement="bottomRight">
+          <UserOutlined className={styles.userIcon} />
         </Dropdown>
         <LogoutOutlined className={styles.logoutIcon} onClick={handleLogout} />
       </div>

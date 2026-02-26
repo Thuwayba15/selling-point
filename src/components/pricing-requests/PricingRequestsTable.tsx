@@ -68,9 +68,7 @@ export const PricingRequestsTable = ({
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={STATUS_COLORS[status] || "default"}>
-          {STATUS_LABELS[status] || "—"}
-        </Tag>
+        <Tag color={STATUS_COLORS[status] || "default"}>{STATUS_LABELS[status] || "—"}</Tag>
       ),
     },
     {
@@ -78,9 +76,7 @@ export const PricingRequestsTable = ({
       dataIndex: "priority",
       key: "priority",
       render: (priority) => (
-        <Tag color={PRIORITY_COLORS[priority] || "default"}>
-          {PRIORITY_LABELS[priority] || "—"}
-        </Tag>
+        <Tag color={PRIORITY_COLORS[priority] || "default"}>{PRIORITY_LABELS[priority] || "—"}</Tag>
       ),
     },
     {

@@ -42,7 +42,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-style: italic;
   `,
 
-
   subtitle: css`
     margin: ${token.marginXS}px 0 0;
     font-size: ${token.fontSize}px;
@@ -140,5 +139,4 @@ export const useStyles = createStyles(({ token, css }) => ({
   buttonSpacing: css`
     margin-right: ${token.marginXS}px;
   `,
-
 }));

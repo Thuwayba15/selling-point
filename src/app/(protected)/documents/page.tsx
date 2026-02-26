@@ -1,6 +1,18 @@
 "use client";
 
-import { Button, Card, Col, Form, Input, Row, Select, Space, Table, Typography, Upload } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  Table,
+  Typography,
+  Upload,
+} from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 
 const { Title } = Typography;
@@ -15,8 +27,7 @@ const DocumentsPage = () => {
   ];
 
   return (
-    <Space orientation="vertical"size="middle">
-
+    <Space orientation="vertical" size="middle">
       <Card title="Filters">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={8}>

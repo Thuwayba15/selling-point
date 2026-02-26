@@ -6,10 +6,7 @@ import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ContactsFiltersProps {
-  onApplyFilters: (filters: {
-    searchTerm?: string;
-    clientId?: string;
-  }) => void;
+  onApplyFilters: (filters: { searchTerm?: string; clientId?: string }) => void;
   onClear: () => void;
   clients?: Array<{ id: string; name: string }>;
 }

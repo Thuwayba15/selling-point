@@ -99,7 +99,7 @@ const ClientsPage = () => {
         pageSize: size,
       });
     },
-    [searchTerm, industry, clientType, isActive, actions]
+    [searchTerm, industry, clientType, isActive, actions],
   );
 
   // Load client details and stats when selected

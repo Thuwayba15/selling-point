@@ -1,10 +1,5 @@
 import { createAction } from "redux-actions";
-import {
-  IContract,
-  IContractRenewal,
-  IContractsStateContext,
-  IPaginationInfo,
-} from "./context";
+import { IContract, IContractRenewal, IContractsStateContext, IPaginationInfo } from "./context";
 
 export enum ContractsActionEnums {
   getContractsPending = "GET_CONTRACTS_PENDING",
@@ -58,7 +53,7 @@ export enum ContractsActionEnums {
 // Get Contracts
 export const getContractsPending = createAction<IContractsStateContext>(
   ContractsActionEnums.getContractsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getContractsSuccess = createAction<
@@ -81,13 +76,13 @@ export const getContractsError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Single Contract
 export const getContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.getContractPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getContractSuccess = createAction<IContractsStateContext, IContract>(
@@ -98,7 +93,7 @@ export const getContractSuccess = createAction<IContractsStateContext, IContract
     isSuccess: true,
     isError: false,
     contract,
-  })
+  }),
 );
 
 export const getContractError = createAction<IContractsStateContext, string>(
@@ -109,13 +104,13 @@ export const getContractError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Expiring Contracts
 export const getExpiringContractsPending = createAction<IContractsStateContext>(
   ContractsActionEnums.getExpiringContractsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getExpiringContractsSuccess = createAction<
@@ -137,13 +132,13 @@ export const getExpiringContractsError = createAction<IContractsStateContext, st
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Client Contracts
 export const getClientContractsPending = createAction<IContractsStateContext>(
   ContractsActionEnums.getClientContractsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getClientContractsSuccess = createAction<
@@ -165,13 +160,13 @@ export const getClientContractsError = createAction<IContractsStateContext, stri
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Create Contract
 export const createContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.createContractPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const createContractSuccess = createAction<IContractsStateContext, IContract>(
@@ -182,7 +177,7 @@ export const createContractSuccess = createAction<IContractsStateContext, IContr
     isSuccess: true,
     isError: false,
     contract,
-  })
+  }),
 );
 
 export const createContractError = createAction<IContractsStateContext, string>(
@@ -193,13 +188,13 @@ export const createContractError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Update Contract
 export const updateContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.updateContractPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateContractSuccess = createAction<IContractsStateContext, IContract>(
@@ -210,7 +205,7 @@ export const updateContractSuccess = createAction<IContractsStateContext, IContr
     isSuccess: true,
     isError: false,
     contract,
-  })
+  }),
 );
 
 export const updateContractError = createAction<IContractsStateContext, string>(
@@ -221,13 +216,13 @@ export const updateContractError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Activate Contract
 export const activateContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.activateContractPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const activateContractSuccess = createAction<IContractsStateContext, IContract>(
@@ -238,7 +233,7 @@ export const activateContractSuccess = createAction<IContractsStateContext, ICon
     isSuccess: true,
     isError: false,
     contract,
-  })
+  }),
 );
 
 export const activateContractError = createAction<IContractsStateContext, string>(
@@ -249,13 +244,13 @@ export const activateContractError = createAction<IContractsStateContext, string
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Cancel Contract
 export const cancelContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.cancelContractPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const cancelContractSuccess = createAction<IContractsStateContext, IContract>(
@@ -266,7 +261,7 @@ export const cancelContractSuccess = createAction<IContractsStateContext, IContr
     isSuccess: true,
     isError: false,
     contract,
-  })
+  }),
 );
 
 export const cancelContractError = createAction<IContractsStateContext, string>(
@@ -277,13 +272,13 @@ export const cancelContractError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Delete Contract
 export const deleteContractPending = createAction<IContractsStateContext>(
   ContractsActionEnums.deleteContractPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteContractSuccess = createAction<IContractsStateContext>(
@@ -293,7 +288,7 @@ export const deleteContractSuccess = createAction<IContractsStateContext>(
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const deleteContractError = createAction<IContractsStateContext, string>(
@@ -304,13 +299,13 @@ export const deleteContractError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Create Renewal
 export const createRenewalPending = createAction<IContractsStateContext>(
   ContractsActionEnums.createRenewalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const createRenewalSuccess = createAction<IContractsStateContext, IContractRenewal>(
@@ -320,7 +315,7 @@ export const createRenewalSuccess = createAction<IContractsStateContext, IContra
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const createRenewalError = createAction<IContractsStateContext, string>(
@@ -331,13 +326,13 @@ export const createRenewalError = createAction<IContractsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Complete Renewal
 export const completeRenewalPending = createAction<IContractsStateContext>(
   ContractsActionEnums.completeRenewalPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const completeRenewalSuccess = createAction<IContractsStateContext, IContractRenewal>(
@@ -347,7 +342,7 @@ export const completeRenewalSuccess = createAction<IContractsStateContext, ICont
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const completeRenewalError = createAction<IContractsStateContext, string>(
@@ -358,7 +353,7 @@ export const completeRenewalError = createAction<IContractsStateContext, string>
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Clear
@@ -370,7 +365,7 @@ export const clearError = createAction<IContractsStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 export const clearContract = createAction<IContractsStateContext>(
@@ -381,5 +376,5 @@ export const clearContract = createAction<IContractsStateContext>(
     isSuccess: false,
     isError: false,
     contract: undefined,
-  })
+  }),
 );

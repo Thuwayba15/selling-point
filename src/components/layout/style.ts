@@ -1,6 +1,6 @@
 import { createStyles, css } from "antd-style";
 import { colors } from "@/theme/colors";
-import '../../app/globals.css';
+import "../../app/globals.css";
 
 export const useStyles = createStyles({
   shell: css`

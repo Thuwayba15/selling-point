@@ -2,16 +2,7 @@
 
 import React from "react";
 import dayjs from "dayjs";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Button,
-  Space,
-  Table,
-  DatePicker,
-} from "antd";
+import { Form, Input, InputNumber, Select, Button, Space, Table, DatePicker } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { FormInstance } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -52,7 +43,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
 }) => {
   const { styles } = useStyles();
   const [lineItems, setLineItems] = React.useState<IProposalLineItem[]>(
-    initialValues?.lineItems || []
+    initialValues?.lineItems || [],
   );
   const [isAddingLineItem, setIsAddingLineItem] = React.useState(false);
   const [lineItemForm] = Form.useForm();
@@ -66,8 +57,11 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       unitPrice: values.unitPrice,
       discount: values.discount || 0,
       taxRate: values.taxRate || 0,
-      total: (values.quantity * values.unitPrice * (1 - (values.discount || 0) / 100)) *
-             (1 + (values.taxRate || 0) / 100),
+      total:
+        values.quantity *
+        values.unitPrice *
+        (1 - (values.discount || 0) / 100) *
+        (1 + (values.taxRate || 0) / 100),
     };
 
     setLineItems([...lineItems, newLineItem]);
@@ -90,7 +84,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       validUntil: values.validUntil ? values.validUntil.toISOString() : undefined,
       ...(values.notes ? { notes: values.notes } : {}),
     };
-    
+
     // Pass both proposal data and line items separately
     onSubmit(proposalData, lineItems);
   };
@@ -208,38 +202,23 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
-          label="Description"
-          name="description"
-        >
+        <Form.Item label="Description" name="description">
           <Input.TextArea rows={3} placeholder="Proposal description" />
         </Form.Item>
 
-        <Form.Item
-          label="Valid Until"
-          name="validUntil"
-        >
+        <Form.Item label="Valid Until" name="validUntil">
           <DatePicker className={styles.fullWidthControl} />
         </Form.Item>
 
-        <Form.Item
-          label="Currency"
-          name="currency"
-        >
+        <Form.Item label="Currency" name="currency">
           <Select placeholder="Select currency" options={CURRENCY_OPTIONS} />
         </Form.Item>
 
-        <Form.Item
-          label="Status"
-          name="status"
-        >
+        <Form.Item label="Status" name="status">
           <Select placeholder="Select status" options={STATUS_OPTIONS} disabled />
         </Form.Item>
 
-        <Form.Item
-          label="Notes"
-          name="notes"
-        >
+        <Form.Item label="Notes" name="notes">
           <Input.TextArea rows={2} placeholder="Additional notes" />
         </Form.Item>
 
@@ -286,10 +265,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
                 <Input placeholder="e.g., Implementation, Support, Training" />
               </Form.Item>
 
-              <Form.Item
-                label="Description"
-                name="description"
-              >
+              <Form.Item label="Description" name="description">
                 <Input.TextArea rows={2} placeholder="Additional description" />
               </Form.Item>
 

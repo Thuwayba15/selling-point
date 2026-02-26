@@ -69,11 +69,7 @@ export const ContractsFilters = ({
             Apply Filters
           </Button>
           {hasActiveFilters && (
-            <Button
-              icon={<ClearOutlined />}
-              onClick={onClear}
-              danger
-            >
+            <Button icon={<ClearOutlined />} onClick={onClear} danger>
               Clear Filters
             </Button>
           )}

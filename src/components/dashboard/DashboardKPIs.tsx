@@ -19,7 +19,7 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
   const { styles } = useStyles();
 
   // Debug: Log the overview data
-  console.log('DashboardKPIs - overview:', overview);
+  console.log("DashboardKPIs - overview:", overview);
 
   if (isLoading) {
     return (
@@ -79,7 +79,6 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
         </div>
       )}
 
-
       {/* Active Contracts */}
       {overview?.contracts && (
         <div className={styles.card}>
@@ -101,7 +100,6 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
           </Space>
         </div>
       )}
-
     </div>
   );
 };

@@ -75,13 +75,11 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch opportunities";
+          error?.response?.data?.message || error?.message || "Failed to fetch opportunities";
         dispatch(getOpportunitiesError(message));
       }
     };
@@ -106,13 +104,11 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
               totalCount: data.totalCount ?? 0,
               totalPages: data.totalPages ?? 0,
             },
-          })
+          }),
         );
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch opportunities";
+          error?.response?.data?.message || error?.message || "Failed to fetch opportunities";
         dispatch(getMyOpportunitiesError(message));
       }
     };
@@ -127,9 +123,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         dispatch(getOpportunitySuccess(data));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch opportunity";
+          error?.response?.data?.message || error?.message || "Failed to fetch opportunity";
         dispatch(getOpportunityError(message));
       }
     };
@@ -144,9 +138,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         dispatch(getOpportunityStageHistorySuccess(data || []));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch stage history";
+          error?.response?.data?.message || error?.message || "Failed to fetch stage history";
         dispatch(getOpportunityStageHistoryError(message));
       }
     };
@@ -167,9 +159,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         dispatch(getOpportunityPipelineSuccess(normalized));
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch pipeline";
+          error?.response?.data?.message || error?.message || "Failed to fetch pipeline";
         dispatch(getOpportunityPipelineError(message));
       }
     };
@@ -185,15 +175,16 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to create opportunity";
+          error?.response?.data?.message || error?.message || "Failed to create opportunity";
         dispatch(createOpportunityError(message));
         return false;
       }
     };
 
-    const updateOpportunity = async (id: string, opportunity: Partial<IOpportunity>): Promise<boolean> => {
+    const updateOpportunity = async (
+      id: string,
+      opportunity: Partial<IOpportunity>,
+    ): Promise<boolean> => {
       dispatch(updateOpportunityPending());
 
       try {
@@ -204,15 +195,17 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update opportunity";
+          error?.response?.data?.message || error?.message || "Failed to update opportunity";
         dispatch(updateOpportunityError(message));
         return false;
       }
     };
 
-    const updateOpportunityStage = async (id: string, stage: number, reason?: string): Promise<boolean> => {
+    const updateOpportunityStage = async (
+      id: string,
+      stage: number,
+      reason?: string,
+    ): Promise<boolean> => {
       dispatch(updateOpportunityStagePending());
 
       try {
@@ -223,9 +216,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update opportunity stage";
+          error?.response?.data?.message || error?.message || "Failed to update opportunity stage";
         dispatch(updateOpportunityStageError(message));
         return false;
       }
@@ -242,9 +233,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to assign opportunity";
+          error?.response?.data?.message || error?.message || "Failed to assign opportunity";
         dispatch(assignOpportunityError(message));
         return false;
       }
@@ -261,9 +250,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         return true;
       } catch (error: any) {
         const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete opportunity";
+          error?.response?.data?.message || error?.message || "Failed to delete opportunity";
         dispatch(deleteOpportunityError(message));
         return false;
       }

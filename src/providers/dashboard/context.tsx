@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { createContext } from "react";
 
@@ -138,4 +138,6 @@ export const INITIAL_STATE: IDashboardStateContext = {
 
 // Create contexts
 export const DashboardStateContext = createContext<IDashboardStateContext>(INITIAL_STATE);
-export const DashboardActionsContext = createContext<IDashboardActionContext | undefined>(undefined);
+export const DashboardActionsContext = createContext<IDashboardActionContext | undefined>(
+  undefined,
+);

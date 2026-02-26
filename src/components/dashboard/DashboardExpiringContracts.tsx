@@ -24,7 +24,12 @@ export const DashboardExpiringContracts = ({
     );
   }
 
-  if (!expiringContracts || !expiringContracts.contracts || !Array.isArray(expiringContracts.contracts) || expiringContracts.contracts.length === 0) {
+  if (
+    !expiringContracts ||
+    !expiringContracts.contracts ||
+    !Array.isArray(expiringContracts.contracts) ||
+    expiringContracts.contracts.length === 0
+  ) {
     return <Empty description="No expiring contracts" />;
   }
 
@@ -55,16 +60,14 @@ export const DashboardExpiringContracts = ({
       title: "Expiry Date",
       dataIndex: "expiryDate",
       key: "expiryDate",
-      render: (date: string) => date ? new Date(date).toLocaleDateString() : "N/A",
+      render: (date: string) => (date ? new Date(date).toLocaleDateString() : "N/A"),
       responsive: ["sm", "md", "lg"],
     },
     {
       title: "Days Until Expiry",
       dataIndex: "daysUntilExpiry",
       key: "daysUntilExpiry",
-      render: (days: number) => (
-        <Tag color={getStatusColor(days)}>{days || 0} days</Tag>
-      ),
+      render: (days: number) => <Tag color={getStatusColor(days)}>{days || 0} days</Tag>,
       responsive: ["xs", "sm", "md", "lg"],
     },
     {

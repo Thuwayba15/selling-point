@@ -5,15 +5,9 @@ import dayjs from "dayjs";
 import { App, Button, Form, Modal, Table, Tag, Tabs } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
-import {
-  useContractsState,
-  useContractsActions,
-} from "@/providers/contracts";
+import { useContractsState, useContractsActions } from "@/providers/contracts";
 import { useClientsState, useClientsActions } from "@/providers/clients";
-import {
-  useOpportunitiesState,
-  useOpportunitiesActions,
-} from "@/providers/opportunities";
+import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useProposalsState, useProposalsActions } from "@/providers/proposals";
 import { useAuthState } from "@/providers/auth";
 import {
@@ -204,8 +198,6 @@ const ContractsPage = () => {
     }
   };
 
-
-
   const handleStatusChange = (newStatus: number | undefined) => {
     setStatus(newStatus);
   };
@@ -284,10 +276,7 @@ const ContractsPage = () => {
                   {selectedContract && (
                     <div className={styles.selectedRow}>
                       <div className={styles.detailsPanel}>
-                        <ContractDetails
-                          contract={selectedContract}
-                          loading={isLoadingDetails}
-                        />
+                        <ContractDetails contract={selectedContract} loading={isLoadingDetails} />
                       </div>
                       <div className={styles.actionsCard}>
                         <ContractActions
@@ -329,15 +318,13 @@ const ContractsPage = () => {
                       title: "End Date",
                       dataIndex: "endDate",
                       key: "endDate",
-                      render: (date) =>
-                        date ? new Date(date).toLocaleDateString() : "—",
+                      render: (date) => (date ? new Date(date).toLocaleDateString() : "—"),
                     },
                     {
                       title: "Days Until Expiry",
                       dataIndex: "daysUntilExpiry",
                       key: "daysUntilExpiry",
-                      render: (days) =>
-                        days !== undefined ? `${days} days` : "—",
+                      render: (days) => (days !== undefined ? `${days} days` : "—"),
                     },
                     {
                       title: "Action",

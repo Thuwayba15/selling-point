@@ -29,7 +29,12 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
     );
   }
 
-  if (!pipelineMetrics || !pipelineMetrics.stages || !Array.isArray(pipelineMetrics.stages) || pipelineMetrics.stages.length === 0) {
+  if (
+    !pipelineMetrics ||
+    !pipelineMetrics.stages ||
+    !Array.isArray(pipelineMetrics.stages) ||
+    pipelineMetrics.stages.length === 0
+  ) {
     return <Empty description="No pipeline data available" />;
   }
 
@@ -39,11 +44,13 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
   };
 
   // Find max value for scaling bars - try both 'value' and 'totalValue' fields
-  const maxValue = Math.max(...pipelineMetrics.stages.map(s => (s as any).totalValue || s.value || 0));
-  
+  const maxValue = Math.max(
+    ...pipelineMetrics.stages.map((s) => (s as any).totalValue || s.value || 0),
+  );
+
   // Calculate total pipeline value from all stages (excluding Closed Won/Lost)
   const calculatedTotalValue = pipelineMetrics.stages
-    .filter(s => s.stage <= 4) // Only stages 1-4 (Lead, Qualified, Proposal, Negotiation)
+    .filter((s) => s.stage <= 4) // Only stages 1-4 (Lead, Qualified, Proposal, Negotiation)
     .reduce((sum, s) => sum + ((s as any).totalValue || s.value || 0), 0);
 
   return (
@@ -53,27 +60,31 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
           // Support both 'value' and 'totalValue' field names from API
           const stageValue = (stage as any).totalValue || stage.value || 0;
           const barHeight = maxValue > 0 ? (stageValue / maxValue) * 100 : 10;
-          
+
           return (
-  <div key={stage.stage} className={styles.barWrapper}>
-    <div className={styles.barContainer}>
-      <div 
-        className={styles.bar}
-        style={{ height: `${barHeight}%` }}
-      />
-      <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
-    </div>
-    <div className={styles.barLabel}>
-      {STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}
-    </div>
-    <div className={styles.barCount}>{stage.count ?? 0} opps</div>
-  </div>
-);
+            <div key={stage.stage} className={styles.barWrapper}>
+              <div className={styles.barContainer}>
+                <div className={styles.bar} style={{ height: `${barHeight}%` }} />
+                <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
+              </div>
+              <div className={styles.barLabel}>
+                {STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}
+              </div>
+              <div className={styles.barCount}>{stage.count ?? 0} opps</div>
+            </div>
+          );
         })}
       </div>
       <div className={styles.pipelineSummary}>
-        <div>Weighted Pipeline Value: {formatCurrency((pipelineMetrics as any).weightedPipelineValue || pipelineMetrics.weightedValue)}</div>
-        <div>Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}</div>
+        <div>
+          Weighted Pipeline Value:{" "}
+          {formatCurrency(
+            (pipelineMetrics as any).weightedPipelineValue || pipelineMetrics.weightedValue,
+          )}
+        </div>
+        <div>
+          Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}
+        </div>
       </div>
     </div>
   );
