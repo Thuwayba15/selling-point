@@ -141,11 +141,4 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-right: ${token.marginXS}px;
   `,
 
-  viewModeButtons: css`
-    margin-bottom: ${token.marginSM}px;
-  `,
-
-  buttonSpacing: css`
-    margin-right: ${token.marginXS}px;
-  `,
 }));

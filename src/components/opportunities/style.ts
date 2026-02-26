@@ -153,8 +153,4 @@ export const useStyles = createStyles(({ token, css }) => ({
   chartPlaceholder: css`
     height: 320px;
   `,
-
-  sectionSpacing: css`
-    margin-bottom: ${token.marginLG}px;
-  `,
 }));
