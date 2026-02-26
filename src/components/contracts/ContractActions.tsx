@@ -1,14 +1,12 @@
 "use client";
 
-import { Card, Button, Space, Modal, Form, Input, Select } from "antd";
+import { Card, Button, Space, Modal } from "antd";
 import {
   EditOutlined,
   CheckOutlined,
   CloseOutlined,
   DeleteOutlined,
-  ReloadOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
 import { useRbac } from "@/hooks/useRbac";
 import { IContract } from "@/providers/contracts/context";
 import { useStyles } from "./style";
@@ -19,8 +17,6 @@ interface ContractActionsProps {
   onActivate: () => void;
   onCancel: () => void;
   onDelete: () => void;
-  onCreateRenewal: (renewalData: any) => void;
-  opportunities?: Array<{ id: string; title: string }>;
   loading?: boolean;
 }
 
@@ -30,19 +26,10 @@ export const ContractActions = ({
   onActivate,
   onCancel,
   onDelete,
-  onCreateRenewal,
-  opportunities = [],
   loading = false,
 }: ContractActionsProps) => {
   const { can } = useRbac();
   const { styles } = useStyles();
-  const [isRenewalModalOpen, setIsRenewalModalOpen] = useState(false);
-  const [renewalForm] = Form.useForm();
-
-  const opportunityOptions = opportunities.map((opp) => ({
-    label: opp.title,
-    value: opp.id,
-  }));
 
   if (!contract) {
     return (
@@ -92,25 +79,6 @@ export const ContractActions = ({
     });
   };
 
-  const handleCreateRenewal = () => {
-    setIsRenewalModalOpen(true);
-  };
-
-  const handleRenewalSubmit = async () => {
-    try {
-      const values = await renewalForm.validateFields();
-      const renewalData = {
-        renewalOpportunityId: values.renewalOpportunityId || undefined,
-        notes: values.notes || undefined,
-      };
-      onCreateRenewal(renewalData);
-      setIsRenewalModalOpen(false);
-      renewalForm.resetFields();
-    } catch (error) {
-      console.error("Form validation failed:", error);
-    }
-  };
-
   return (
     <>
       <Card className={styles.actionsCard} title="Actions">
@@ -148,30 +116,17 @@ export const ContractActions = ({
               >
                 Edit Contract
               </Button>
+
+              <Button
+                block
+                danger
+                icon={<CloseOutlined />}
+                onClick={handleCancel}
+                loading={loading}
+              >
+                Cancel Contract
+              </Button>
             </>
-          )}
-
-          {can("create:contract") && isActive && (
-            <Button
-              block
-              icon={<ReloadOutlined />}
-              onClick={handleCreateRenewal}
-              loading={loading}
-            >
-              Create Renewal
-            </Button>
-          )}
-
-          {can("activate:contract") && isActive && (
-            <Button
-              block
-              danger
-              icon={<CloseOutlined />}
-              onClick={handleCancel}
-              loading={loading}
-            >
-              Cancel Contract
-            </Button>
           )}
 
           {can("delete:contract") && isDraft && (
@@ -193,52 +148,6 @@ export const ContractActions = ({
           )}
         </Space>
       </Card>
-
-      <Modal
-        title="Create Renewal"
-        open={isRenewalModalOpen}
-        onOk={handleRenewalSubmit}
-        onCancel={() => {
-          setIsRenewalModalOpen(false);
-          renewalForm.resetFields();
-        }}
-        okText="Create"
-        cancelText="Cancel"
-      >
-        <Form
-          form={renewalForm}
-          layout="vertical"
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Renewal Opportunity (Optional)"
-            name="renewalOpportunityId"
-            rules={[{ required: false }]}
-            tooltip="Link this renewal to an existing opportunity"
-          >
-            <Select
-              options={opportunityOptions}
-              placeholder="Select an opportunity"
-              allowClear
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Notes"
-            name="notes"
-            rules={[{ required: false }]}
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Add renewal notes (e.g., Annual CPI adjustment of 8%, price changes, etc.)"
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 };

@@ -116,11 +116,10 @@ export const ContractsTable = ({
               }
             : false
         }
-        rowClassName={(record) =>
-          record.id === selectedContractId ? styles.selectedRow : ""
-        }
         onRow={(record) => ({
           onClick: () => onSelectContract(record),
+          className: record.id === selectedContractId ? "ant-table-row-selected" : "",
+          style: { cursor: "pointer" },
         })}
       />
     </Card>

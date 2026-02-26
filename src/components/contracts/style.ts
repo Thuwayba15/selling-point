@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     cursor: pointer;
   `,
 
-   selectedRow: css`
+  selectedRow: css`
     display: flex;
     gap: ${token.marginLG}px;
     margin-bottom: ${token.marginLG}px;
@@ -92,14 +92,23 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   detailsPanel: css`
-    width: 100%;
+    flex: 2;
   `,
 
   detailsCard: css`
-    width: 100%;
+    height: 100%;
   `,
 
   actionsCard: css`
+    flex: 1;
+    min-width: 300px;
+
+    @media (max-width: 768px) {
+      min-width: 100%;
+    }
+  `,
+
+  actionsStack: css`
     width: 100%;
   `,
 

@@ -25,7 +25,7 @@ import {
   ContractForm,
 } from "@/components/contracts";
 import { useStyles } from "@/components/contracts/style";
-import { IContract, IContractRenewal } from "@/providers/contracts/context";
+import { IContract } from "@/providers/contracts/context";
 import { useRbac } from "@/hooks/useRbac";
 
 const ContractsPage = () => {
@@ -54,8 +54,6 @@ const ContractsPage = () => {
     activateContract,
     cancelContract,
     deleteContract,
-    createRenewal,
-    completeRenewal,
     clearError,
     clearContract,
   } = useContractsActions();
@@ -206,15 +204,7 @@ const ContractsPage = () => {
     }
   };
 
-  const handleCreateRenewal = async (renewalData: any) => {
-    if (!contract?.id) return;
 
-    const success = await createRenewal(contract.id, renewalData);
-    if (success) {
-      message.success("Renewal created successfully");
-      getContract(contract.id);
-    }
-  };
 
   const handleStatusChange = (newStatus: number | undefined) => {
     setStatus(newStatus);
@@ -351,8 +341,6 @@ const ContractsPage = () => {
                           onActivate={handleActivate}
                           onCancel={handleCancel}
                           onDelete={handleDelete}
-                          onCreateRenewal={handleCreateRenewal}
-                          opportunities={opportunityOptions}
                           loading={isPending}
                         />
                       </div>
@@ -416,27 +404,6 @@ const ContractsPage = () => {
                   rowKey="id"
                   pagination={false}
                 />
-              ),
-            },
-            {
-              key: "renewals",
-              label: "Renewals",
-              children: selectedContract?.renewals ? (
-                <Table
-                  columns={renewalColumns}
-                  dataSource={selectedContract.renewals}
-                  rowKey="id"
-                  pagination={false}
-                  title={() => (
-                    <div>
-                      {selectedContract.title} - Renewals
-                    </div>
-                  )}
-                />
-              ) : (
-                <div className={styles.emptyState}>
-                  Select a contract from the "All Contracts" tab to view renewals
-                </div>
               ),
             },
           ]}
