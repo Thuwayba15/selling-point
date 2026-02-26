@@ -18,6 +18,7 @@ const PAGE_NAMES: Record<string, string> = {
   [ROUTES.activities]: "Activities",
   [ROUTES.clients]: "Clients",
   [ROUTES.contacts]: "Contacts",
+  [ROUTES.opportunities]: "Opportunities",
   [ROUTES.reports]: "Reports",
   [ROUTES.admin]: "Admin",
   [ROUTES.adminUsers]: "Admin • Users",

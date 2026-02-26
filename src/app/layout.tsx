@@ -9,6 +9,7 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/auth";
 import { ClientsProvider } from "@/providers/clients";
 import { ContactsProvider } from "@/providers/contacts";
+import { OpportunitiesProvider } from "@/providers/opportunities";
 import { antdTheme } from "@/theme/theme";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
@@ -29,11 +30,13 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         <AuthProvider>
           <ClientsProvider>
             <ContactsProvider>
-              <AntdRegistry>
-                <ConfigProvider theme={antdTheme}>
-                  <App>{children}</App>
-                </ConfigProvider>
-              </AntdRegistry>
+              <OpportunitiesProvider>
+                <AntdRegistry>
+                  <ConfigProvider theme={antdTheme}>
+                    <App>{children}</App>
+                  </ConfigProvider>
+                </AntdRegistry>
+              </OpportunitiesProvider>
             </ContactsProvider>
           </ClientsProvider>
         </AuthProvider>
