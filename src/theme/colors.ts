@@ -1,10 +1,13 @@
 export const colors = {
-  darkGreen: '#1e3a2e',
-  lightGreen: '#cdcda9',
-  white: '#fff',
-  black: '#111',
-  gray: '#888',
-  inputBorder: '#d4d4d4',
-  buttonHover: '#2d5443',
-  subtitle: 'rgba(255,255,255,0.8)',
+  primary: "#3a6b59",
+  secondary: "#84b97a",
+  shell: "#1a3a2e",          
+  shellText: "#ffffff",
+  shellHover: "#245a47",
+  shellSelected: "#2a6b54",
+
+  bgLayout: "#cdcda9",      
+  bgContainer: "#ffffff",    
+  text: "rgba(0,0,0,0.88)",
+  textSecondary: "rgba(0,0,0,0.6)",
 };

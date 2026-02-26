@@ -8,7 +8,6 @@ const { Title } = Typography;
 const ReportsPage = () => {
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Title level={3}>Reports</Title>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>

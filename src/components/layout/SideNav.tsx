@@ -18,9 +18,12 @@ import { ROUTES } from "@/lib/routes";
 import { useAuthState } from "@/providers/auth";
 import { isAdmin, isManager } from "@/utils/rbac";
 
+import { useStyles } from "./style";
+
 export const SideNav = () => {
   const pathname = usePathname();
   const { user } = useAuthState();
+  const { styles } = useStyles();
 
   // Get roles safely (handle undefined case)
   const roles = user?.roles ?? [];
@@ -49,6 +52,12 @@ export const SideNav = () => {
     : [];
 
   return (
-    <Menu theme="dark" mode="inline" selectedKeys={[pathname]} items={[...baseItems, ...adminItems]} />
+    <>
+      <div className={styles.siderLogo}>
+        Selling Point
+        <span className={styles.siderLogoDot} />
+      </div>
+      <Menu theme="dark" mode="inline" selectedKeys={[pathname]} items={[...baseItems, ...adminItems]} />
+    </>
   );
 };
