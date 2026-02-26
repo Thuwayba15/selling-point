@@ -9,8 +9,6 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/auth";
 import { ClientsProvider } from "@/providers/clients";
 import { antdTheme } from "@/theme/theme";
-// import { OpportunitiesProvider } from "@/providers/opportunities";
-import { OpportunitiesProvider } from "@/providers/opportunities";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
 // import { ActivitiesProvider } from "@/providers/activities";

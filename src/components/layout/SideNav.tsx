@@ -33,7 +33,6 @@ export const SideNav = () => {
   const baseItems = [
     { key: ROUTES.dashboard, icon: <HomeOutlined />, label: <Link href={ROUTES.dashboard}>Dashboard</Link> },
     { key: ROUTES.clients, icon: <TeamOutlined />, label: <Link href={ROUTES.clients}>Clients</Link> },
-    { key: ROUTES.opportunities, icon: <ProjectOutlined />, label: <Link href={ROUTES.opportunities}>Opportunities</Link> },
     { key: ROUTES.pricingRequests, icon: <FileTextOutlined />, label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link> },
     { key: ROUTES.proposals, icon: <FileTextOutlined />, label: <Link href={ROUTES.proposals}>Proposals</Link> },
     { key: ROUTES.contracts, icon: <FileTextOutlined />, label: <Link href={ROUTES.contracts}>Contracts</Link> },
