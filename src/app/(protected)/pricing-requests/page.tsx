@@ -55,7 +55,6 @@ const PricingRequestsPage = () => {
 
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Title level={3}>Pricing Requests</Title>
 
       <Tabs
         items={[

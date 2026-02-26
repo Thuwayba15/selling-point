@@ -29,8 +29,6 @@ const DashboardPage = () => {
 
   return (
     <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-      <Title level={3}>Dashboard</Title>
-
       {/* Top KPI cards: driven by dashboard endpoints */}
       <Row>
         <Col xs={24} md={12} lg={6}>
