@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { message, Modal, Form } from "antd";
+import { Modal, Form, App } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useStyles } from "@/components/clients/style";
 import {
@@ -19,6 +19,7 @@ import type { IClient } from "@/providers/clients/context";
 
 const ClientsPage = () => {
   const { styles } = useStyles();
+  const { message } = App.useApp();
 
   // Provider state and actions
   const state = useClientsState();
