@@ -1,4 +1,4 @@
-import type { AuthUser, UserRole } from "./context";
+import type { AuthUser, UserRole } from "@/providers/auth/context";
 
 /**
  * Safely parse JSON; returns null if invalid.

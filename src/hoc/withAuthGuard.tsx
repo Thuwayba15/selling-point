@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 
 import { ROUTES } from "@/lib/routes";
 import { storage } from "@/lib/storage";
-import { AUTH_STORAGE_KEY, type AuthUser } from "@/providers/auth/context";
+import { AUTH_STORAGE_KEY, type AuthUser, type UserRole } from "@/providers/auth/context";
 
 type WithAuthOptions = {
   redirectTo?: string;
-  allowedRoles?: Array<AuthUser["role"]>;
+  allowedRoles?: UserRole[];
 };
 
 export const withAuthGuard = <P extends object>(
@@ -47,9 +47,9 @@ export const withAuthGuard = <P extends object>(
       }
 
       const isAuthenticated = Boolean(user);
-      const userRole = user?.role ?? null;
+      const userRoles = user?.roles ?? [];
 
-      console.log("Auth Guard - isAuthenticated:", isAuthenticated, "role:", userRole);
+      console.log("Auth Guard - isAuthenticated:", isAuthenticated, "roles:", userRoles);
 
       // Redirect if not authenticated
       if (!isAuthenticated) {
@@ -59,15 +59,20 @@ export const withAuthGuard = <P extends object>(
       }
 
       // Check role restrictions
-      if (allowedRoles.length > 0 && userRole && !allowedRoles.includes(userRole)) {
-        // Redirect to appropriate default route based on role
-        const fallback = userRole === "Admin" ? ROUTES.admin : ROUTES.dashboard;
-        console.log("Auth Guard - Role not allowed, redirecting to:", fallback);
-        router.replace(fallback);
+      if (allowedRoles.length > 0) {
+        const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
+        if (!hasRequiredRole) {
+          // Redirect to appropriate default route based on highest role
+          const fallback = userRoles.includes("Admin") ? ROUTES.admin : ROUTES.dashboard;
+          console.log("Auth Guard - Role not allowed, redirecting to:", fallback);
+          router.replace(fallback);
+        } else {
+          console.log("Auth Guard - Access granted");
+        }
       } else {
-        console.log("Auth Guard - Access granted");
+        console.log("Auth Guard - No role restrictions, access granted");
       }
-    }, [isHydrated, router, redirectTo]);
+    }, [isHydrated, router, redirectTo, allowedRoles]);
 
     if (!isHydrated) return null;
 
@@ -85,16 +90,19 @@ export const withAuthGuard = <P extends object>(
     }
 
     const isAuthenticated = Boolean(user);
-    const userRole = user?.role ?? null;
+    const userRoles = user?.roles ?? [];
 
     if (!isAuthenticated) {
       console.log("Auth Guard (render) - Not authenticated, returning null");
       return null;
     }
 
-    if (allowedRoles.length > 0 && (!userRole || !allowedRoles.includes(userRole))) {
-      console.log("Auth Guard (render) - Role not allowed, returning null");
-      return null;
+    if (allowedRoles.length > 0) {
+      const hasRequiredRole = userRoles.some((role) => allowedRoles.includes(role));
+      if (!hasRequiredRole) {
+        console.log("Auth Guard (render) - Role not allowed, returning null");
+        return null;
+      }
     }
 
     return <Wrapped {...props} />;
