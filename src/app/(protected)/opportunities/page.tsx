@@ -1,4 +1,4 @@
-"use client";
+import { OpportunitiesView } from "../../../components/opportunities/OpportunitiesView";
 
 import { Button, Card, Col, Form, Input, Row, Select, Space, Table, Typography } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
