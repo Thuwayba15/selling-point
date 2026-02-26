@@ -22,6 +22,8 @@ import { authReducer } from "./reducer";
 import { bootstrapSuccess, loginSuccess, logoutAction, setError, clearError } from "./actions";
 import { decodeToken, safeParseJson } from "../../utils/auth/utils";
 
+const LEGACY_AUTH_STORAGE_KEY = "sales.auth.user";
+
 type LoginResponse = {
   token: string;
   userId: string;
@@ -138,6 +140,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
       storage.remove(TOKEN_STORAGE_KEY);
       storage.remove(AUTH_STORAGE_KEY);
+      storage.remove(LEGACY_AUTH_STORAGE_KEY);
 
       dispatch(logoutAction());
       router.replace(ROUTES.login);
