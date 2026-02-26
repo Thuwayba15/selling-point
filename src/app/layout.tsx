@@ -1,13 +1,14 @@
 
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "antd/dist/reset.css";
 import "./globals.css";
 
 import { AuthProvider } from "@/providers/auth";
 import { ClientsProvider } from "@/providers/clients";
+import { ContactsProvider } from "@/providers/contacts";
 import { antdTheme } from "@/theme/theme";
 // import { ProposalsProvider } from "@/providers/proposals";
 // import { ContractsProvider } from "@/providers/contracts";
@@ -27,9 +28,13 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body className={inter.className}>
         <AuthProvider>
           <ClientsProvider>
-            <AntdRegistry>
-              <ConfigProvider theme={antdTheme}>{children}</ConfigProvider>
-            </AntdRegistry>
+            <ContactsProvider>
+              <AntdRegistry>
+                <ConfigProvider theme={antdTheme}>
+                  <App>{children}</App>
+                </ConfigProvider>
+              </AntdRegistry>
+            </ContactsProvider>
           </ClientsProvider>
         </AuthProvider>
       </body>
