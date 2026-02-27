@@ -10,4 +10,5 @@ export const ROUTES = {
   contacts: "/contacts",
   opportunities: "/opportunities",
   reports: "/reports",
+  notes: "/notes",
 } as const;

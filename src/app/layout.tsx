@@ -13,6 +13,7 @@ import { PricingRequestsProvider } from "@/providers/pricing-requests";
 import { ProposalsProvider } from "@/providers/proposals";
 import { ContractsProvider } from "@/providers/contracts";
 import { DashboardProvider } from "@/providers/dashboard";
+import { NotesProvider } from "@/providers/notes";
 import { antdTheme } from "@/theme/theme";
 // import { ActivitiesProvider } from "@/providers/activities";
 // import { ReportsProvider } from "@/providers/reports";
@@ -36,11 +37,13 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                   <ProposalsProvider>
                     <ContractsProvider>
                       <DashboardProvider>
-                        <AntdRegistry>
-                          <ConfigProvider theme={antdTheme}>
-                            <App>{children}</App>
-                          </ConfigProvider>
-                        </AntdRegistry>
+                        <NotesProvider>
+                          <AntdRegistry>
+                            <ConfigProvider theme={antdTheme}>
+                              <App>{children}</App>
+                            </ConfigProvider>
+                          </AntdRegistry>
+                        </NotesProvider>
                       </DashboardProvider>
                     </ContractsProvider>
                   </ProposalsProvider>
