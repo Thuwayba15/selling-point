@@ -13,11 +13,11 @@ import { PricingRequestsProvider } from "@/providers/pricing-requests";
 import { ProposalsProvider } from "@/providers/proposals";
 import { ContractsProvider } from "@/providers/contracts";
 import { DashboardProvider } from "@/providers/dashboard";
+import { ActivitiesProvider } from "@/providers/activities";
+import { UsersProvider } from "@/providers/users";
 import { NotesProvider } from "@/providers/notes";
 import { antdTheme } from "@/theme/theme";
-// import { ActivitiesProvider } from "@/providers/activities";
 // import { ReportsProvider } from "@/providers/reports";
-// import { UsersProvider } from "@/providers/users";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,27 +30,31 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <ClientsProvider>
-            <ContactsProvider>
-              <OpportunitiesProvider>
-                <PricingRequestsProvider>
-                  <ProposalsProvider>
-                    <ContractsProvider>
-                      <DashboardProvider>
-                        <NotesProvider>
+          <UsersProvider>
+            <ClientsProvider>
+              <ContactsProvider>
+                <OpportunitiesProvider>
+                  <PricingRequestsProvider>
+                    <ProposalsProvider>
+                      <ContractsProvider>
+                        <DashboardProvider>
+                          <ActivitiesProvider>
+                            <NotesProvider>
                           <AntdRegistry>
-                            <ConfigProvider theme={antdTheme}>
-                              <App>{children}</App>
-                            </ConfigProvider>
-                          </AntdRegistry>
-                        </NotesProvider>
+                                <ConfigProvider theme={antdTheme}>
+                                  <App>{children}</App>
+                                </ConfigProvider>
+                              </AntdRegistry>
+                          </ActivitiesProvider>
+                          </NotesProvider>
                       </DashboardProvider>
-                    </ContractsProvider>
-                  </ProposalsProvider>
-                </PricingRequestsProvider>
-              </OpportunitiesProvider>
-            </ContactsProvider>
-          </ClientsProvider>
+                      </ContractsProvider>
+                    </ProposalsProvider>
+                  </PricingRequestsProvider>
+                </OpportunitiesProvider>
+              </ContactsProvider>
+            </ClientsProvider>
+          </UsersProvider>
         </AuthProvider>
       </body>
     </html>
