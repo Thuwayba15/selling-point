@@ -16,6 +16,7 @@ import { DashboardProvider } from "@/providers/dashboard";
 import { ActivitiesProvider } from "@/providers/activities";
 import { UsersProvider } from "@/providers/users";
 import { NotesProvider } from "@/providers/notes";
+import { DocumentsProvider } from "@/providers/documents";
 import { antdTheme } from "@/theme/theme";
 // import { ReportsProvider } from "@/providers/reports";
 
@@ -40,14 +41,16 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                         <DashboardProvider>
                           <ActivitiesProvider>
                             <NotesProvider>
-                          <AntdRegistry>
-                                <ConfigProvider theme={antdTheme}>
-                                  <App>{children}</App>
-                                </ConfigProvider>
-                              </AntdRegistry>
-                              </NotesProvider>
+                              <DocumentsProvider>
+                                <AntdRegistry>
+                                  <ConfigProvider theme={antdTheme}>
+                                    <App>{children}</App>
+                                  </ConfigProvider>
+                                </AntdRegistry>
+                              </DocumentsProvider>
+                            </NotesProvider>
                           </ActivitiesProvider>
-                      </DashboardProvider>
+                        </DashboardProvider>
                       </ContractsProvider>
                     </ProposalsProvider>
                   </PricingRequestsProvider>
