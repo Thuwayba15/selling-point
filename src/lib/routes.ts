@@ -9,5 +9,6 @@ export const ROUTES = {
   clients: "/clients",
   contacts: "/contacts",
   opportunities: "/opportunities",
+  activities: "/activities",
   reports: "/reports",
 } as const;
