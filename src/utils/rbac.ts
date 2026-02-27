@@ -104,6 +104,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     "update:activity",
     "delete:activity",
 
+    // Documents
+    "delete:document",
+
     // Reports
     "view:reports",
 

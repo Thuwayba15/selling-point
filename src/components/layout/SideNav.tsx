@@ -9,6 +9,7 @@ import {
   FileTextOutlined,
   TeamOutlined,
   CalendarOutlined,
+  FolderOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";
@@ -66,6 +67,11 @@ export const SideNav = () => {
       key: ROUTES.notes,
       icon: <FileTextOutlined />,
       label: <Link href={ROUTES.notes}>Notes</Link>,
+    },
+    {
+      key: ROUTES.documents,
+      icon: <FolderOutlined />,
+      label: <Link href={ROUTES.documents}>Documents</Link>,
     },
   ];
 
