@@ -13,7 +13,6 @@ import AuthLink from "@/components/auth/AuthLink";
 import { useStyles } from "@/components/auth/style";
 
 const LoginPage = () => {
-  const router = useRouter();
   const { login } = useAuthActions();
   const { styles } = useStyles();
   const [loading, setLoading] = useState(false);

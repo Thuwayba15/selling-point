@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Form, Input, InputNumber, Select, Switch, Button, Space } from "antd";
+import { Form, Input, Select, Switch, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IClient } from "@/providers/clients/context";
 import type { ClientFormValues } from "@/types/forms";

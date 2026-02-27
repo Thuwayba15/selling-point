@@ -13,7 +13,6 @@ import {
   OpportunityDetails,
   OpportunityActions,
   OpportunityForm,
-  OpportunitiesPipeline,
   OpportunityStageHistory,
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";

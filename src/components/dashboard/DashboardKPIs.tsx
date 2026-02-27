@@ -1,12 +1,6 @@
 "use client";
 
-import { Row, Col, Card, Statistic, Space, Skeleton } from "antd";
-import {
-  DollarOutlined,
-  CheckCircleOutlined,
-  PercentageOutlined,
-  FileOutlined,
-} from "@ant-design/icons";
+import { Space, Skeleton } from "antd";
 import { IDashboardOverview } from "@/providers/dashboard/context";
 import { useStyles } from "./style";
 

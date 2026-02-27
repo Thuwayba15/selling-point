@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import { App, Button, Form, Modal, Table, Tag, Tabs } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { App, Button, Form, Modal, Table, Tabs } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useContractsState, useContractsActions } from "@/providers/contracts";
 import { useClientsState, useClientsActions } from "@/providers/clients";

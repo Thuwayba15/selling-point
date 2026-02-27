@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Form, Input, InputNumber, Select, Button, Space } from "antd";
+import { Form, Input, Select, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IPricingRequest } from "@/providers/pricing-requests/context";
 import type { PricingRequestFormValues } from "@/types/forms";

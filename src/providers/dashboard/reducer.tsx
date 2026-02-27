@@ -4,22 +4,6 @@ import type { Action } from "redux-actions";
 import { INITIAL_STATE, type IDashboardStateContext } from "./context";
 import {
   DashboardActionEnums,
-  getDashboardOverviewPending,
-  getDashboardOverviewSuccess,
-  getDashboardOverviewError,
-  getPipelineMetricsPending,
-  getPipelineMetricsSuccess,
-  getPipelineMetricsError,
-  getSalesPerformancePending,
-  getSalesPerformanceSuccess,
-  getSalesPerformanceError,
-  getActivitySummaryPending,
-  getActivitySummarySuccess,
-  getActivitySummaryError,
-  getExpiringContractsPending,
-  getExpiringContractsSuccess,
-  getExpiringContractsError,
-  clearError,
 } from "./actions";
 
 export const dashboardReducer = handleActions<IDashboardStateContext, IDashboardStateContext>(

@@ -4,29 +4,6 @@ import type { Action } from "redux-actions";
 import { INITIAL_STATE, type IContactsStateContext } from "./context";
 import {
   ContactsActionEnums,
-  getContactsPending,
-  getContactsSuccess,
-  getContactsError,
-  getContactPending,
-  getContactSuccess,
-  getContactError,
-  getContactsByClientPending,
-  getContactsByClientSuccess,
-  getContactsByClientError,
-  createContactPending,
-  createContactSuccess,
-  createContactError,
-  updateContactPending,
-  updateContactSuccess,
-  updateContactError,
-  setPrimaryContactPending,
-  setPrimaryContactSuccess,
-  setPrimaryContactError,
-  deleteContactPending,
-  deleteContactSuccess,
-  deleteContactError,
-  clearError,
-  clearContact,
 } from "./actions";
 
 export const contactsReducer = handleActions<IContactsStateContext, IContactsStateContext>(

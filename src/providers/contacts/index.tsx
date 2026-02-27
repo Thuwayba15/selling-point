@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useContext, useMemo, useReducer } from "react";
+import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
 import { getErrorMessage } from "@/lib/errors";
 
