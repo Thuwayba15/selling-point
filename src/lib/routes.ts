@@ -11,4 +11,5 @@ export const ROUTES = {
   opportunities: "/opportunities",
   activities: "/activities",
   reports: "/reports",
+  notes: "/notes",
 } as const;
