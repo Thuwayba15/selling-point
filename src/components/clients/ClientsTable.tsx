@@ -91,7 +91,7 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
         pagination={pagination}
         onRow={(record) => ({
           onClick: () => onSelect(record),
-          className: selectedId === record.id ? styles.selectedRow : "",
+          className: selectedId === record.id ? styles.highlightedRow : styles.tableRow,
         })}
       />
     </Card>

@@ -77,7 +77,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   filtersActions: css`
     display: flex;
     gap: ${token.marginXS}px;
-    align-items: flex-end;
   `,
 
   formItemNoBorder: css`
@@ -111,7 +110,7 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   statsCard: css`
-    flex: 1;
+    margin-bottom: ${token.marginLG}px;
   `,
 
   actionsCard: css`
@@ -140,4 +139,20 @@ export const useStyles = createStyles(({ token, css }) => ({
     color: ${token.colorTextSecondary};
     padding: ${token.paddingSM}px 0;
   `,
+
+  primaryBadge: css`
+    margin-left: ${token.marginXS}px;
+  `,
+
+  highlightedRow: css`
+  background-color: ${token.colorPrimaryBg} !important;
+
+  td {
+    background-color: ${token.colorPrimaryBg} !important;
+  }
+
+  &:hover td {
+    background-color: ${token.colorPrimaryBgHover} !important;
+  }
+`,
 }));
