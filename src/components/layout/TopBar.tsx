@@ -15,14 +15,9 @@ const PAGE_NAMES: Record<string, string> = {
   [ROUTES.proposals]: "Proposals",
   [ROUTES.contracts]: "Contracts",
   [ROUTES.pricingRequests]: "Pricing Requests",
-  [ROUTES.activities]: "Activities",
   [ROUTES.clients]: "Clients",
   [ROUTES.contacts]: "Contacts",
   [ROUTES.opportunities]: "Opportunities",
-  [ROUTES.reports]: "Reports",
-  [ROUTES.admin]: "Admin",
-  [ROUTES.adminUsers]: "Admin • Users",
-  [ROUTES.adminConfig]: "Admin • Config",
 };
 
 export const TopBar = () => {
@@ -50,7 +45,7 @@ export const TopBar = () => {
       </Text>
       <Divider className={styles.userMenuDivider} />
       <Text type="secondary" className={styles.userMenuTextSecondary}>
-        <strong>Role:</strong> {user?.roles.join(', ')}
+        <strong>Role:</strong> {user?.roles.join(", ")}
       </Text>
       <br />
       <Text type="secondary" className={styles.userMenuTextSecondary}>
@@ -64,8 +59,8 @@ export const TopBar = () => {
       <h1 className={styles.headerTitle}>{pageName}</h1>
 
       <div className={styles.headerRight}>
-        <Dropdown popupRender={() => userMenuContent} trigger={['click']} placement="bottomRight">
-          <UserOutlined className={styles.userIcon} style={{ cursor: 'pointer' }} />
+        <Dropdown popupRender={() => userMenuContent} trigger={["click"]} placement="bottomRight">
+          <UserOutlined className={styles.userIcon} />
         </Dropdown>
         <LogoutOutlined className={styles.logoutIcon} onClick={handleLogout} />
       </div>

@@ -4,11 +4,7 @@ import { createContext } from "react";
 
 export const AUTH_STORAGE_KEY = "auth.user";
 
-export type UserRole =
-  | "Admin"
-  | "SalesManager"
-  | "BusinessDevelopmentManager"
-  | "SalesRep";
+export type UserRole = "Admin" | "SalesManager" | "BusinessDevelopmentManager" | "SalesRep";
 
 export type AuthUser = {
   id: string;

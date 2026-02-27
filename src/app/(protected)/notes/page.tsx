@@ -14,8 +14,7 @@ const NotesPage = () => {
   ];
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-
+    <Space orientation="vertical" size="middle">
       <Card title="Filters">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={8}>

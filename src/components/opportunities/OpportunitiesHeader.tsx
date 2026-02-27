@@ -16,8 +16,7 @@ export const OpportunitiesHeader = ({ onCreateClick }: OpportunitiesHeaderProps)
   return (
     <div className={styles.header}>
       <div className={styles.headerText}>
-        <h1 className={styles.title}>Opportunities</h1>
-        <p className={styles.subtitle}>Track sales opportunities and pipeline progress</p>
+        <h1 className={styles.title}>Track sales opportunities and pipeline progress</h1>
       </div>
       {can("create:opportunity") && (
         <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick}>

@@ -21,7 +21,7 @@ const PricingRequestsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { can } = useRbac();
-  
+
   const {
     isPending,
     isLoadingDetails,
@@ -31,7 +31,7 @@ const PricingRequestsPage = () => {
     pricingRequest,
     pagination,
   } = usePricingRequestsState();
-  
+
   const {
     getPricingRequests,
     getPendingPricingRequests,
@@ -52,7 +52,9 @@ const PricingRequestsPage = () => {
   const [status, setStatus] = useState<number | undefined>(undefined);
   const [priority, setPriority] = useState<number | undefined>(undefined);
   const [assignedToId, setAssignedToId] = useState<string | undefined>(undefined);
-  const [selectedPricingRequest, setSelectedPricingRequest] = useState<IPricingRequest | null>(null);
+  const [selectedPricingRequest, setSelectedPricingRequest] = useState<IPricingRequest | null>(
+    null,
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [viewMode, setViewMode] = useState<"all" | "pending" | "mine">("all");
@@ -109,7 +111,7 @@ const PricingRequestsPage = () => {
       pageNumber: number;
       pageSize: number;
     },
-    mode: "all" | "pending" | "mine" = viewMode
+    mode: "all" | "pending" | "mine" = viewMode,
   ) => {
     if (mode === "pending") {
       await getPendingPricingRequests({
@@ -149,7 +151,7 @@ const PricingRequestsPage = () => {
           pageNumber: 1,
           pageSize,
         },
-        viewMode
+        viewMode,
       );
       setCurrentPage(1);
     }
@@ -182,7 +184,7 @@ const PricingRequestsPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        viewMode
+        viewMode,
       );
       if (selectedPricingRequest.id === pricingRequest?.id) {
         await getPricingRequest(selectedPricingRequest.id);
@@ -217,7 +219,7 @@ const PricingRequestsPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        viewMode
+        viewMode,
       );
       await getPricingRequest(selectedPricingRequest.id);
     }
@@ -242,7 +244,7 @@ const PricingRequestsPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        viewMode
+        viewMode,
       );
       await getPricingRequest(selectedPricingRequest.id);
     }
@@ -267,7 +269,21 @@ const PricingRequestsPage = () => {
         pageNumber: 1,
         pageSize,
       },
-      viewMode
+      viewMode,
+    );
+  };
+
+  const handleClearFilters = () => {
+    setStatus(undefined);
+    setPriority(undefined);
+    setAssignedToId(undefined);
+    setCurrentPage(1);
+    fetchPricingRequests(
+      {
+        pageNumber: 1,
+        pageSize,
+      },
+      viewMode,
     );
   };
 
@@ -282,7 +298,7 @@ const PricingRequestsPage = () => {
         pageNumber: page,
         pageSize: newPageSize,
       },
-      viewMode
+      viewMode,
     );
   };
 
@@ -297,7 +313,7 @@ const PricingRequestsPage = () => {
         pageNumber: 1,
         pageSize,
       },
-      mode
+      mode,
     );
   };
 
@@ -307,11 +323,11 @@ const PricingRequestsPage = () => {
         <PricingRequestsHeader onCreateClick={handleCreateClick} />
 
         {/* View mode buttons */}
-        <div style={{ marginBottom: 16 }}>
+        <div className={styles.viewModeButtons}>
           <Button
             type={viewMode === "all" ? "primary" : "default"}
             onClick={() => handleViewModeChange("all")}
-            style={{ marginRight: 8 }}
+            className={styles.buttonSpacing}
           >
             All Requests
           </Button>
@@ -319,7 +335,7 @@ const PricingRequestsPage = () => {
             <Button
               type={viewMode === "pending" ? "primary" : "default"}
               onClick={() => handleViewModeChange("pending")}
-              style={{ marginRight: 8 }}
+              className={styles.buttonSpacing}
             >
               Pending
             </Button>
@@ -333,7 +349,10 @@ const PricingRequestsPage = () => {
         </div>
 
         {viewMode === "all" && (
-          <PricingRequestsFilters onApplyFilters={handleApplyFilters} />
+          <PricingRequestsFilters
+            onApplyFilters={handleApplyFilters}
+            onClear={handleClearFilters}
+          />
         )}
 
         <PricingRequestsTable
@@ -348,7 +367,10 @@ const PricingRequestsPage = () => {
         {selectedPricingRequest && (
           <div className={styles.selectedRow}>
             <div className={styles.detailsPanel}>
-              <PricingRequestDetails pricingRequest={pricingRequest || null} loading={isLoadingDetails} />
+              <PricingRequestDetails
+                pricingRequest={pricingRequest || null}
+                loading={isLoadingDetails}
+              />
             </div>
             <PricingRequestActions
               pricingRequest={selectedPricingRequest}

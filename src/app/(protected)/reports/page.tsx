@@ -7,8 +7,7 @@ const { Title } = Typography;
 
 const ReportsPage = () => {
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-
+    <Space orientation="vertical" size="middle">
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
           <Card title="Opportunities Report">
@@ -17,12 +16,12 @@ const ReportsPage = () => {
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <Form.Item label="Start Date">
-                    <DatePicker showTime style={{ width: "100%" }} />
+                    <DatePicker showTime />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="End Date">
-                    <DatePicker showTime style={{ width: "100%" }} />
+                    <DatePicker showTime />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -38,7 +37,7 @@ const ReportsPage = () => {
               </Row>
             </Form>
 
-            <div style={{ height: 260 }} />
+            <div />
           </Card>
         </Col>
 
@@ -49,12 +48,12 @@ const ReportsPage = () => {
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <Form.Item label="Start Date">
-                    <DatePicker showTime style={{ width: "100%" }} />
+                    <DatePicker showTime />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item label="End Date">
-                    <DatePicker showTime style={{ width: "100%" }} />
+                    <DatePicker showTime />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -72,7 +71,7 @@ const ReportsPage = () => {
               </Row>
             </Form>
 
-            <div style={{ height: 260 }} />
+            <div />
           </Card>
         </Col>
       </Row>
@@ -80,4 +79,4 @@ const ReportsPage = () => {
   );
 };
 
-  export default withAuthGuard(ReportsPage, { allowedRoles: ["Admin", "SalesManager"] });
+export default withAuthGuard(ReportsPage, { allowedRoles: ["Admin", "SalesManager"] });

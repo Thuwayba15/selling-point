@@ -1,9 +1,5 @@
 import { createAction } from "redux-actions";
-import {
-  IPricingRequest,
-  IPricingRequestsStateContext,
-  IPaginationInfo,
-} from "./context";
+import { IPricingRequest, IPricingRequestsStateContext, IPaginationInfo } from "./context";
 
 export enum PricingRequestsActionEnums {
   getPricingRequestsPending = "GET_PRICING_REQUESTS_PENDING",
@@ -45,7 +41,7 @@ export enum PricingRequestsActionEnums {
 // Get Pricing Requests
 export const getPricingRequestsPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.getPricingRequestsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getPricingRequestsSuccess = createAction<
@@ -68,26 +64,29 @@ export const getPricingRequestsError = createAction<IPricingRequestsStateContext
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Pending Pricing Requests
 export const getPendingPricingRequestsPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.getPendingPricingRequestsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getPendingPricingRequestsSuccess = createAction<
   IPricingRequestsStateContext,
   { pricingRequests: IPricingRequest[]; pagination?: IPaginationInfo }
->(PricingRequestsActionEnums.getPendingPricingRequestsSuccess, ({ pricingRequests, pagination }) => ({
-  isPending: false,
-  isLoadingDetails: false,
-  isSuccess: true,
-  isError: false,
-  pricingRequests,
-  pagination,
-}));
+>(
+  PricingRequestsActionEnums.getPendingPricingRequestsSuccess,
+  ({ pricingRequests, pagination }) => ({
+    isPending: false,
+    isLoadingDetails: false,
+    isSuccess: true,
+    isError: false,
+    pricingRequests,
+    pagination,
+  }),
+);
 
 export const getPendingPricingRequestsError = createAction<IPricingRequestsStateContext, string>(
   PricingRequestsActionEnums.getPendingPricingRequestsError,
@@ -97,13 +96,13 @@ export const getPendingPricingRequestsError = createAction<IPricingRequestsState
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get My Pricing Requests
 export const getMyPricingRequestsPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.getMyPricingRequestsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getMyPricingRequestsSuccess = createAction<
@@ -126,13 +125,13 @@ export const getMyPricingRequestsError = createAction<IPricingRequestsStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Single Pricing Request
 export const getPricingRequestPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.getPricingRequestPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getPricingRequestSuccess = createAction<IPricingRequestsStateContext, IPricingRequest>(
@@ -143,7 +142,7 @@ export const getPricingRequestSuccess = createAction<IPricingRequestsStateContex
     isSuccess: true,
     isError: false,
     pricingRequest,
-  })
+  }),
 );
 
 export const getPricingRequestError = createAction<IPricingRequestsStateContext, string>(
@@ -154,25 +153,25 @@ export const getPricingRequestError = createAction<IPricingRequestsStateContext,
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Create Pricing Request
 export const createPricingRequestPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.createPricingRequestPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
-export const createPricingRequestSuccess = createAction<IPricingRequestsStateContext, IPricingRequest>(
-  PricingRequestsActionEnums.createPricingRequestSuccess,
-  (pricingRequest: IPricingRequest) => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: true,
-    isError: false,
-    pricingRequest,
-  })
-);
+export const createPricingRequestSuccess = createAction<
+  IPricingRequestsStateContext,
+  IPricingRequest
+>(PricingRequestsActionEnums.createPricingRequestSuccess, (pricingRequest: IPricingRequest) => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: true,
+  isError: false,
+  pricingRequest,
+}));
 
 export const createPricingRequestError = createAction<IPricingRequestsStateContext, string>(
   PricingRequestsActionEnums.createPricingRequestError,
@@ -182,25 +181,25 @@ export const createPricingRequestError = createAction<IPricingRequestsStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Update Pricing Request
 export const updatePricingRequestPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.updatePricingRequestPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
-export const updatePricingRequestSuccess = createAction<IPricingRequestsStateContext, IPricingRequest>(
-  PricingRequestsActionEnums.updatePricingRequestSuccess,
-  (pricingRequest: IPricingRequest) => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: true,
-    isError: false,
-    pricingRequest,
-  })
-);
+export const updatePricingRequestSuccess = createAction<
+  IPricingRequestsStateContext,
+  IPricingRequest
+>(PricingRequestsActionEnums.updatePricingRequestSuccess, (pricingRequest: IPricingRequest) => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: true,
+  isError: false,
+  pricingRequest,
+}));
 
 export const updatePricingRequestError = createAction<IPricingRequestsStateContext, string>(
   PricingRequestsActionEnums.updatePricingRequestError,
@@ -210,25 +209,25 @@ export const updatePricingRequestError = createAction<IPricingRequestsStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Assign Pricing Request
 export const assignPricingRequestPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.assignPricingRequestPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
-export const assignPricingRequestSuccess = createAction<IPricingRequestsStateContext, IPricingRequest>(
-  PricingRequestsActionEnums.assignPricingRequestSuccess,
-  (pricingRequest: IPricingRequest) => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: true,
-    isError: false,
-    pricingRequest,
-  })
-);
+export const assignPricingRequestSuccess = createAction<
+  IPricingRequestsStateContext,
+  IPricingRequest
+>(PricingRequestsActionEnums.assignPricingRequestSuccess, (pricingRequest: IPricingRequest) => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: true,
+  isError: false,
+  pricingRequest,
+}));
 
 export const assignPricingRequestError = createAction<IPricingRequestsStateContext, string>(
   PricingRequestsActionEnums.assignPricingRequestError,
@@ -238,25 +237,25 @@ export const assignPricingRequestError = createAction<IPricingRequestsStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Complete Pricing Request
 export const completePricingRequestPending = createAction<IPricingRequestsStateContext>(
   PricingRequestsActionEnums.completePricingRequestPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
-export const completePricingRequestSuccess = createAction<IPricingRequestsStateContext, IPricingRequest>(
-  PricingRequestsActionEnums.completePricingRequestSuccess,
-  (pricingRequest: IPricingRequest) => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: true,
-    isError: false,
-    pricingRequest,
-  })
-);
+export const completePricingRequestSuccess = createAction<
+  IPricingRequestsStateContext,
+  IPricingRequest
+>(PricingRequestsActionEnums.completePricingRequestSuccess, (pricingRequest: IPricingRequest) => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: true,
+  isError: false,
+  pricingRequest,
+}));
 
 export const completePricingRequestError = createAction<IPricingRequestsStateContext, string>(
   PricingRequestsActionEnums.completePricingRequestError,
@@ -266,7 +265,7 @@ export const completePricingRequestError = createAction<IPricingRequestsStateCon
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Clear Error
@@ -278,7 +277,7 @@ export const clearError = createAction<IPricingRequestsStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 // Clear Pricing Request
@@ -290,5 +289,5 @@ export const clearPricingRequest = createAction<IPricingRequestsStateContext>(
     isSuccess: false,
     isError: false,
     pricingRequest: undefined,
-  })
+  }),
 );

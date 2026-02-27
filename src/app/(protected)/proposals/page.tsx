@@ -5,14 +5,8 @@ import dayjs from "dayjs";
 import { App, Button, Form, Modal } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useProposalsState, useProposalsActions } from "@/providers/proposals";
-import {
-  useClientsState,
-  useClientsActions,
-} from "@/providers/clients";
-import {
-  useOpportunitiesState,
-  useOpportunitiesActions,
-} from "@/providers/opportunities";
+import { useClientsState, useClientsActions } from "@/providers/clients";
+import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import {
   ProposalsHeader,
   ProposalsFilters,
@@ -30,15 +24,8 @@ const ProposalsPage = () => {
   const { message } = App.useApp();
   const { can } = useRbac();
 
-  const {
-    isPending,
-    isLoadingDetails,
-    isError,
-    errorMessage,
-    proposals,
-    proposal,
-    pagination,
-  } = useProposalsState();
+  const { isPending, isLoadingDetails, isError, errorMessage, proposals, proposal, pagination } =
+    useProposalsState();
 
   const {
     getProposals,
@@ -120,15 +107,13 @@ const ProposalsPage = () => {
     title: opp.title || "",
   }));
 
-  const fetchProposals = async (
-    params: {
-      status?: number;
-      clientId?: string;
-      opportunityId?: string;
-      pageNumber: number;
-      pageSize: number;
-    }
-  ) => {
+  const fetchProposals = async (params: {
+    status?: number;
+    clientId?: string;
+    opportunityId?: string;
+    pageNumber: number;
+    pageSize: number;
+  }) => {
     await getProposals(params);
   };
 
@@ -139,7 +124,7 @@ const ProposalsPage = () => {
 
   const handleCreateSubmit = async (
     values: Partial<IProposal>,
-    lineItems?: IProposalLineItem[]
+    lineItems?: IProposalLineItem[],
   ) => {
     const success = await createProposal(values);
     if (success) {
@@ -147,7 +132,7 @@ const ProposalsPage = () => {
       setIsCreateModalOpen(false);
       createForm.resetFields();
       setCurrentPage(1);
-      
+
       // Refresh proposals list
       await fetchProposals({
         status,
@@ -174,10 +159,7 @@ const ProposalsPage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = async (
-    values: Partial<IProposal>,
-    lineItems?: IProposalLineItem[]
-  ) => {
+  const handleEditSubmit = async (values: Partial<IProposal>, lineItems?: IProposalLineItem[]) => {
     if (!selectedProposal) return;
 
     const success = await updateProposal(selectedProposal.id, values);
@@ -185,21 +167,21 @@ const ProposalsPage = () => {
       message.success("Proposal updated successfully");
       setIsEditModalOpen(false);
       editForm.resetFields();
-      
+
       // Sync line items if provided
       if (lineItems && selectedProposal.id) {
         const existingLineItems = proposal?.lineItems || [];
-        
+
         // Identify new items (no id) and add them
-        const newItems = lineItems.filter(item => !item.id || item.id.startsWith('temp-'));
+        const newItems = lineItems.filter((item) => !item.id || item.id.startsWith("temp-"));
         for (const item of newItems) {
           const { id, ...lineItemData } = item;
           await addLineItem(selectedProposal.id, lineItemData);
         }
-        
+
         // Identify removed items and delete them
         const removedItems = existingLineItems.filter(
-          existingItem => !lineItems.find(item => item.id === existingItem.id)
+          (existingItem) => !lineItems.find((item) => item.id === existingItem.id),
         );
         for (const item of removedItems) {
           if (item.id) {
@@ -207,7 +189,7 @@ const ProposalsPage = () => {
           }
         }
       }
-      
+
       await fetchProposals({
         status,
         clientId,
@@ -314,6 +296,17 @@ const ProposalsPage = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setStatus(undefined);
+    setClientId(undefined);
+    setOpportunityId(undefined);
+    setCurrentPage(1);
+    fetchProposals({
+      pageNumber: 1,
+      pageSize,
+    });
+  };
+
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);
@@ -331,7 +324,7 @@ const ProposalsPage = () => {
       <div className={styles.mainContent}>
         <ProposalsHeader onCreateClick={handleCreateClick} />
 
-        <ProposalsFilters onApplyFilters={handleApplyFilters} />
+        <ProposalsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} />
 
         <ProposalsTable
           proposals={proposals || []}

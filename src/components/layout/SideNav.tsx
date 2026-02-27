@@ -31,26 +31,42 @@ export const SideNav = () => {
   const managerRole = isManager(roles);
 
   const baseItems = [
-    { key: ROUTES.dashboard, icon: <HomeOutlined />, label: <Link href={ROUTES.dashboard}>Dashboard</Link> },
-    { key: ROUTES.clients, icon: <TeamOutlined />, label: <Link href={ROUTES.clients}>Clients</Link> },
-    { key: ROUTES.contacts, icon: <TeamOutlined />, label: <Link href={ROUTES.contacts}>Contacts</Link> },
-    { key: ROUTES.opportunities, icon: <ProjectOutlined />, label: <Link href={ROUTES.opportunities}>Opportunities</Link> },
-    { key: ROUTES.pricingRequests, icon: <FileTextOutlined />, label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link> },
-    { key: ROUTES.proposals, icon: <FileTextOutlined />, label: <Link href={ROUTES.proposals}>Proposals</Link> },
-    { key: ROUTES.contracts, icon: <FileTextOutlined />, label: <Link href={ROUTES.contracts}>Contracts</Link> },
-    { key: ROUTES.activities, icon: <CheckSquareOutlined />, label: <Link href={ROUTES.activities}>Activities</Link> },
-    ...(managerRole
-      ? [{ key: ROUTES.reports, icon: <BarChartOutlined />, label: <Link href={ROUTES.reports}>Reports</Link> }]
-      : []),
+    {
+      key: ROUTES.dashboard,
+      icon: <HomeOutlined />,
+      label: <Link href={ROUTES.dashboard}>Dashboard</Link>,
+    },
+    {
+      key: ROUTES.clients,
+      icon: <TeamOutlined />,
+      label: <Link href={ROUTES.clients}>Clients</Link>,
+    },
+    {
+      key: ROUTES.contacts,
+      icon: <TeamOutlined />,
+      label: <Link href={ROUTES.contacts}>Contacts</Link>,
+    },
+    {
+      key: ROUTES.opportunities,
+      icon: <ProjectOutlined />,
+      label: <Link href={ROUTES.opportunities}>Opportunities</Link>,
+    },
+    {
+      key: ROUTES.pricingRequests,
+      icon: <FileTextOutlined />,
+      label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
+    },
+    {
+      key: ROUTES.proposals,
+      icon: <FileTextOutlined />,
+      label: <Link href={ROUTES.proposals}>Proposals</Link>,
+    },
+    {
+      key: ROUTES.contracts,
+      icon: <FileTextOutlined />,
+      label: <Link href={ROUTES.contracts}>Contracts</Link>,
+    },
   ];
-
-  const adminItems = adminRole
-    ? [
-        { key: ROUTES.admin, icon: <CrownOutlined />, label: <Link href={ROUTES.admin}>Admin</Link> },
-        { key: ROUTES.adminUsers, icon: <TeamOutlined />, label: <Link href={ROUTES.adminUsers}>Admin • Users</Link> },
-        { key: ROUTES.adminConfig, icon: <ToolOutlined />, label: <Link href={ROUTES.adminConfig}>Admin • Config</Link> },
-      ]
-    : [];
 
   return (
     <>
@@ -58,7 +74,7 @@ export const SideNav = () => {
         Selling Point
         <span className={styles.siderLogoDot} />
       </div>
-      <Menu theme="dark" mode="inline" selectedKeys={[pathname]} items={[...baseItems, ...adminItems]} />
+      <Menu theme="dark" mode="inline" selectedKeys={[pathname]} items={[...baseItems]} />
     </>
   );
 };

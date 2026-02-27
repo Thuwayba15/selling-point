@@ -4,6 +4,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IOpportunity } from "@/providers/opportunities/context";
+import { useStyles } from "./style";
 
 interface OpportunityFormProps {
   form: FormInstance;
@@ -45,16 +46,23 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   onCancel,
   clients = [],
 }) => {
+  const { styles } = useStyles();
   const handleFinish = (values: any) => {
     // Ensure all numeric fields are properly typed
     const opportunityData: Partial<IOpportunity> = {
       title: values.title,
       clientId: values.clientId,
-      estimatedValue: typeof values.estimatedValue === "string" ? parseFloat(values.estimatedValue) : values.estimatedValue,
+      estimatedValue:
+        typeof values.estimatedValue === "string"
+          ? parseFloat(values.estimatedValue)
+          : values.estimatedValue,
       currency: values.currency,
       stage: typeof values.stage === "string" ? parseInt(values.stage, 10) : values.stage,
       source: typeof values.source === "string" ? parseInt(values.source, 10) : values.source,
-      probability: typeof values.probability === "string" ? parseInt(values.probability, 10) : values.probability,
+      probability:
+        typeof values.probability === "string"
+          ? parseInt(values.probability, 10)
+          : values.probability,
       expectedCloseDate: values.expectedCloseDate,
       ...(values.description ? { description: values.description } : {}),
     };
@@ -110,7 +118,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           placeholder="Enter value"
           min={0}
           step={100}
-          style={{ width: "100%" }}
+          className={styles.fullWidthControl}
         />
       </Form.Item>
 
@@ -146,12 +154,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           { type: "number", min: 0, max: 100, message: "Probability must be between 0 and 100" },
         ]}
       >
-        <InputNumber
-          placeholder="0 - 100"
-          min={0}
-          max={100}
-          style={{ width: "100%" }}
-        />
+        <InputNumber placeholder="0 - 100" min={0} max={100} className={styles.fullWidthControl} />
       </Form.Item>
 
       <Form.Item
@@ -163,10 +166,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
       </Form.Item>
 
       <Form.Item label="Description" name="description">
-        <Input.TextArea
-          placeholder="Enter opportunity description"
-          rows={4}
-        />
+        <Input.TextArea placeholder="Enter opportunity description" rows={4} />
       </Form.Item>
 
       <Form.Item>
@@ -174,9 +174,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           <Button type="primary" htmlType="submit" loading={loading}>
             {initialValues?.id ? "Update Opportunity" : "Create Opportunity"}
           </Button>
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </Space>
       </Form.Item>
     </Form>

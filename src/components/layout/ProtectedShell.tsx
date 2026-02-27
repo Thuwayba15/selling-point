@@ -13,13 +13,7 @@ export const ProtectedShell = ({ children }: { children: ReactNode }) => {
   const { styles } = useStyles();
   return (
     <Layout className={styles.shell}>
-      <Sider 
-        width={260}
-        breakpoint="lg"
-        collapsedWidth="80"
-        className={styles.sider} 
-        theme="dark"
-      >
+      <Sider width={260} breakpoint="lg" collapsedWidth="80" className={styles.sider} theme="dark">
         <SideNav />
       </Sider>
 

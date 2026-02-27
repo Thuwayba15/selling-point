@@ -27,33 +27,21 @@ export const ContactDetails = ({ contact, loading }: ContactDetailsProps) => {
           <Descriptions.Item label="Full Name">
             {contact.firstName} {contact.lastName}
           </Descriptions.Item>
-          
+
           <Descriptions.Item label="Email">{contact.email}</Descriptions.Item>
-          
-          <Descriptions.Item label="Phone Number">
-            {contact.phoneNumber || "—"}
-          </Descriptions.Item>
-          
-          <Descriptions.Item label="Position">
-            {contact.position || "—"}
+
+          <Descriptions.Item label="Phone Number">{contact.phoneNumber || "—"}</Descriptions.Item>
+
+          <Descriptions.Item label="Position">{contact.position || "—"}</Descriptions.Item>
+
+          <Descriptions.Item label="Client">{contact.clientName || "—"}</Descriptions.Item>
+
+          <Descriptions.Item label="Primary Contact">
+            {contact.isPrimaryContact ? <Tag color="gold">Yes</Tag> : <Tag>No</Tag>}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Client">
-            {contact.clientName || "—"}
-          </Descriptions.Item>
-          
-          <Descriptions.Item label="Primary Contact">
-            {contact.isPrimaryContact ? (
-              <Tag color="gold">Yes</Tag>
-            ) : (
-              <Tag>No</Tag>
-            )}
-          </Descriptions.Item>
-          
           <Descriptions.Item label="Created">
-            {contact.createdAt
-              ? new Date(contact.createdAt).toLocaleDateString()
-              : "—"}
+            {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : "—"}
           </Descriptions.Item>
         </Descriptions>
       )}

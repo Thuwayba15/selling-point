@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Table } from "antd";
+import { Card, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IOpportunityPipeline, IOpportunityPipelineStage } from "@/providers/opportunities/context";
 import { useStyles } from "./style";
@@ -19,6 +19,15 @@ const STAGE_LABELS: Record<number, string> = {
   6: "Closed Lost",
 };
 
+const STAGE_COLORS: Record<number, string> = {
+  1: "default", // Lead - gray
+  2: "blue", // Qualified - blue
+  3: "cyan", // Proposal - cyan
+  4: "gold", // Negotiation - gold
+  5: "success", // Closed Won - green
+  6: "error", // Closed Lost - red
+};
+
 export const OpportunitiesPipeline = ({ pipeline, loading }: OpportunitiesPipelineProps) => {
   const { styles } = useStyles();
   const stages = pipeline?.stages || [];
@@ -28,7 +37,9 @@ export const OpportunitiesPipeline = ({ pipeline, loading }: OpportunitiesPipeli
       title: "Stage",
       dataIndex: "stage",
       key: "stage",
-      render: (stage) => STAGE_LABELS[stage] || "—",
+      render: (stage) => (
+        <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
+      ),
     },
     {
       title: "Count",
@@ -57,6 +68,7 @@ export const OpportunitiesPipeline = ({ pipeline, loading }: OpportunitiesPipeli
         dataSource={stages}
         rowKey={(record) => String(record.stage ?? "unknown")}
         pagination={false}
+        scroll={{ x: "max-content" }}
         size="small"
       />
     </Card>

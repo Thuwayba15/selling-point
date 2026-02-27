@@ -2,19 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { Card, Form, Input, Button, Select } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ContactsFiltersProps {
-  onApplyFilters: (filters: {
-    searchTerm?: string;
-    clientId?: string;
-  }) => void;
+  onApplyFilters: (filters: { searchTerm?: string; clientId?: string }) => void;
+  onClear: () => void;
   clients?: Array<{ id: string; name: string }>;
 }
 
 export const ContactsFilters = ({
   onApplyFilters,
+  onClear,
   clients = [],
 }: ContactsFiltersProps) => {
   const [form] = Form.useForm();
@@ -28,6 +27,8 @@ export const ContactsFilters = ({
       clientId,
     });
   };
+
+  const hasActiveFilters = searchTerm || clientId;
 
   return (
     <Card className={styles.filtersCard} title="Filters">
@@ -61,9 +62,16 @@ export const ContactsFilters = ({
           </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
-            <Button type="primary" onClick={handleApply} block>
-              Apply Filters
-            </Button>
+            <div className={styles.filtersActions}>
+              <Button type="primary" onClick={handleApply}>
+                Apply Filters
+              </Button>
+              {hasActiveFilters && (
+                <Button icon={<ClearOutlined />} onClick={onClear} danger>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
           </Form.Item>
         </div>
       </Form>

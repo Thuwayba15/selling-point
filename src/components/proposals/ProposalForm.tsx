@@ -2,22 +2,12 @@
 
 import React from "react";
 import dayjs from "dayjs";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Button,
-  Space,
-  Table,
-  Modal,
-  DatePicker,
-} from "antd";
+import { Form, Input, InputNumber, Select, Button, Space, Table, DatePicker } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { FormInstance } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { Dayjs } from "dayjs";
 import { IProposal, IProposalLineItem } from "@/providers/proposals/context";
+import { useStyles } from "./style";
 
 interface ProposalFormProps {
   form: FormInstance;
@@ -51,8 +41,9 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
   opportunities = [],
   clients = [],
 }) => {
+  const { styles } = useStyles();
   const [lineItems, setLineItems] = React.useState<IProposalLineItem[]>(
-    initialValues?.lineItems || []
+    initialValues?.lineItems || [],
   );
   const [isAddingLineItem, setIsAddingLineItem] = React.useState(false);
   const [lineItemForm] = Form.useForm();
@@ -66,8 +57,11 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       unitPrice: values.unitPrice,
       discount: values.discount || 0,
       taxRate: values.taxRate || 0,
-      total: (values.quantity * values.unitPrice * (1 - (values.discount || 0) / 100)) *
-             (1 + (values.taxRate || 0) / 100),
+      total:
+        values.quantity *
+        values.unitPrice *
+        (1 - (values.discount || 0) / 100) *
+        (1 + (values.taxRate || 0) / 100),
     };
 
     setLineItems([...lineItems, newLineItem]);
@@ -90,7 +84,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       validUntil: values.validUntil ? values.validUntil.toISOString() : undefined,
       ...(values.notes ? { notes: values.notes } : {}),
     };
-    
+
     // Pass both proposal data and line items separately
     onSubmit(proposalData, lineItems);
   };
@@ -208,38 +202,23 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
-          label="Description"
-          name="description"
-        >
+        <Form.Item label="Description" name="description">
           <Input.TextArea rows={3} placeholder="Proposal description" />
         </Form.Item>
 
-        <Form.Item
-          label="Valid Until"
-          name="validUntil"
-        >
-          <DatePicker style={{ width: "100%" }} />
+        <Form.Item label="Valid Until" name="validUntil">
+          <DatePicker className={styles.fullWidthControl} />
         </Form.Item>
 
-        <Form.Item
-          label="Currency"
-          name="currency"
-        >
+        <Form.Item label="Currency" name="currency">
           <Select placeholder="Select currency" options={CURRENCY_OPTIONS} />
         </Form.Item>
 
-        <Form.Item
-          label="Status"
-          name="status"
-        >
+        <Form.Item label="Status" name="status">
           <Select placeholder="Select status" options={STATUS_OPTIONS} disabled />
         </Form.Item>
 
-        <Form.Item
-          label="Notes"
-          name="notes"
-        >
+        <Form.Item label="Notes" name="notes">
           <Input.TextArea rows={2} placeholder="Additional notes" />
         </Form.Item>
 
@@ -255,13 +234,14 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
         </Form.Item>
       </Form>
 
-      <div style={{ marginTop: "24px" }}>
+      <div className={styles.lineItemsSection}>
         <h3>Line Items</h3>
         <Table
           columns={lineItemColumns}
           dataSource={lineItems}
           rowKey="id"
           pagination={false}
+          scroll={{ x: "max-content" }}
           size="small"
         />
 
@@ -270,12 +250,12 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
             type="dashed"
             icon={<PlusOutlined />}
             onClick={() => setIsAddingLineItem(true)}
-            style={{ width: "100%", marginTop: "16px" }}
+            className={styles.lineItemsAddButton}
           >
             Add Line Item
           </Button>
         ) : (
-          <div style={{ marginTop: "16px", padding: "16px", border: "1px dashed #d9d9d9" }}>
+          <div className={styles.lineItemEditor}>
             <Form form={lineItemForm} layout="vertical" onFinish={handleAddLineItem}>
               <Form.Item
                 label="Product/Service Name"
@@ -285,10 +265,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
                 <Input placeholder="e.g., Implementation, Support, Training" />
               </Form.Item>
 
-              <Form.Item
-                label="Description"
-                name="description"
-              >
+              <Form.Item label="Description" name="description">
                 <Input.TextArea rows={2} placeholder="Additional description" />
               </Form.Item>
 

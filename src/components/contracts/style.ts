@@ -1,0 +1,169 @@
+import { createStyles } from "antd-style";
+
+export const useStyles = createStyles(({ token, css }) => ({
+  pageContainer: css`
+    padding: ${token.paddingSM}px;
+    background-color: ${token.colorBgLayout};
+    min-height: 100vh;
+
+    @media (max-width: 768px) {
+      padding: ${token.paddingXS}px;
+    }
+  `,
+
+  mainContent: css`
+    max-width: 1400px;
+    margin: 0 auto;
+  `,
+
+  header: css`
+    margin-bottom: ${token.marginLG}px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
+
+  headerText: css`
+    flex: 1;
+  `,
+
+  title: css`
+    margin: 0;
+    font-size: ${token.fontSizeHeading2}px;
+    font-weight: ${token.fontWeightStrong};
+    color: ${token.colorText};
+    font-style: italic;
+  `,
+
+  subtitle: css`
+    margin: ${token.marginXS}px 0 0;
+    font-size: ${token.fontSize}px;
+    color: ${token.colorTextSecondary};
+  `,
+
+  filtersCard: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  filtersRow: css`
+    display: flex;
+    gap: ${token.margin}px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: ${token.marginSM}px;
+    }
+  `,
+
+  filterItem: css`
+    flex: 1;
+    min-width: 200px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      min-width: 100%;
+    }
+  `,
+
+  tableCard: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  tableRow: css`
+    cursor: pointer;
+  `,
+
+  selectedRow: css`
+    display: flex;
+    gap: ${token.marginLG}px;
+    margin-bottom: ${token.marginLG}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  `,
+
+  detailsPanel: css`
+    flex: 2;
+  `,
+
+  detailsCard: css`
+    height: 100%;
+  `,
+
+  actionsCard: css`
+    flex: 1;
+    min-width: 300px;
+
+    @media (max-width: 768px) {
+      min-width: 100%;
+    }
+  `,
+
+  actionsStack: css`
+    width: 100%;
+  `,
+
+  actionButton: css`
+    width: 100%;
+  `,
+
+  buttonGroup: css`
+    display: flex;
+    gap: ${token.marginSM}px;
+    flex-wrap: wrap;
+  `,
+
+  fullWidthControl: css`
+    width: 100%;
+  `,
+
+  filtersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: flex-end;
+  `,
+
+  formActions: css`
+    width: 100%;
+    margin-top: ${token.marginLG}px;
+  `,
+
+  loadingState: css`
+    text-align: center;
+    padding: ${token.paddingLG}px 0;
+  `,
+
+  sectionBlock: css`
+    margin-top: ${token.marginLG}px;
+  `,
+
+  actionNotice: css`
+    margin-top: ${token.marginXS}px;
+    font-size: ${token.fontSizeSM}px;
+    color: ${token.colorTextSecondary};
+  `,
+
+  emptyState: css`
+    color: ${token.colorTextSecondary};
+    text-align: center;
+    padding: ${token.paddingLG}px;
+  `,
+
+  renewalSection: css`
+    margin-top: ${token.marginLG}px;
+  `,
+
+  statusBadge: css`
+    display: inline-block;
+  `,
+}));

@@ -11,7 +11,12 @@ interface ClientActionsProps {
   onDelete: () => Promise<void>;
 }
 
-export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientName, onEdit, onDelete }) => {
+export const ClientActions: React.FC<ClientActionsProps> = ({
+  clientId,
+  clientName,
+  onEdit,
+  onDelete,
+}) => {
   const { styles } = useStyles();
   const { can } = useRbac();
   const { modal, message } = App.useApp();
@@ -44,14 +49,9 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
 
   return (
     <Card title="Actions" className={styles.actionsCard}>
-      <Space orientation="vertical" style={{ width: "100%" }}>
+      <Space orientation="vertical" className={styles.actionsStack}>
         {canEdit && (
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            block
-            onClick={onEdit}
-          >
+          <Button type="primary" icon={<EditOutlined />} block onClick={onEdit}>
             Edit Client
           </Button>
         )}
@@ -67,9 +67,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({ clientId, clientNa
           </Button>
         )}
         {!canEdit && !canDelete && (
-          <div style={{ color: "#999", textAlign: "center" }}>
-            No actions available for your role
-          </div>
+          <div className={styles.noActionsMessage}>No actions available for your role</div>
         )}
       </Space>
     </Card>

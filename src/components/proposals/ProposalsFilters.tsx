@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { Card, Form, Input, Button, Select } from "antd";
+import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ProposalsFiltersProps {
-  onApplyFilters: (filters: {
-    status?: number;
-    clientId?: string;
-    opportunityId?: string;
-  }) => void;
+  onApplyFilters: (filters: { status?: number; clientId?: string; opportunityId?: string }) => void;
+  onClear: () => void;
 }
 
 const STATUS_OPTIONS = [
@@ -19,7 +17,7 @@ const STATUS_OPTIONS = [
   { label: "Approved", value: 4 },
 ];
 
-export const ProposalsFilters = ({ onApplyFilters }: ProposalsFiltersProps) => {
+export const ProposalsFilters = ({ onApplyFilters, onClear }: ProposalsFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const [status, setStatus] = useState<number | undefined>(undefined);
@@ -33,6 +31,8 @@ export const ProposalsFilters = ({ onApplyFilters }: ProposalsFiltersProps) => {
       opportunityId: opportunityId || undefined,
     });
   };
+
+  const hasActiveFilters = status !== undefined || clientId || opportunityId;
 
   return (
     <Card className={styles.filtersCard} title="Filters">
@@ -67,9 +67,16 @@ export const ProposalsFilters = ({ onApplyFilters }: ProposalsFiltersProps) => {
           </Form.Item>
 
           <Form.Item label=" " className={styles.filterItem}>
-            <Button type="primary" onClick={handleApply} block>
-              Apply Filters
-            </Button>
+            <div className={styles.filtersActions}>
+              <Button type="primary" onClick={handleApply}>
+                Apply Filters
+              </Button>
+              {hasActiveFilters && (
+                <Button icon={<ClearOutlined />} onClick={onClear} danger>
+                  Clear Filters
+                </Button>
+              )}
+            </div>
           </Form.Item>
         </div>
       </Form>

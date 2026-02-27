@@ -18,8 +18,8 @@ export const ClientsHeader: React.FC<ClientsHeaderProps> = ({ onCreateClick }) =
   return (
     <div className={styles.header}>
       <div>
-        <h1 className={styles.title}>Clients</h1>
-        <p className={styles.subtitle}>Manage your clients and track their engagement</p>
+        <h1 className={styles.title}>Manage your clients and track their engagement</h1>
+        <p className={styles.subtitle}></p>
       </div>
       <Space>
         {canCreate && (

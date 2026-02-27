@@ -54,7 +54,7 @@ export enum OpportunitiesActionEnums {
 
 export const getOpportunitiesPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.getOpportunitiesPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getOpportunitiesSuccess = createAction<
@@ -77,12 +77,12 @@ export const getOpportunitiesError = createAction<IOpportunitiesStateContext, st
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const getMyOpportunitiesPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.getMyOpportunitiesPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getMyOpportunitiesSuccess = createAction<
@@ -105,12 +105,12 @@ export const getMyOpportunitiesError = createAction<IOpportunitiesStateContext, 
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const getOpportunityPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.getOpportunityPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getOpportunitySuccess = createAction<IOpportunitiesStateContext, IOpportunity>(
@@ -121,7 +121,7 @@ export const getOpportunitySuccess = createAction<IOpportunitiesStateContext, IO
     isSuccess: true,
     isError: false,
     opportunity,
-  })
+  }),
 );
 
 export const getOpportunityError = createAction<IOpportunitiesStateContext, string>(
@@ -132,12 +132,12 @@ export const getOpportunityError = createAction<IOpportunitiesStateContext, stri
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const getOpportunityStageHistoryPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.getOpportunityStageHistoryPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getOpportunityStageHistorySuccess = createAction<
@@ -159,12 +159,12 @@ export const getOpportunityStageHistoryError = createAction<IOpportunitiesStateC
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const getOpportunityPipelinePending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.getOpportunityPipelinePending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getOpportunityPipelineSuccess = createAction<
@@ -186,12 +186,12 @@ export const getOpportunityPipelineError = createAction<IOpportunitiesStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const createOpportunityPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.createOpportunityPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const createOpportunitySuccess = createAction<IOpportunitiesStateContext, IOpportunity>(
@@ -202,7 +202,7 @@ export const createOpportunitySuccess = createAction<IOpportunitiesStateContext,
     isSuccess: true,
     isError: false,
     opportunity,
-  })
+  }),
 );
 
 export const createOpportunityError = createAction<IOpportunitiesStateContext, string>(
@@ -213,12 +213,12 @@ export const createOpportunityError = createAction<IOpportunitiesStateContext, s
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const updateOpportunityPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.updateOpportunityPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateOpportunitySuccess = createAction<IOpportunitiesStateContext, IOpportunity>(
@@ -229,7 +229,7 @@ export const updateOpportunitySuccess = createAction<IOpportunitiesStateContext,
     isSuccess: true,
     isError: false,
     opportunity,
-  })
+  }),
 );
 
 export const updateOpportunityError = createAction<IOpportunitiesStateContext, string>(
@@ -240,12 +240,12 @@ export const updateOpportunityError = createAction<IOpportunitiesStateContext, s
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const updateOpportunityStagePending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.updateOpportunityStagePending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateOpportunityStageSuccess = createAction<IOpportunitiesStateContext, IOpportunity>(
@@ -256,7 +256,7 @@ export const updateOpportunityStageSuccess = createAction<IOpportunitiesStateCon
     isSuccess: true,
     isError: false,
     opportunity,
-  })
+  }),
 );
 
 export const updateOpportunityStageError = createAction<IOpportunitiesStateContext, string>(
@@ -267,12 +267,12 @@ export const updateOpportunityStageError = createAction<IOpportunitiesStateConte
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const assignOpportunityPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.assignOpportunityPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const assignOpportunitySuccess = createAction<IOpportunitiesStateContext, IOpportunity>(
@@ -283,7 +283,7 @@ export const assignOpportunitySuccess = createAction<IOpportunitiesStateContext,
     isSuccess: true,
     isError: false,
     opportunity,
-  })
+  }),
 );
 
 export const assignOpportunityError = createAction<IOpportunitiesStateContext, string>(
@@ -294,12 +294,12 @@ export const assignOpportunityError = createAction<IOpportunitiesStateContext, s
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const deleteOpportunityPending = createAction<IOpportunitiesStateContext>(
   OpportunitiesActionEnums.deleteOpportunityPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteOpportunitySuccess = createAction<IOpportunitiesStateContext, string>(
@@ -309,7 +309,7 @@ export const deleteOpportunitySuccess = createAction<IOpportunitiesStateContext,
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const deleteOpportunityError = createAction<IOpportunitiesStateContext, string>(
@@ -320,7 +320,7 @@ export const deleteOpportunityError = createAction<IOpportunitiesStateContext, s
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 export const clearError = createAction<IOpportunitiesStateContext>(
@@ -331,7 +331,7 @@ export const clearError = createAction<IOpportunitiesStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 export const clearOpportunity = createAction<IOpportunitiesStateContext>(
@@ -343,5 +343,5 @@ export const clearOpportunity = createAction<IOpportunitiesStateContext>(
     isError: false,
     opportunity: undefined,
     stageHistory: undefined,
-  })
+  }),
 );

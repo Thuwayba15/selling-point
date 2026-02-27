@@ -1,9 +1,5 @@
 import { createAction } from "redux-actions";
-import {
-  IContact,
-  IContactsStateContext,
-  IPaginationInfo,
-} from "./context";
+import { IContact, IContactsStateContext, IPaginationInfo } from "./context";
 
 // Enum defining the type of actions that can be dispatched
 export enum ContactsActionEnums {
@@ -52,7 +48,7 @@ export enum ContactsActionEnums {
 // ============================================================================
 export const getContactsPending = createAction<IContactsStateContext>(
   ContactsActionEnums.getContactsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getContactsSuccess = createAction<
@@ -75,7 +71,7 @@ export const getContactsError = createAction<IContactsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -83,7 +79,7 @@ export const getContactsError = createAction<IContactsStateContext, string>(
 // ============================================================================
 export const getContactPending = createAction<IContactsStateContext>(
   ContactsActionEnums.getContactPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getContactSuccess = createAction<IContactsStateContext, IContact>(
@@ -94,7 +90,7 @@ export const getContactSuccess = createAction<IContactsStateContext, IContact>(
     isSuccess: true,
     isError: false,
     contact,
-  })
+  }),
 );
 
 export const getContactError = createAction<IContactsStateContext, string>(
@@ -105,7 +101,7 @@ export const getContactError = createAction<IContactsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -113,7 +109,7 @@ export const getContactError = createAction<IContactsStateContext, string>(
 // ============================================================================
 export const getContactsByClientPending = createAction<IContactsStateContext>(
   ContactsActionEnums.getContactsByClientPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getContactsByClientSuccess = createAction<
@@ -135,7 +131,7 @@ export const getContactsByClientError = createAction<IContactsStateContext, stri
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -143,7 +139,7 @@ export const getContactsByClientError = createAction<IContactsStateContext, stri
 // ============================================================================
 export const createContactPending = createAction<IContactsStateContext>(
   ContactsActionEnums.createContactPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const createContactSuccess = createAction<IContactsStateContext, IContact>(
@@ -154,7 +150,7 @@ export const createContactSuccess = createAction<IContactsStateContext, IContact
     isSuccess: true,
     isError: false,
     contact,
-  })
+  }),
 );
 
 export const createContactError = createAction<IContactsStateContext, string>(
@@ -165,7 +161,7 @@ export const createContactError = createAction<IContactsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -173,7 +169,7 @@ export const createContactError = createAction<IContactsStateContext, string>(
 // ============================================================================
 export const updateContactPending = createAction<IContactsStateContext>(
   ContactsActionEnums.updateContactPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const updateContactSuccess = createAction<IContactsStateContext, IContact>(
@@ -184,7 +180,7 @@ export const updateContactSuccess = createAction<IContactsStateContext, IContact
     isSuccess: true,
     isError: false,
     contact,
-  })
+  }),
 );
 
 export const updateContactError = createAction<IContactsStateContext, string>(
@@ -195,7 +191,7 @@ export const updateContactError = createAction<IContactsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -203,7 +199,7 @@ export const updateContactError = createAction<IContactsStateContext, string>(
 // ============================================================================
 export const setPrimaryContactPending = createAction<IContactsStateContext>(
   ContactsActionEnums.setPrimaryContactPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const setPrimaryContactSuccess = createAction<IContactsStateContext, IContact>(
@@ -214,7 +210,7 @@ export const setPrimaryContactSuccess = createAction<IContactsStateContext, ICon
     isSuccess: true,
     isError: false,
     contact,
-  })
+  }),
 );
 
 export const setPrimaryContactError = createAction<IContactsStateContext, string>(
@@ -225,7 +221,7 @@ export const setPrimaryContactError = createAction<IContactsStateContext, string
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -233,7 +229,7 @@ export const setPrimaryContactError = createAction<IContactsStateContext, string
 // ============================================================================
 export const deleteContactPending = createAction<IContactsStateContext>(
   ContactsActionEnums.deleteContactPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteContactSuccess = createAction<IContactsStateContext>(
@@ -244,7 +240,7 @@ export const deleteContactSuccess = createAction<IContactsStateContext>(
     isSuccess: true,
     isError: false,
     contact: undefined,
-  })
+  }),
 );
 
 export const deleteContactError = createAction<IContactsStateContext, string>(
@@ -255,7 +251,7 @@ export const deleteContactError = createAction<IContactsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // ============================================================================
@@ -269,7 +265,7 @@ export const clearError = createAction<IContactsStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 export const clearContact = createAction<IContactsStateContext>(
@@ -280,5 +276,5 @@ export const clearContact = createAction<IContactsStateContext>(
     isSuccess: false,
     isError: false,
     contact: undefined,
-  })
+  }),
 );

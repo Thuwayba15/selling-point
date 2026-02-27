@@ -1,6 +1,6 @@
 import { createStyles, css } from "antd-style";
 import { colors } from "@/theme/colors";
-import '../../app/globals.css';
+import "../../app/globals.css";
 
 export const useStyles = createStyles({
   shell: css`
@@ -72,6 +72,7 @@ export const useStyles = createStyles({
   userIcon: css`
     font-size: 1.25rem;
     color: ${colors.shellText};
+    cursor: pointer;
   `,
   logoutIcon: css`
     font-size: 1.25rem;

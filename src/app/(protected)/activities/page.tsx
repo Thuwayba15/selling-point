@@ -16,7 +16,7 @@ const ActivitiesPage = () => {
 
   const tableCard = (title: string) => (
     <Card title={title}>
-      <Space style={{ marginBottom: 16 }}>
+      <Space>
         <Button type="primary">Create Activity</Button>
         <Button>Mark Complete</Button>
         <Button>View Participants</Button>
@@ -26,8 +26,7 @@ const ActivitiesPage = () => {
   );
 
   return (
-    <Space orientation="vertical" style={{ width: "100%" }} size="middle">
-
+    <Space orientation="vertical" size="middle">
       <Tabs
         items={[
           { key: "mine", label: "My Activities", children: tableCard("My Activities") },

@@ -103,7 +103,7 @@ const OpportunitiesPage = () => {
       pageNumber: number;
       pageSize: number;
     },
-    useMy = showMyOpportunities
+    useMy = showMyOpportunities,
   ) => {
     if (useMy) {
       await getMyOpportunities({
@@ -118,7 +118,7 @@ const OpportunitiesPage = () => {
   };
 
   const fetchPipeline = async (overrideOwnerId?: string, useMy = showMyOpportunities) => {
-    const pipelineOwnerId = useMy ? user?.id : overrideOwnerId ?? ownerId;
+    const pipelineOwnerId = useMy ? user?.id : (overrideOwnerId ?? ownerId);
     await getOpportunityPipeline({ ownerId: pipelineOwnerId });
   };
 
@@ -164,7 +164,7 @@ const OpportunitiesPage = () => {
           pageNumber: 1,
           pageSize,
         },
-        showMyOpportunities
+        showMyOpportunities,
       );
       await fetchPipeline(ownerId, showMyOpportunities);
       setCurrentPage(1);
@@ -199,7 +199,7 @@ const OpportunitiesPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        showMyOpportunities
+        showMyOpportunities,
       );
       if (selectedOpportunity.id === opportunity?.id) {
         await getOpportunity(selectedOpportunity.id);
@@ -225,7 +225,11 @@ const OpportunitiesPage = () => {
   const handleStageSubmit = async (values: { stage: number; reason?: string }) => {
     if (!selectedOpportunity) return;
 
-    const success = await updateOpportunityStage(selectedOpportunity.id, values.stage, values.reason);
+    const success = await updateOpportunityStage(
+      selectedOpportunity.id,
+      values.stage,
+      values.reason,
+    );
     if (success) {
       message.success("Stage updated successfully");
       setIsStageModalOpen(false);
@@ -239,7 +243,7 @@ const OpportunitiesPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        showMyOpportunities
+        showMyOpportunities,
       );
       await getOpportunity(selectedOpportunity.id);
       await getOpportunityStageHistory(selectedOpportunity.id);
@@ -275,7 +279,7 @@ const OpportunitiesPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        showMyOpportunities
+        showMyOpportunities,
       );
       await getOpportunity(selectedOpportunity.id);
       await fetchPipeline(ownerId, showMyOpportunities);
@@ -304,7 +308,7 @@ const OpportunitiesPage = () => {
           pageNumber: currentPage,
           pageSize,
         },
-        showMyOpportunities
+        showMyOpportunities,
       );
       await fetchPipeline(ownerId, showMyOpportunities);
     }
@@ -331,9 +335,25 @@ const OpportunitiesPage = () => {
         pageNumber: 1,
         pageSize,
       },
-      showMyOpportunities
+      showMyOpportunities,
     );
     fetchPipeline(filters.ownerId, showMyOpportunities);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm(undefined);
+    setClientId(undefined);
+    setStage(undefined);
+    setOwnerId(undefined);
+    setCurrentPage(1);
+    fetchOpportunities(
+      {
+        pageNumber: 1,
+        pageSize,
+      },
+      showMyOpportunities,
+    );
+    fetchPipeline(undefined, showMyOpportunities);
   };
 
   const handleShowMyOpportunitiesChange = (value: boolean) => {
@@ -349,7 +369,7 @@ const OpportunitiesPage = () => {
         pageNumber: 1,
         pageSize,
       },
-      value
+      value,
     );
     fetchPipeline(ownerId, value);
   };
@@ -366,7 +386,7 @@ const OpportunitiesPage = () => {
         pageNumber: page,
         pageSize: newPageSize,
       },
-      showMyOpportunities
+      showMyOpportunities,
     );
   };
 
@@ -377,6 +397,7 @@ const OpportunitiesPage = () => {
 
         <OpportunitiesFilters
           onApplyFilters={handleApplyFilters}
+          onClear={handleClearFilters}
           clients={clientsList}
           showMyOpportunities={showMyOpportunities}
           onShowMyOpportunitiesChange={handleShowMyOpportunitiesChange}
@@ -406,8 +427,17 @@ const OpportunitiesPage = () => {
           </div>
         )}
 
-        <div className={styles.insightsRow}>
+        {/* Pipeline Overview shows statistics by stage */}
+        {/* <div className={styles.insightsRow}>
           <OpportunitiesPipeline pipeline={pipeline} loading={isLoadingDetails} />
+          <OpportunityStageHistory
+            stageHistory={stageHistory}
+            loading={isLoadingDetails}
+            hasSelection={Boolean(selectedOpportunity)}
+          />
+        </div> */}
+
+        <div style={{ marginBottom: "24px" }}>
           <OpportunityStageHistory
             stageHistory={stageHistory}
             loading={isLoadingDetails}

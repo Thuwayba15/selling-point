@@ -4,11 +4,11 @@ import { colors } from "./colors";
 
 export const antdTheme: ThemeConfig = {
   token: {
-    colorPrimary: colors.primary, 
+    colorPrimary: colors.primary,
     colorInfo: colors.primary,
 
-    colorBgLayout: colors.bgLayout, 
-    colorBgContainer: colors.bgContainer, 
+    colorBgLayout: colors.bgLayout,
+    colorBgContainer: colors.bgContainer,
 
     colorText: colors.text,
     colorTextSecondary: colors.textSecondary,

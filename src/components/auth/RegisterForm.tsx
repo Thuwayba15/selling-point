@@ -95,10 +95,7 @@ const RegisterForm = () => {
         <AuthInput type="password" placeholder="••••••" />
       </Form.Item>
 
-      <Form.Item
-        label="Phone Number (Optional)"
-        name="phoneNumber"
-      >
+      <Form.Item label="Phone Number (Optional)" name="phoneNumber">
         <AuthInput placeholder="+1234567890" />
       </Form.Item>
 

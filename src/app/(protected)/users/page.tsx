@@ -11,6 +11,6 @@ const UsersPage = () => {
       <Title level={3}>Users</Title>
     </Card>
   );
-}
+};
 
 export default withAuthGuard(UsersPage);

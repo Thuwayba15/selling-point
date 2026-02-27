@@ -16,8 +16,7 @@ export const PricingRequestsHeader = ({ onCreateClick }: PricingRequestsHeaderPr
   return (
     <div className={styles.header}>
       <div className={styles.headerText}>
-        <h1 className={styles.title}>Pricing Requests</h1>
-        <p className={styles.subtitle}>Manage pricing requests and assignments</p>
+        <h1 className={styles.title}>Manage pricing requests and assignments</h1>
       </div>
       {can("create:pricing-request") && (
         <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick}>
