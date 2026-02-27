@@ -14,6 +14,7 @@ import {
 } from "@/components/contacts";
 import { useStyles } from "@/components/contacts/style";
 import { IContact } from "@/providers/contacts/context";
+import type { ContactFormValues } from "@/types/forms";
 import { getAxiosInstance } from "@/lib/api";
 
 const ContactsPage = () => {
@@ -95,8 +96,12 @@ const ContactsPage = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateSubmit = async (values: any) => {
-    const success = await createContact(values);
+  const handleCreateSubmit = async (values: ContactFormValues) => {
+    const contactData = {
+      ...values,
+      isPrimaryContact: values.isPrimaryContact ?? false,
+    };
+    const success = await createContact(contactData);
     if (success) {
       message.success("Contact created successfully");
       setIsCreateModalOpen(false);
@@ -122,10 +127,14 @@ const ContactsPage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = async (values: any) => {
+  const handleEditSubmit = async (values: ContactFormValues) => {
     if (!selectedContact) return;
 
-    const success = await updateContact(selectedContact.id, values);
+    const contactData = {
+      ...values,
+      isPrimaryContact: values.isPrimaryContact ?? false,
+    };
+    const success = await updateContact(selectedContact.id, contactData);
     if (success) {
       message.success("Contact updated successfully");
       setIsEditModalOpen(false);

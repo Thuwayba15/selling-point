@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
@@ -79,9 +80,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch contracts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch contracts");
         dispatch(getContractsError(message));
       }
     };
@@ -94,9 +94,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get(`/api/contracts/${id}`);
 
         dispatch(getContractSuccess(data));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch contract");
         dispatch(getContractError(message));
       }
     };
@@ -115,9 +114,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
             expiringContracts: Array.isArray(data) ? data : data.items || [],
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch expiring contracts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch expiring contracts");
         dispatch(getExpiringContractsError(message));
       }
     };
@@ -134,9 +132,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
             contracts: Array.isArray(data) ? data : data.items || [],
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch client contracts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch client contracts");
         dispatch(getClientContractsError(message));
       }
     };
@@ -150,9 +147,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(createContractSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create contract");
         dispatch(createContractError(message));
         return false;
       }
@@ -167,9 +163,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(updateContractSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update contract");
         dispatch(updateContractError(message));
         return false;
       }
@@ -184,9 +179,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(activateContractSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to activate contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to activate contract");
         dispatch(activateContractError(message));
         return false;
       }
@@ -201,9 +195,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(cancelContractSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to cancel contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to cancel contract");
         dispatch(cancelContractError(message));
         return false;
       }
@@ -218,9 +211,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(deleteContractSuccess());
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to delete contract";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to delete contract");
         dispatch(deleteContractError(message));
         return false;
       }
@@ -238,9 +230,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(createRenewalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create renewal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create renewal");
         dispatch(createRenewalError(message));
         return false;
       }
@@ -255,9 +246,8 @@ export const ContractsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(completeRenewalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to complete renewal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to complete renewal");
         dispatch(completeRenewalError(message));
         return false;
       }

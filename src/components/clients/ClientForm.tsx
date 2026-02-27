@@ -4,6 +4,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, Switch, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IClient } from "@/providers/clients/context";
+import type { ClientFormValues } from "@/types/forms";
 
 interface ClientFormProps {
   form: FormInstance;
@@ -55,7 +56,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const handleFinish = (values: any) => {
+  const handleFinish = (values: ClientFormValues) => {
     // Convert clientType to number if it's a string
     const clientData: Partial<IClient> = {
       ...values,

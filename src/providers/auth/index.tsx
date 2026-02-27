@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { storage } from "@/lib/storage";
 import { getAxiosInstance, TOKEN_STORAGE_KEY } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   AUTH_STORAGE_KEY,
@@ -87,11 +88,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(loginSuccess(user));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message ??
-          error?.message ??
-          "Login failed. Please check your credentials.";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Login failed. Please check your credentials.");
 
         dispatch(setError(message));
         return false;
@@ -122,11 +120,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(loginSuccess(user));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message ??
-          error?.message ??
-          "Registration failed. Please try again.";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Registration failed. Please try again.");
 
         dispatch(setError(message));
         return false;

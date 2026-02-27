@@ -25,6 +25,9 @@ export const useStyles = createStyles({
     gap: 8px;
     margin-bottom: 20px;
     border-bottom: 1px solid ${colors.bgLayout};
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
   `,
   siderLogoDot: css`
     display: inline-block;

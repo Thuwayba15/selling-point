@@ -115,7 +115,7 @@ const ContractsPage = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateSubmit = async (values: any) => {
+  const handleCreateSubmit = async (values: Partial<IContract>) => {
     // Automatically set ownerId to current user if not set
     const contractData = {
       ...values,
@@ -143,7 +143,7 @@ const ContractsPage = () => {
     }
   };
 
-  const handleEditSubmit = async (values: any) => {
+  const handleEditSubmit = async (values: Partial<IContract>) => {
     if (!contract?.id) return;
 
     // Automatically set ownerId to current user if not set

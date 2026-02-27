@@ -9,9 +9,6 @@ import {
   FileTextOutlined,
   CheckSquareOutlined,
   TeamOutlined,
-  BarChartOutlined,
-  CrownOutlined,
-  ToolOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";

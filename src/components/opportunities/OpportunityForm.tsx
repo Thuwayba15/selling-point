@@ -4,6 +4,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IOpportunity } from "@/providers/opportunities/context";
+import type { OpportunityFormValues } from "@/types/forms";
 import { useStyles } from "./style";
 
 interface OpportunityFormProps {
@@ -47,7 +48,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   clients = [],
 }) => {
   const { styles } = useStyles();
-  const handleFinish = (values: any) => {
+  const handleFinish = (values: OpportunityFormValues) => {
     // Ensure all numeric fields are properly typed
     const opportunityData: Partial<IOpportunity> = {
       title: values.title,

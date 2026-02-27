@@ -2,6 +2,7 @@
 
 import { useContext, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 import { INITIAL_STATE, IClient, ClientsActionContext, ClientsStateContext } from "./context";
 import { ClientsReducer } from "./reducer";
 import {
@@ -61,9 +62,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
           },
         }),
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching clients:", error);
-      dispatch(getClientsError(error.response?.data?.message || "Failed to fetch clients"));
+      dispatch(getClientsError(getErrorMessage(error, "Failed to fetch clients")));
     }
   };
 
@@ -76,9 +77,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await api.get(`/api/clients/${id}`);
       dispatch(getClientSuccess(response.data));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching client:", error);
-      dispatch(getClientError(error.response?.data?.message || "Failed to fetch client"));
+      dispatch(getClientError(getErrorMessage(error, "Failed to fetch client")));
     }
   };
 
@@ -91,10 +92,10 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await api.get(`/api/clients/${id}/stats`);
       dispatch(getClientStatsSuccess(response.data));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching client stats:", error);
       dispatch(
-        getClientStatsError(error.response?.data?.message || "Failed to fetch client stats"),
+        getClientStatsError(getErrorMessage(error, "Failed to fetch client stats")),
       );
     }
   };
@@ -108,9 +109,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await api.post("/api/clients", client);
       dispatch(createClientSuccess(response.data));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating client:", error);
-      dispatch(createClientError(error.response?.data?.message || "Failed to create client"));
+      dispatch(createClientError(getErrorMessage(error, "Failed to create client")));
     }
   };
 
@@ -123,9 +124,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await api.put(`/api/clients/${id}`, client);
       dispatch(updateClientSuccess(response.data));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating client:", error);
-      dispatch(updateClientError(error.response?.data?.message || "Failed to update client"));
+      dispatch(updateClientError(getErrorMessage(error, "Failed to update client")));
     }
   };
 
@@ -138,9 +139,9 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       await api.delete(`/api/clients/${id}`);
       dispatch(deleteClientSuccess());
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting client:", error);
-      dispatch(deleteClientError(error.response?.data?.message || "Failed to delete client"));
+      dispatch(deleteClientError(getErrorMessage(error, "Failed to delete client")));
     }
   };
 

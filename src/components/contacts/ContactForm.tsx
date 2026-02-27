@@ -3,11 +3,12 @@
 import { Form, Input, Button, Select, Switch } from "antd";
 import type { FormInstance } from "antd";
 import { IContact } from "@/providers/contacts/context";
+import type { ContactFormValues } from "@/types/forms";
 
 interface ContactFormProps {
   form: FormInstance;
   initialValues?: Partial<IContact>;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: ContactFormValues) => void;
   loading: boolean;
   clients?: Array<{ id: string; name: string }>;
 }
