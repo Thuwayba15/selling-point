@@ -38,9 +38,7 @@ export enum ClientsActionEnums {
   clearClient = "CLEAR_CLIENT",
 }
 
-// ============================================================================
 // Get Clients Actions
-// ============================================================================
 export const getClientsPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientsPending,
   () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
@@ -69,9 +67,7 @@ export const getClientsError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Get Single Client Actions
-// ============================================================================
 export const getClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientPending,
   () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
@@ -99,9 +95,7 @@ export const getClientError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Get Client Stats Actions
-// ============================================================================
 export const getClientStatsPending = createAction<IClientsStateContext>(
   ClientsActionEnums.getClientStatsPending,
   () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
@@ -129,9 +123,7 @@ export const getClientStatsError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Create Client Actions
-// ============================================================================
 export const createClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.createClientPending,
   () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
@@ -159,9 +151,7 @@ export const createClientError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Update Client Actions
-// ============================================================================
 export const updateClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.updateClientPending,
   () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
@@ -189,9 +179,7 @@ export const updateClientError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Delete Client Actions
-// ============================================================================
 export const deleteClientPending = createAction<IClientsStateContext>(
   ClientsActionEnums.deleteClientPending,
   () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
@@ -219,9 +207,7 @@ export const deleteClientError = createAction<IClientsStateContext, string>(
   }),
 );
 
-// ============================================================================
 // Utility Actions
-// ============================================================================
 export const clearError = createAction<IClientsStateContext>(ClientsActionEnums.clearError, () => ({
   isPending: false,
   isLoadingDetails: false,

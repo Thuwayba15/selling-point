@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Select, Space, Button } from "antd";
+import { Card, Select, Button } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 

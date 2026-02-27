@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Form, Input, Select, Button, Space } from "antd";
+import { Card, Form, Input, Select, Button } from "antd";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 

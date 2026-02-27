@@ -1,6 +1,6 @@
 "use client";
 
-import { Table, Empty, Skeleton, Space } from "antd";
+import { Table, Empty, Skeleton } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ISalesPerformance } from "@/providers/dashboard/context";
 import { useStyles } from "./style";

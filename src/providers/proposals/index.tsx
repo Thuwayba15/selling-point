@@ -3,12 +3,14 @@
 import type { ReactNode } from "react";
 import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
   ProposalsStateContext,
   ProposalsActionsContext,
   type IProposal,
+  type IProposalLineItem,
   type IProposalsActionContext,
 } from "./context";
 
@@ -79,9 +81,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch proposals";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch proposals");
         dispatch(getProposalsError(message));
       }
     };
@@ -94,9 +95,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get(`/api/proposals/${id}`);
 
         dispatch(getProposalSuccess(data));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch proposal");
         dispatch(getProposalError(message));
       }
     };
@@ -110,9 +110,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(createProposalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create proposal");
         dispatch(createProposalError(message));
         return false;
       }
@@ -127,15 +126,17 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(updateProposalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update proposal");
         dispatch(updateProposalError(message));
         return false;
       }
     };
 
-    const addLineItem = async (proposalId: string, lineItem: any): Promise<boolean> => {
+    const addLineItem = async (
+      proposalId: string,
+      lineItem: Partial<IProposalLineItem>,
+    ): Promise<boolean> => {
       dispatch(addLineItemPending());
 
       try {
@@ -144,9 +145,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(addLineItemSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to add line item";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to add line item");
         dispatch(addLineItemError(message));
         return false;
       }
@@ -155,7 +155,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
     const updateLineItem = async (
       proposalId: string,
       lineItemId: string,
-      lineItem: any,
+      lineItem: Partial<IProposalLineItem>,
     ): Promise<boolean> => {
       dispatch(updateLineItemPending());
 
@@ -168,9 +168,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(updateLineItemSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update line item";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update line item");
         dispatch(updateLineItemError(message));
         return false;
       }
@@ -183,11 +182,10 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         await api.delete(`/api/proposals/${proposalId}/line-items/${lineItemId}`);
 
-        dispatch(deleteLineItemSuccess({ id: proposalId } as any));
+        dispatch(deleteLineItemSuccess({ id: proposalId } as IProposal));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to delete line item";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to delete line item");
         dispatch(deleteLineItemError(message));
         return false;
       }
@@ -202,9 +200,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(submitProposalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to submit proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to submit proposal");
         dispatch(submitProposalError(message));
         return false;
       }
@@ -219,9 +216,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(approveProposalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to approve proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to approve proposal");
         dispatch(approveProposalError(message));
         return false;
       }
@@ -236,9 +232,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(rejectProposalSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to reject proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to reject proposal");
         dispatch(rejectProposalError(message));
         return false;
       }
@@ -253,9 +248,8 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(deleteProposalSuccess());
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to delete proposal";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to delete proposal");
         dispatch(deleteProposalError(message));
         return false;
       }

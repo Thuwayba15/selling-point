@@ -1,12 +1,6 @@
 "use client";
 
-import { Row, Col, Card, Statistic, Empty, Skeleton, Space } from "antd";
-import {
-  PhoneOutlined,
-  MailOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { Empty, Skeleton, Space } from "antd";
 import { IActivitySummary } from "@/providers/dashboard/context";
 import { useStyles } from "./style";
 

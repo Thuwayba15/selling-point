@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Form, Input, InputNumber, Select, Button, Space } from "antd";
+import { Form, Input, Select, Button, Space } from "antd";
 import type { FormInstance } from "antd";
 import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { PricingRequestFormValues } from "@/types/forms";
 
 interface PricingRequestFormProps {
   form: FormInstance;
@@ -41,7 +42,7 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
   onCancel,
   opportunities = [],
 }) => {
-  const handleFinish = (values: any) => {
+  const handleFinish = (values: PricingRequestFormValues) => {
     const pricingRequestData: Partial<IPricingRequest> = {
       opportunityId: values.opportunityId,
       status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,

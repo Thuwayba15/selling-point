@@ -3,8 +3,6 @@
 import { Button, Card, Space, Table, Tabs, Typography } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 
-const { Title } = Typography;
-
 const ActivitiesPage = () => {
   const columns = [
     { title: "Title", dataIndex: "title", key: "title" },

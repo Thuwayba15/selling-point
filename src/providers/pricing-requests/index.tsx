@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
@@ -70,9 +71,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch pricing requests";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch pricing requests");
         dispatch(getPricingRequestsError(message));
       }
     };
@@ -98,11 +98,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch pending pricing requests";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch pending pricing requests");
         dispatch(getPendingPricingRequestsError(message));
       }
     };
@@ -125,9 +122,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch my pricing requests";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch my pricing requests");
         dispatch(getMyPricingRequestsError(message));
       }
     };
@@ -140,9 +136,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
         const { data } = await api.get(`/api/pricingrequests/${id}`);
 
         dispatch(getPricingRequestSuccess(data));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch pricing request";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch pricing request");
         dispatch(getPricingRequestError(message));
       }
     };
@@ -158,9 +153,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
 
         dispatch(createPricingRequestSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create pricing request";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create pricing request");
         dispatch(createPricingRequestError(message));
         return false;
       }
@@ -178,9 +172,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
 
         dispatch(updatePricingRequestSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update pricing request";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update pricing request");
         dispatch(updatePricingRequestError(message));
         return false;
       }
@@ -195,9 +188,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
 
         dispatch(assignPricingRequestSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to assign pricing request";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to assign pricing request");
         dispatch(assignPricingRequestError(message));
         return false;
       }
@@ -212,9 +204,8 @@ export const PricingRequestsProvider = ({ children }: { children: ReactNode }) =
 
         dispatch(completePricingRequestSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to complete pricing request";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to complete pricing request");
         dispatch(completePricingRequestError(message));
         return false;
       }

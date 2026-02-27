@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useContext, useMemo, useReducer } from "react";
+import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
@@ -70,9 +71,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch contacts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch contacts");
         dispatch(getContactsError(message));
       }
     };
@@ -89,9 +89,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         });
 
         dispatch(getContactsByClientSuccess({ contacts: data || [] }));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch client contacts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch client contacts");
         dispatch(getContactsByClientError(message));
       }
     };
@@ -105,9 +104,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get(`/api/contacts/${id}`);
 
         dispatch(getContactSuccess(data));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch contact";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch contact");
         dispatch(getContactError(message));
       }
     };
@@ -124,9 +122,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(createContactSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create contact";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create contact");
         dispatch(createContactError(message));
         return false;
       }
@@ -142,9 +139,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(updateContactSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update contact";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update contact");
         dispatch(updateContactError(message));
         return false;
       }
@@ -160,9 +156,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(setPrimaryContactSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to set primary contact";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to set primary contact");
         dispatch(setPrimaryContactError(message));
         return false;
       }
@@ -178,9 +173,8 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
         dispatch(deleteContactSuccess());
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to delete contact";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to delete contact");
         dispatch(deleteContactError(message));
         return false;
       }

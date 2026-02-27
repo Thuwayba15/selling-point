@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useCallback, useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
@@ -49,9 +50,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get("/api/dashboard/overview");
 
         dispatch(getDashboardOverviewSuccess({ overview: data }));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch dashboard overview";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch dashboard overview");
         dispatch(getDashboardOverviewError(message));
       }
     };
@@ -65,9 +65,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get("/api/dashboard/pipeline-metrics");
 
         dispatch(getPipelineMetricsSuccess({ pipelineMetrics: data }));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch pipeline metrics";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch pipeline metrics");
         dispatch(getPipelineMetricsError(message));
       }
     };
@@ -83,9 +82,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         });
 
         dispatch(getSalesPerformanceSuccess({ salesPerformance: data || [] }));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch sales performance";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch sales performance");
         dispatch(getSalesPerformanceError(message));
       }
     };
@@ -99,9 +97,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get("/api/dashboard/activities-summary");
 
         dispatch(getActivitySummarySuccess({ activitySummary: data }));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch activity summary";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch activity summary");
         dispatch(getActivitySummaryError(message));
       }
     };
@@ -124,9 +121,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch expiring contracts";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch expiring contracts");
         dispatch(getExpiringContractsError(message));
       }
     };

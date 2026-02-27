@@ -3,6 +3,7 @@ import { Form, Radio, message } from "antd";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@/providers/auth";
 import type { RegisterPayload } from "@/providers/auth";
+import type { RegisterFormValues } from "@/types/forms";
 import AuthInput from "./AuthInput";
 import AuthButton from "./AuthButton";
 import AuthTitle from "./AuthTitle";
@@ -19,7 +20,7 @@ const RegisterForm = () => {
   const [mode, setMode] = useState<RegistrationMode>("default");
   const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
       const payload: RegisterPayload = {

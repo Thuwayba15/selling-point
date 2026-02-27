@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, Form, Input, Button, Select } from "antd";
-import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
+import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface PricingRequestsFiltersProps {

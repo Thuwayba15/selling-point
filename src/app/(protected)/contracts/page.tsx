@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import { App, Button, Form, Modal, Table, Tag, Tabs } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { App, Button, Form, Modal, Table, Tabs } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useContractsState, useContractsActions } from "@/providers/contracts";
 import { useClientsState, useClientsActions } from "@/providers/clients";
@@ -115,7 +114,7 @@ const ContractsPage = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateSubmit = async (values: any) => {
+  const handleCreateSubmit = async (values: Partial<IContract>) => {
     // Automatically set ownerId to current user if not set
     const contractData = {
       ...values,
@@ -143,7 +142,7 @@ const ContractsPage = () => {
     }
   };
 
-  const handleEditSubmit = async (values: any) => {
+  const handleEditSubmit = async (values: Partial<IContract>) => {
     if (!contract?.id) return;
 
     // Automatically set ownerId to current user if not set

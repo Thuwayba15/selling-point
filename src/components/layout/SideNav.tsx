@@ -7,16 +7,11 @@ import {
   HomeOutlined,
   ProjectOutlined,
   FileTextOutlined,
-  CheckSquareOutlined,
   TeamOutlined,
-  BarChartOutlined,
-  CrownOutlined,
-  ToolOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";
 import { useAuthState } from "@/providers/auth";
-import { isAdmin, isManager } from "@/utils/rbac";
 
 import { useStyles } from "./style";
 
@@ -24,11 +19,6 @@ export const SideNav = () => {
   const pathname = usePathname();
   const { user } = useAuthState();
   const { styles } = useStyles();
-
-  // Get roles safely (handle undefined case)
-  const roles = user?.roles ?? [];
-  const adminRole = isAdmin(roles);
-  const managerRole = isManager(roles);
 
   const baseItems = [
     {

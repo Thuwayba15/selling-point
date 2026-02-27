@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 import {
   INITIAL_STATE,
@@ -77,9 +78,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch opportunities";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch opportunities");
         dispatch(getOpportunitiesError(message));
       }
     };
@@ -106,9 +106,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
             },
           }),
         );
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch opportunities";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch opportunities");
         dispatch(getMyOpportunitiesError(message));
       }
     };
@@ -121,9 +120,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         const { data } = await api.get(`/api/opportunities/${id}`);
 
         dispatch(getOpportunitySuccess(data));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch opportunity";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch opportunity");
         dispatch(getOpportunityError(message));
       }
     };
@@ -136,9 +134,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         const { data } = await api.get(`/api/opportunities/${id}/stage-history`);
 
         dispatch(getOpportunityStageHistorySuccess(data || []));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch stage history";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch stage history");
         dispatch(getOpportunityStageHistoryError(message));
       }
     };
@@ -157,9 +154,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         };
 
         dispatch(getOpportunityPipelineSuccess(normalized));
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to fetch pipeline";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to fetch pipeline");
         dispatch(getOpportunityPipelineError(message));
       }
     };
@@ -173,9 +169,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
         dispatch(createOpportunitySuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to create opportunity";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to create opportunity");
         dispatch(createOpportunityError(message));
         return false;
       }
@@ -193,9 +188,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
         dispatch(updateOpportunitySuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update opportunity";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update opportunity");
         dispatch(updateOpportunityError(message));
         return false;
       }
@@ -214,9 +208,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
         dispatch(updateOpportunityStageSuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to update opportunity stage";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to update opportunity stage");
         dispatch(updateOpportunityStageError(message));
         return false;
       }
@@ -231,9 +224,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
         dispatch(assignOpportunitySuccess(data));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to assign opportunity";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to assign opportunity");
         dispatch(assignOpportunityError(message));
         return false;
       }
@@ -248,9 +240,8 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
         dispatch(deleteOpportunitySuccess(id));
         return true;
-      } catch (error: any) {
-        const message =
-          error?.response?.data?.message || error?.message || "Failed to delete opportunity";
+      } catch (error: unknown) {
+        const message = getErrorMessage(error, "Failed to delete opportunity");
         dispatch(deleteOpportunityError(message));
         return false;
       }

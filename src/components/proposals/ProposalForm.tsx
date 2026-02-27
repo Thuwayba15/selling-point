@@ -7,6 +7,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { FormInstance } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IProposal, IProposalLineItem } from "@/providers/proposals/context";
+import type { ProposalFormValues, ProposalLineItemFormValues } from "@/types/forms";
 import { useStyles } from "./style";
 
 interface ProposalFormProps {
@@ -48,20 +49,25 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
   const [isAddingLineItem, setIsAddingLineItem] = React.useState(false);
   const [lineItemForm] = Form.useForm();
 
-  const handleAddLineItem = (values: any) => {
+  const handleAddLineItem = (values: ProposalLineItemFormValues) => {
+    const quantity = typeof values.quantity === "string" ? parseFloat(values.quantity) : values.quantity;
+    const unitPrice = typeof values.unitPrice === "string" ? parseFloat(values.unitPrice) : values.unitPrice;
+    const discount = typeof values.discount === "string" ? parseFloat(values.discount) : values.discount || 0;
+    const taxRate = typeof values.taxRate === "string" ? parseFloat(values.taxRate) : values.taxRate || 0;
+
     const newLineItem: IProposalLineItem = {
       id: Math.random().toString(),
       productServiceName: values.productServiceName,
       description: values.description,
-      quantity: values.quantity,
-      unitPrice: values.unitPrice,
-      discount: values.discount || 0,
-      taxRate: values.taxRate || 0,
+      quantity,
+      unitPrice,
+      discount,
+      taxRate,
       total:
-        values.quantity *
-        values.unitPrice *
-        (1 - (values.discount || 0) / 100) *
-        (1 + (values.taxRate || 0) / 100),
+        quantity *
+        unitPrice *
+        (1 - discount / 100) *
+        (1 + taxRate / 100),
     };
 
     setLineItems([...lineItems, newLineItem]);
@@ -73,7 +79,14 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
     setLineItems(lineItems.filter((item) => item.id !== itemId));
   };
 
-  const handleFinish = (values: any) => {
+  const handleFinish = (values: ProposalFormValues) => {
+    const validUntil =
+      typeof values.validUntil === "string"
+        ? values.validUntil
+        : values.validUntil
+          ? values.validUntil.toISOString()
+          : undefined;
+
     const proposalData: Partial<IProposal> = {
       title: values.title,
       clientId: values.clientId,
@@ -81,7 +94,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status || 1,
       description: values.description,
       currency: values.currency || "ZAR",
-      validUntil: values.validUntil ? values.validUntil.toISOString() : undefined,
+      validUntil,
       ...(values.notes ? { notes: values.notes } : {}),
     };
 
