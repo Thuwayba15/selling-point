@@ -45,8 +45,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                                   <App>{children}</App>
                                 </ConfigProvider>
                               </AntdRegistry>
+                              </NotesProvider>
                           </ActivitiesProvider>
-                          </NotesProvider>
                       </DashboardProvider>
                       </ContractsProvider>
                     </ProposalsProvider>
