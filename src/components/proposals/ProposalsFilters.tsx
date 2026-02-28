@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Button, Select } from "antd";
+import { Form, Button, Select } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
@@ -36,11 +36,6 @@ export const ProposalsFilters = ({
     value: client.id,
   }));
 
-  const opportunityOptions = opportunities.map((opp) => ({
-    label: opp.title,
-    value: opp.id,
-  }));
-
   const handleApply = () => {
     onApplyFilters({
       status: status || undefined,
@@ -49,56 +44,52 @@ export const ProposalsFilters = ({
     });
   };
 
+  const handleClear = () => {
+    setStatus(undefined);
+    setClientId(undefined);
+    setOpportunityId(undefined);
+    form.resetFields();
+    onClear();
+  };
+
   const hasActiveFilters = status !== undefined || clientId || opportunityId;
 
   return (
-    <Card className={styles.filtersCard} title="Filters">
-      <Form form={form} layout="vertical">
-        <div className={styles.filtersRow}>
-          <Form.Item label="Status" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by status"
-              value={status}
-              onChange={setStatus}
-              allowClear
-              options={STATUS_OPTIONS}
-            />
-          </Form.Item>
+    <div className={styles.workspaceFiltersBar}>
+      <Form form={form} layout="inline" className={styles.workspaceFiltersForm}>
+        <Form.Item className={styles.workspaceFilterItem}>
+          <Select
+            placeholder="Status"
+            value={status}
+            onChange={setStatus}
+            allowClear
+            options={STATUS_OPTIONS}
+            className={styles.workspaceFilterSelect}
+          />
+        </Form.Item>
 
-          <Form.Item label="Client" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by client"
-              value={clientId}
-              onChange={setClientId}
-              allowClear
-              options={clientOptions}
-            />
-          </Form.Item>
+        <Form.Item className={styles.workspaceFilterItem}>
+          <Select
+            placeholder="Client"
+            value={clientId}
+            onChange={setClientId}
+            allowClear
+            options={clientOptions}
+            className={styles.workspaceFilterSelect}
+          />
+        </Form.Item>
 
-          <Form.Item label="Opportunity" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by opportunity"
-              value={opportunityId}
-              onChange={setOpportunityId}
-              allowClear
-              options={opportunityOptions}
-            />
-          </Form.Item>
-
-          <Form.Item label=" " className={styles.filterItem}>
-            <div className={styles.filtersActions}>
-              <Button type="primary" onClick={handleApply}>
-                Apply Filters
-              </Button>
-              {hasActiveFilters && (
-                <Button icon={<ClearOutlined />} onClick={onClear} danger>
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.workspaceFilterActionsItem}>
+          <div className={styles.workspaceFiltersActions}>
+            <Button type="primary" onClick={handleApply}>
+              Apply
+            </Button>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </div>
+        </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 };

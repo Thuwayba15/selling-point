@@ -59,10 +59,10 @@ export const useOpportunityWorkspaceData = () => {
                 params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 100 },
               })
               .catch(() => ({ data: { items: [] } })),
-            // Contracts for this opportunity's client
+            // Contracts (filter client-side for workspace consistency)
             api
               .get("/api/contracts", {
-                params: { clientId: selectedOpportunity.clientId, pageNumber: 1, pageSize: 100 },
+                params: { pageNumber: 1, pageSize: 1000 },
               })
               .catch(() => ({ data: { items: [] } })),
             // Documents related to this opportunity (relatedToType=2 for Opportunity)
@@ -102,12 +102,31 @@ export const useOpportunityWorkspaceData = () => {
           }),
         );
 
+        const allContracts = (contractsRes.data?.items || contractsRes.data || []) as IContract[];
+        const filteredContracts = allContracts
+          .filter((contract) => {
+            if (contract.opportunityId) {
+              return contract.opportunityId === selectedOpportunity.id;
+            }
+
+            if (selectedOpportunity.clientId) {
+              return contract.clientId === selectedOpportunity.clientId;
+            }
+
+            return false;
+          })
+          .sort((a, b) => {
+            const bTime = Date.parse(b.createdAt || b.updatedAt || "") || 0;
+            const aTime = Date.parse(a.createdAt || a.updatedAt || "") || 0;
+            return bTime - aTime;
+          });
+
         setWorkspaceData({
           pricingRequests: (pricingRequestsRes.data?.items || pricingRequestsRes.data || []).filter(
             (item: IPricingRequest) => item.opportunityId === selectedOpportunity.id
           ) as IPricingRequest[],
           proposals: proposalsWithDetails,
-          contracts: (contractsRes.data?.items || contractsRes.data || []) as IContract[],
+          contracts: filteredContracts,
           documents: (documentsRes.data?.items || documentsRes.data || []) as IDocument[],
           notes: (notesRes.data?.items || notesRes.data || []) as INote[],
         });

@@ -100,6 +100,8 @@ const OpportunityWorkspacePage = () => {
     handlePricingRequestComplete,
     handleContractCreate,
     handleContractEdit,
+    handleContractActivate,
+    handleContractCancel,
     handleDocumentCreate,
     handleNoteCreate,
     handleNoteEdit,
@@ -341,6 +343,18 @@ const OpportunityWorkspacePage = () => {
     }
   };
 
+  const handleActivateEntity = async (type: EntityType, entity: any) => {
+    if (type === "contract") {
+      await handleContractActivate(entity);
+    }
+  };
+
+  const handleCancelEntity = async (type: EntityType, entity: any) => {
+    if (type === "contract") {
+      await handleContractCancel(entity);
+    }
+  };
+
   const handleSubmitEntity = async (type: EntityType, entity: any) => {
     if (type === "proposal") {
       await handleProposalSubmit(entity);
@@ -379,6 +393,8 @@ const OpportunityWorkspacePage = () => {
           onEditEntity={handleEditEntity}
           onAssignEntity={handleAssignEntity}
           onCompleteEntity={handleCompleteEntity}
+          onActivateEntity={handleActivateEntity}
+          onCancelEntity={handleCancelEntity}
           onSubmitEntity={handleSubmitEntity}
           onApproveEntity={handleApproveEntity}
           onRejectEntity={handleRejectEntity}

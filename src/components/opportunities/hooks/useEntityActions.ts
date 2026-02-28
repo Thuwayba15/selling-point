@@ -1,6 +1,7 @@
 import { App, Modal } from "antd";
 import { useCallback } from "react";
 import { useRbac } from "@/hooks/useRbac";
+import { useAuthState } from "@/providers/auth";
 import { useActivitiesActions } from "@/providers/activities";
 import { useProposalsActions } from "@/providers/proposals";
 import { usePricingRequestsActions } from "@/providers/pricing-requests";
@@ -14,6 +15,17 @@ import type { IActivity } from "@/providers/activities/context";
 import type { IProposal } from "@/providers/proposals/context";
 import type { CreateProposalPayload } from "@/components/proposals/CreateProposalForm";
 import type { UpdateProposalPayload } from "@/components/proposals/EditProposalForm";
+
+const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
+const normalizeOwnerId = (...candidates: Array<string | undefined>) => {
+  const validOwnerId = candidates.find((candidate) => {
+    const trimmedCandidate = candidate?.trim();
+    return Boolean(trimmedCandidate && trimmedCandidate !== EMPTY_GUID);
+  });
+
+  return validOwnerId?.trim();
+};
 
 interface UseEntityActionsProps {
   selectedOpportunity: any | null;
@@ -38,6 +50,7 @@ export const useEntityActions = ({
 }: UseEntityActionsProps) => {
   const { message } = App.useApp();
   const { can } = useRbac();
+  const { user } = useAuthState();
 
   const activitiesActions = useActivitiesActions();
   const proposalsActions = useProposalsActions();
@@ -335,35 +348,133 @@ export const useEntityActions = ({
   const handleContractCreate = useCallback(
     async (values: any) => {
       try {
-        if (!selectedOpportunity) return;
-        const success = await contractsActions.createContract({
+        if (!selectedOpportunity) return false;
+        const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+        const contractData = {
           ...values,
           opportunityId: selectedOpportunity.id,
           clientId: selectedOpportunity.clientId,
-        });
-        if (!success) return;
+          ownerId,
+        };
+        const success = await contractsActions.createContract(contractData);
+        if (!success) {
+          message.error("Failed to create contract");
+          return false;
+        }
         message.success("Contract created successfully");
         await onRefresh();
+        return true;
       } catch {
         message.error("Failed to create contract");
+        return false;
       }
     },
-    [selectedOpportunity, contractsActions, message, onRefresh],
+    [selectedOpportunity, contractsActions, message, onRefresh, user?.id],
   );
 
   const handleContractEdit = useCallback(
     async (values: any) => {
       try {
-        if (!selectedEntity?.id) return;
-        const success = await contractsActions.updateContract(selectedEntity.id, values);
-        if (!success) return;
-        message.success("Contract updated successfully");
+        if (!selectedEntity?.id) return false;
+        const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+        const contractData = {
+          ...values,
+          ownerId,
+        };
+        const requestedStatus =
+          typeof contractData.status === "number" ? contractData.status : undefined;
+        const currentStatus =
+          typeof selectedEntity.status === "number" ? selectedEntity.status : undefined;
+        const shouldActivate = requestedStatus === 2 && currentStatus !== 2;
+        const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
+
+        const { status: _status, ...updatePayload } = contractData;
+        const updateSuccess = await contractsActions.updateContract(selectedEntity.id, updatePayload);
+
+        if (!updateSuccess) {
+          message.error("Failed to update contract");
+          return false;
+        }
+
+        if (shouldActivate) {
+          const activateSuccess = await contractsActions.activateContract(selectedEntity.id);
+          if (!activateSuccess) {
+            message.error("Failed to activate contract");
+            return false;
+          }
+        }
+
+        if (shouldCancel) {
+          const cancelSuccess = await contractsActions.cancelContract(selectedEntity.id);
+          if (!cancelSuccess) {
+            message.error("Failed to cancel contract");
+            return false;
+          }
+        }
+
+        if (shouldActivate) {
+          message.success("Contract updated and activated successfully");
+        } else if (shouldCancel) {
+          message.success("Contract updated and cancelled successfully");
+        } else {
+          message.success("Contract updated successfully");
+        }
+
         await onRefresh();
+        return true;
       } catch {
         message.error("Failed to update contract");
+        return false;
       }
     },
-    [selectedEntity, contractsActions, message, onRefresh],
+    [selectedEntity, contractsActions, message, onRefresh, user?.id],
+  );
+
+  const handleContractActivate = useCallback(
+    async (entity: any) => {
+      if (!entity?.id || !can("activate:contract")) return;
+
+      Modal.confirm({
+        title: "Activate contract?",
+        content: "This will move the contract to Active status.",
+        okText: "Activate",
+        onOk: async () => {
+          try {
+            const success = await contractsActions.activateContract(entity.id);
+            if (!success) return;
+            message.success("Contract activated successfully");
+            await onRefresh();
+          } catch {
+            message.error("Failed to activate contract");
+          }
+        },
+      });
+    },
+    [can, contractsActions, message, onRefresh],
+  );
+
+  const handleContractCancel = useCallback(
+    async (entity: any) => {
+      if (!entity?.id || !can("update:contract")) return;
+
+      Modal.confirm({
+        title: "Cancel contract?",
+        content: "This action cannot be undone.",
+        okText: "Cancel Contract",
+        okType: "danger",
+        onOk: async () => {
+          try {
+            const success = await contractsActions.cancelContract(entity.id);
+            if (!success) return;
+            message.success("Contract cancelled successfully");
+            await onRefresh();
+          } catch {
+            message.error("Failed to cancel contract");
+          }
+        },
+      });
+    },
+    [can, contractsActions, message, onRefresh],
   );
 
   const handleDocumentCreate = useCallback(
@@ -477,6 +588,8 @@ export const useEntityActions = ({
     handlePricingRequestComplete,
     handleContractCreate,
     handleContractEdit,
+    handleContractActivate,
+    handleContractCancel,
     handleDocumentCreate,
     handleNoteCreate,
     handleNoteEdit,

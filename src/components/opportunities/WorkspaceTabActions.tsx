@@ -9,6 +9,7 @@ type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "doc
 interface WorkspaceTabActionsProps {
   entityType: EntityType;
   onCreateClick: (type: EntityType) => void;
+  compact?: boolean;
 }
 
 const ENTITY_LABELS: Record<EntityType, string> = {
@@ -20,7 +21,11 @@ const ENTITY_LABELS: Record<EntityType, string> = {
   note: "Note",
 };
 
-export const WorkspaceTabActions = ({ entityType, onCreateClick }: WorkspaceTabActionsProps) => {
+export const WorkspaceTabActions = ({
+  entityType,
+  onCreateClick,
+  compact = false,
+}: WorkspaceTabActionsProps) => {
   const { can } = useRbac();
 
   const permissionMap: Record<EntityType, string> = {
@@ -37,7 +42,7 @@ export const WorkspaceTabActions = ({ entityType, onCreateClick }: WorkspaceTabA
   }
 
   return (
-    <Space style={{ marginBottom: 16 }}>
+    <Space style={compact ? undefined : { marginBottom: 16 }}>
       <Button
         type="primary"
         icon={<PlusOutlined />}

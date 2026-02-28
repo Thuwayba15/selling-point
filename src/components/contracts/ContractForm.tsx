@@ -12,7 +12,7 @@ interface ContractFormProps {
   form: FormInstance;
   initialValues?: Partial<IContract>;
   loading?: boolean;
-  onSubmit: (values: Partial<IContract>) => void;
+  onSubmit: (values: Partial<IContract>) => Promise<void> | void;
   onCancel: () => void;
   clients?: Array<{ id: string; name: string }>;
   opportunities?: Array<{ id: string; title: string }>;
@@ -68,7 +68,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
         endDate: values.endDate ? (values.endDate as Dayjs).toISOString() : undefined,
       };
 
-      onSubmit(submittedValues);
+      await Promise.resolve(onSubmit(submittedValues));
     } catch (error) {
       console.error("Form validation failed:", error);
     }

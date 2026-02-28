@@ -26,8 +26,8 @@ interface EntityModalsRendererProps {
   onPricingRequestCreate: (values: any) => Promise<void>;
   onPricingRequestEdit: (values: any) => Promise<void>;
   onPricingRequestAssign: (values: any) => Promise<void>;
-  onContractCreate: (values: any) => Promise<void>;
-  onContractEdit: (values: any) => Promise<void>;
+  onContractCreate: (values: any) => Promise<boolean>;
+  onContractEdit: (values: any) => Promise<boolean>;
   onDocumentCreate: (values: any, file: File) => Promise<void>;
   onNoteCreate: () => Promise<void>;
   onNoteEdit: () => Promise<void>;
@@ -236,7 +236,12 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
         <ContractForm
           form={forms.contract.create}
           loading={isPending}
-          onSubmit={onContractCreate}
+          onSubmit={async (values) => {
+            const success = await onContractCreate(values);
+            if (success) {
+              closeCreateModal("contract");
+            }
+          }}
           onCancel={() => closeCreateModal("contract")}
           clients={clients}
           opportunities={opportunities}
@@ -255,7 +260,12 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
           form={forms.contract.edit}
           initialValues={selectedEntity || undefined}
           loading={isPending}
-          onSubmit={onContractEdit}
+          onSubmit={async (values) => {
+            const success = await onContractEdit(values);
+            if (success) {
+              closeEditModal("contract");
+            }
+          }}
           onCancel={() => closeEditModal("contract")}
           clients={clients}
           opportunities={opportunities}

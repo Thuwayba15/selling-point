@@ -57,11 +57,11 @@ export const SideNav = () => {
     //   icon: <FileTextOutlined />,
     //   label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
     // },
-    {
-      key: ROUTES.proposals,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.proposals}>Proposals</Link>,
-    },
+    // {
+    //   key: ROUTES.proposals,
+    //   icon: <FileTextOutlined />,
+    //   label: <Link href={ROUTES.proposals}>Proposals</Link>,
+    // },
     {
       key: ROUTES.contracts,
       icon: <FileTextOutlined />,

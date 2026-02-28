@@ -1,8 +1,12 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, Space } from "antd";
+import { Button, Select, Space } from "antd";
 import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
+import { ProposalsFilters } from "@/components/proposals";
+import { PricingRequestsFilters } from "@/components/pricing-requests";
+import { ContractsFilters } from "@/components/contracts";
 import {
   OpportunityDetails,
   OpportunityActions,
@@ -45,6 +49,8 @@ interface OpportunityWorkspaceContentProps {
   onEditEntity: (type: EntityType, entity: any) => void;
   onAssignEntity: (type: EntityType, entity: any) => void;
   onCompleteEntity: (type: EntityType, entity: any) => void;
+  onActivateEntity: (type: EntityType, entity: any) => void;
+  onCancelEntity: (type: EntityType, entity: any) => void;
   onSubmitEntity: (type: EntityType, entity: any) => void;
   onApproveEntity: (type: EntityType, entity: any) => void;
   onRejectEntity: (type: EntityType, entity: any) => void;
@@ -69,6 +75,8 @@ export const OpportunityWorkspaceContent = ({
   onEditEntity,
   onAssignEntity,
   onCompleteEntity,
+  onActivateEntity,
+  onCancelEntity,
   onSubmitEntity,
   onApproveEntity,
   onRejectEntity,
@@ -76,6 +84,118 @@ export const OpportunityWorkspaceContent = ({
   onBackToOpportunities,
 }: OpportunityWorkspaceContentProps) => {
   const { styles } = useStyles();
+  const [proposalFilters, setProposalFilters] = useState<{
+    status?: number;
+    clientId?: string;
+    opportunityId?: string;
+  }>({});
+  const [pricingFilters, setPricingFilters] = useState<{
+    status?: number;
+    priority?: number;
+    assignedToId?: string;
+  }>({});
+  const [contractDraftFilters, setContractDraftFilters] = useState<{
+    status?: number;
+    clientId?: string;
+  }>({});
+  const [contractFilters, setContractFilters] = useState<{
+    status?: number;
+    clientId?: string;
+  }>({});
+  const [contractViewMode, setContractViewMode] = useState<"all" | "expiring">("all");
+
+  const proposalClientOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          (workspaceData.proposals || [])
+            .filter((proposal) => proposal.clientId && proposal.clientName)
+            .map((proposal) => [proposal.clientId as string, proposal.clientName as string]),
+        ),
+      ).map(([id, name]) => ({ id, name })),
+    [workspaceData.proposals],
+  );
+
+  const proposalOpportunityOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          (workspaceData.proposals || [])
+            .filter((proposal) => proposal.opportunityId && proposal.opportunityTitle)
+            .map(
+              (proposal) =>
+                [proposal.opportunityId as string, proposal.opportunityTitle as string] as const,
+            ),
+        ),
+      ).map(([id, title]) => ({ id, title })),
+    [workspaceData.proposals],
+  );
+
+  const filteredProposals = useMemo(
+    () =>
+      (workspaceData.proposals || []).filter((proposal) => {
+        if (proposalFilters.status !== undefined && proposal.status !== proposalFilters.status) {
+          return false;
+        }
+        if (proposalFilters.clientId && proposal.clientId !== proposalFilters.clientId) {
+          return false;
+        }
+        if (
+          proposalFilters.opportunityId &&
+          proposal.opportunityId !== proposalFilters.opportunityId
+        ) {
+          return false;
+        }
+        return true;
+      }),
+    [workspaceData.proposals, proposalFilters],
+  );
+
+  const filteredPricingRequests = useMemo(
+    () =>
+      (workspaceData.pricingRequests || []).filter((item) => {
+        if (pricingFilters.status !== undefined && item.status !== pricingFilters.status) {
+          return false;
+        }
+        if (pricingFilters.priority !== undefined && item.priority !== pricingFilters.priority) {
+          return false;
+        }
+        if (pricingFilters.assignedToId && item.assignedToId !== pricingFilters.assignedToId) {
+          return false;
+        }
+        return true;
+      }),
+    [workspaceData.pricingRequests, pricingFilters],
+  );
+
+  const contractClientOptions = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          (workspaceData.contracts || [])
+            .filter((contract) => contract.clientId && contract.clientName)
+            .map((contract) => [contract.clientId as string, contract.clientName as string]),
+        ),
+      ).map(([id, name]) => ({ id, name })),
+    [workspaceData.contracts],
+  );
+
+  const filteredContracts = useMemo(
+    () =>
+      (workspaceData.contracts || []).filter((contract) => {
+        if (contractFilters.status !== undefined && contract.status !== contractFilters.status) {
+          return false;
+        }
+        if (contractFilters.clientId && contract.clientId !== contractFilters.clientId) {
+          return false;
+        }
+        if (contractViewMode === "expiring" && !contract.isExpiringSoon) {
+          return false;
+        }
+        return true;
+      }),
+    [workspaceData.contracts, contractFilters, contractViewMode],
+  );
 
   const workspaceItems: WorkspaceTabItem[] = [
     {
@@ -112,12 +232,19 @@ export const OpportunityWorkspaceContent = ({
       label: "Pricing Requests",
       content: (
         <>
-          <WorkspaceTabActions
-            entityType="pricingRequest"
-            onCreateClick={onCreateEntity}
-          />
+          <div className={styles.workspaceToolbarRow}>
+            <WorkspaceTabActions
+              entityType="pricingRequest"
+              onCreateClick={onCreateEntity}
+              compact
+            />
+            <PricingRequestsFilters
+              onApplyFilters={(filters) => setPricingFilters(filters)}
+              onClear={() => setPricingFilters({})}
+            />
+          </div>
           <WorkspaceEntityList
-            entities={workspaceData.pricingRequests}
+            entities={filteredPricingRequests}
             type="pricingRequest"
             loading={isLoading}
             emptyText="No pricing requests for this opportunity"
@@ -134,12 +261,21 @@ export const OpportunityWorkspaceContent = ({
       label: "Proposals",
       content: (
         <>
-          <WorkspaceTabActions
-            entityType="proposal"
-            onCreateClick={onCreateEntity}
-          />
+          <div className={styles.workspaceToolbarRow}>
+            <WorkspaceTabActions
+              entityType="proposal"
+              onCreateClick={onCreateEntity}
+              compact
+            />
+            <ProposalsFilters
+              clients={proposalClientOptions}
+              opportunities={proposalOpportunityOptions}
+              onApplyFilters={(filters) => setProposalFilters(filters)}
+              onClear={() => setProposalFilters({})}
+            />
+          </div>
           <WorkspaceEntityList
-            entities={workspaceData.proposals}
+            entities={filteredProposals}
             type="proposal"
             loading={isLoading}
             emptyText="No proposals for this opportunity"
@@ -157,16 +293,50 @@ export const OpportunityWorkspaceContent = ({
       label: "Contracts",
       content: (
         <>
-          <WorkspaceTabActions
-            entityType="contract"
-            onCreateClick={onCreateEntity}
-          />
+          <div className={styles.workspaceToolbarRow}>
+            <WorkspaceTabActions
+              entityType="contract"
+              onCreateClick={onCreateEntity}
+              compact
+            />
+            <Space size={8}>
+              <Select
+                value={contractViewMode}
+                onChange={(value) => setContractViewMode(value)}
+                options={[
+                  { label: "All Contracts", value: "all" },
+                  { label: "Expiring Soon", value: "expiring" },
+                ]}
+                className={styles.workspaceViewSelect}
+              />
+              <ContractsFilters
+                compact
+                status={contractDraftFilters.status}
+                clientId={contractDraftFilters.clientId}
+                onStatusChange={(status) =>
+                  setContractDraftFilters((prev) => ({ ...prev, status }))
+                }
+                onClientIdChange={(clientId) =>
+                  setContractDraftFilters((prev) => ({ ...prev, clientId }))
+                }
+                onApplyFilters={() => setContractFilters(contractDraftFilters)}
+                onClear={() => {
+                  setContractDraftFilters({});
+                  setContractFilters({});
+                  setContractViewMode("all");
+                }}
+                clients={contractClientOptions}
+              />
+            </Space>
+          </div>
           <WorkspaceEntityList
-            entities={workspaceData.contracts}
+            entities={filteredContracts}
             type="contract"
             loading={isLoading}
             emptyText="No contracts linked to this opportunity's client"
             onEntityEdit={(entity) => onEditEntity("contract", entity)}
+            onEntityActivate={(entity) => onActivateEntity("contract", entity)}
+            onEntityCancel={(entity) => onCancelEntity("contract", entity)}
             onEntityDelete={(entity) => onDeleteEntity("contract", entity)}
           />
         </>

@@ -130,6 +130,39 @@ export const useStyles = createStyles(({ token, css }) => ({
     gap: ${token.marginXS}px;
   `,
 
+  workspaceFiltersBar: css`
+    margin-left: auto;
+  `,
+
+  workspaceFiltersForm: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  `,
+
+  workspaceFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFilterSelect: css`
+    width: 140px;
+  `,
+
+  workspaceFilterActionsItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFiltersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+  `,
+
   loadingState: css`
     text-align: center;
     padding: ${token.paddingLG}px 0;
@@ -163,6 +196,16 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-top: ${token.marginSM}px;
     padding: ${token.paddingSM}px;
     border: 1px dashed ${token.colorBorder};
+  `,
+
+  lineItemFieldGroup: css`
+    margin-bottom: ${token.margin}px;
+  `,
+
+  lineItemFieldLabel: css`
+    display: block;
+    margin-bottom: ${token.marginXS}px;
+    font-weight: ${token.fontWeightStrong};
   `,
 
   summarySection: css`

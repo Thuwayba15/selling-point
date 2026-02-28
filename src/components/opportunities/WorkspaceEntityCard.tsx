@@ -87,6 +87,8 @@ interface WorkspaceEntityCardProps {
   onEdit?: (entity: any) => void;
   onAssign?: (entity: any) => void;
   onComplete?: (entity: any) => void;
+  onActivate?: (entity: any) => void;
+  onCancel?: (entity: any) => void;
   onSubmit?: (entity: any) => void;
   onApprove?: (entity: any) => void;
   onReject?: (entity: any) => void;
@@ -100,6 +102,8 @@ export const WorkspaceEntityCard = ({
   onEdit,
   onAssign,
   onComplete,
+  onActivate,
+  onCancel,
   onSubmit,
   onApprove,
   onReject,
@@ -527,6 +531,14 @@ export const WorkspaceEntityCard = ({
       5: "Cancelled",
     };
 
+    const status = contract.status ?? 1;
+    const isDraft = status === 1;
+    const isActive = status === 2;
+    const canEditContract = Boolean(onEdit && can("update:contract") && (isDraft || isActive));
+    const canActivateContract = Boolean(onActivate && can("activate:contract") && isDraft);
+    const canCancelContract = Boolean(onCancel && can("update:contract") && isActive);
+    const canDeleteContract = Boolean(onDelete && can("delete:contract") && isDraft);
+
     return (
       <Card
         size="small"
@@ -536,42 +548,110 @@ export const WorkspaceEntityCard = ({
       >
         <Space direction="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Text strong>{contract.title || contract.contractNumber || "Contract"}</Text>
-            {contract.status && (
-              <Tag color={CONTRACT_STATUS_COLORS[contract.status]}>{statusNames[contract.status]}</Tag>
-            )}
+            <Text strong>{contract.contractNumber || "—"}</Text>
+            <Tag color={CONTRACT_STATUS_COLORS[status]}>{statusNames[status] || "—"}</Tag>
           </div>
 
-          {contract.clientName && (
-            <Text type="secondary">
-              <UserOutlined /> {contract.clientName}
-            </Text>
-          )}
+          <Text>{contract.title || "—"}</Text>
+
+          <Space size={4}>
+            <UserOutlined />
+            <Text type="secondary">{contract.clientName || "—"}</Text>
+          </Space>
 
           <Space separator="|" size="small" wrap>
-            {contract.contractValue !== undefined && (
-              <Space size={4}>
-                <DollarOutlined />
+            <Space size={4}>
+              <CalendarOutlined />
+              <Text type="secondary">
+                {contract.startDate ? new Date(contract.startDate).toLocaleDateString() : "—"}
+              </Text>
+            </Space>
+            <Space size={4}>
+              <CalendarOutlined />
+              {contract.isExpiringSoon ? (
+                <Tag color="orange" style={{ margin: 0 }}>
+                  {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "—"}
+                </Tag>
+              ) : (
                 <Text type="secondary">
-                  {contract.currency || "R"} {contract.contractValue.toLocaleString()}
+                  {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "—"}
                 </Text>
-              </Space>
-            )}
-            {contract.startDate && contract.endDate && (
-              <Space size={4}>
-                <CalendarOutlined />
-                <Text type="secondary">
-                  {new Date(contract.startDate).toLocaleDateString()} -{" "}
-                  {new Date(contract.endDate).toLocaleDateString()}
-                </Text>
-              </Space>
-            )}
-            {contract.isExpiringSoon && (
-              <Tag color="warning" icon={<ClockCircleOutlined />}>
-                Expiring Soon
-              </Tag>
-            )}
+              )}
+            </Space>
+            <Space size={4}>
+              <DollarOutlined />
+              <Text type="secondary">
+                {contract.contractValue != null
+                  ? `${contract.currency || "R"} ${contract.contractValue.toLocaleString()}`
+                  : "—"}
+              </Text>
+            </Space>
           </Space>
+
+          {(canEditContract || canActivateContract || canCancelContract || canDeleteContract) && (
+            <Space size="small" wrap>
+              {canEditContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(contract);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+              {canActivateContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<CheckOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onActivate?.(contract);
+                  }}
+                >
+                  Activate
+                </Button>
+              )}
+              {canCancelContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  danger
+                  icon={<CloseOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCancel?.(contract);
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+              {canDeleteContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(contract);
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
+            </Space>
+          )}
+
+          {contract.isExpiringSoon && (
+            <Tag color="warning" icon={<ClockCircleOutlined />}>
+              Expiring Soon
+            </Tag>
+          )}
         </Space>
       </Card>
     );
@@ -683,6 +763,8 @@ interface WorkspaceEntityListProps {
   onEntityEdit?: (entity: any) => void;
   onEntityAssign?: (entity: any) => void;
   onEntityComplete?: (entity: any) => void;
+  onEntityActivate?: (entity: any) => void;
+  onEntityCancel?: (entity: any) => void;
   onEntitySubmit?: (entity: any) => void;
   onEntityApprove?: (entity: any) => void;
   onEntityReject?: (entity: any) => void;
@@ -698,6 +780,8 @@ export const WorkspaceEntityList = ({
   onEntityEdit,
   onEntityAssign,
   onEntityComplete,
+  onEntityActivate,
+  onEntityCancel,
   onEntitySubmit,
   onEntityApprove,
   onEntityReject,
@@ -726,6 +810,8 @@ export const WorkspaceEntityList = ({
           onEdit={onEntityEdit}
           onAssign={onEntityAssign}
           onComplete={onEntityComplete}
+          onActivate={onEntityActivate}
+          onCancel={onEntityCancel}
           onSubmit={onEntitySubmit}
           onApprove={onEntityApprove}
           onReject={onEntityReject}

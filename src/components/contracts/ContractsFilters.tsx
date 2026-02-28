@@ -12,6 +12,7 @@ interface ContractsFiltersProps {
   onApplyFilters: () => void;
   onClear: () => void;
   clients?: Array<{ id: string; name: string }>;
+  compact?: boolean;
 }
 
 const STATUS_OPTIONS = [
@@ -31,6 +32,7 @@ export const ContractsFilters = ({
   onApplyFilters,
   onClear,
   clients = [],
+  compact = false,
 }: ContractsFiltersProps) => {
   const { styles } = useStyles();
 
@@ -40,6 +42,41 @@ export const ContractsFilters = ({
   ];
 
   const hasActiveFilters = status !== undefined || clientId !== undefined;
+
+  if (compact) {
+    return (
+      <div className={styles.workspaceFiltersBar}>
+        <div className={styles.workspaceFiltersForm}>
+          <div className={styles.workspaceFilterItem}>
+            <Select
+              options={STATUS_OPTIONS.filter((opt) => opt.value !== undefined)}
+              value={status}
+              onChange={onStatusChange}
+              placeholder="Status"
+              allowClear
+              className={styles.workspaceFilterSelect}
+            />
+          </div>
+          <div className={styles.workspaceFilterItem}>
+            <Select
+              options={clients.map((client) => ({ label: client.name, value: client.id }))}
+              value={clientId}
+              onChange={onClientIdChange}
+              placeholder="Client"
+              allowClear
+              className={styles.workspaceFilterSelect}
+            />
+          </div>
+          <div className={styles.workspaceFiltersActions}>
+            <Button type="primary" onClick={onApplyFilters}>
+              Apply
+            </Button>
+            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={onClear} danger />}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card className={styles.filtersCard} title="Filters">

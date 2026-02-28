@@ -21,6 +21,17 @@ import { useStyles } from "@/components/contracts/style";
 import { IContract } from "@/providers/contracts/context";
 import { useRbac } from "@/hooks/useRbac";
 
+const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
+const normalizeOwnerId = (...candidates: Array<string | undefined>) => {
+  const validOwnerId = candidates.find((candidate) => {
+    const trimmedCandidate = candidate?.trim();
+    return Boolean(trimmedCandidate && trimmedCandidate !== EMPTY_GUID);
+  });
+
+  return validOwnerId?.trim();
+};
+
 const ContractsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
@@ -115,10 +126,10 @@ const ContractsPage = () => {
   };
 
   const handleCreateSubmit = async (values: Partial<IContract>) => {
-    // Automatically set ownerId to current user if not set
+    const ownerId = normalizeOwnerId(values.ownerId, user?.id);
     const contractData = {
       ...values,
-      ownerId: values.ownerId || user?.id,
+      ownerId,
     };
     const success = await createContract(contractData);
     if (success) {
@@ -145,10 +156,10 @@ const ContractsPage = () => {
   const handleEditSubmit = async (values: Partial<IContract>) => {
     if (!contract?.id) return;
 
-    // Automatically set ownerId to current user if not set
+    const ownerId = normalizeOwnerId(values.ownerId, user?.id);
     const contractData = {
       ...values,
-      ownerId: values.ownerId || user?.id,
+      ownerId,
     };
     const success = await updateContract(contract.id, contractData);
     if (success) {

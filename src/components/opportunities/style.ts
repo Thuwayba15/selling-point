@@ -64,6 +64,23 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  workspaceToolbarRow: css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: ${token.margin}px;
+    margin-bottom: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
+
+  workspaceViewSelect: css`
+    min-width: 180px;
+  `,
+
   filterItem: css`
     flex: 1;
     min-width: 200px;
