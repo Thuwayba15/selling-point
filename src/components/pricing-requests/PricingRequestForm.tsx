@@ -29,9 +29,7 @@ const PRIORITY_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "ZAR", value: "ZAR" },
-  { label: "USD", value: "USD" },
-  { label: "EUR", value: "EUR" },
+  { label: "R", value: "R" },
 ];
 
 export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
@@ -67,7 +65,7 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
       initialValues={{
         status: 1,
         priority: 2,
-        currency: "ZAR",
+        currency: "R",
         ...initialValues,
       }}
       onFinish={handleFinish}

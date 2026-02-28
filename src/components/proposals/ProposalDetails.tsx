@@ -68,7 +68,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       title: "Unit Price",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (price) => (price ? `${proposal.currency || "ZAR"} ${price.toLocaleString()}` : "—"),
+      render: (price) => (price ? `${proposal.currency || "R"} ${price.toLocaleString()}` : "—"),
     },
     {
       title: "Discount %",
@@ -86,7 +86,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       title: "Total",
       dataIndex: "total",
       key: "total",
-      render: (total) => (total ? `${proposal.currency || "ZAR"} ${total.toLocaleString()}` : "—"),
+      render: (total) => (total ? `${proposal.currency || "R"} ${total.toLocaleString()}` : "—"),
     },
   ];
 

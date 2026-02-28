@@ -25,8 +25,8 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
   }
 
   const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "$0.00M";
-    return `$${(value / 1000000).toFixed(2)}M`;
+    if (value === undefined || value === null || isNaN(value)) return "R0.00M";
+    return `R${(value / 1000000).toFixed(2)}M`;
   };
 
   const formatPercentage = (value: number | undefined | null) => {

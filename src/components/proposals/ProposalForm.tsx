@@ -28,9 +28,7 @@ const STATUS_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "ZAR", value: "ZAR" },
-  { label: "USD", value: "USD" },
-  { label: "EUR", value: "EUR" },
+  { label: "R", value: "R" },
 ];
 
 export const ProposalForm: React.FC<ProposalFormProps> = ({
@@ -93,7 +91,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       opportunityId: values.opportunityId,
       status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status || 1,
       description: values.description,
-      currency: values.currency || "ZAR",
+      currency: values.currency || "R",
       validUntil,
       ...(values.notes ? { notes: values.notes } : {}),
     };
@@ -164,7 +162,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
         layout="vertical"
         initialValues={{
           status: 1,
-          currency: "ZAR",
+          currency: "R",
           ...initialValues,
           validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
         }}

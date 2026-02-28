@@ -39,8 +39,8 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
   }
 
   const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "$0.00M";
-    return `$${(value / 1000000).toFixed(2)}M`;
+    if (value === undefined || value === null || isNaN(value)) return "R0.00M";
+    return `R${(value / 1000000).toFixed(2)}M`;
   };
 
   // Find max value for scaling bars - try both 'value' and 'totalValue' fields

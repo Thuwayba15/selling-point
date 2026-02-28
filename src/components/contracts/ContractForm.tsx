@@ -28,9 +28,7 @@ const STATUS_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "ZAR", value: "ZAR" },
-  { label: "USD", value: "USD" },
-  { label: "EUR", value: "EUR" },
+  { label: "R", value: "R" },
 ];
 
 export const ContractForm: React.FC<ContractFormProps> = ({
@@ -82,7 +80,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
       layout="vertical"
       initialValues={{
         status: 1,
-        currency: "ZAR",
+        currency: "R",
         autoRenew: false,
         ...initialValues,
         startDate: initialValues?.startDate ? dayjs(initialValues.startDate) : undefined,

@@ -41,8 +41,8 @@ export const DashboardSalesPerformance = ({
       dataIndex: "revenue",
       key: "revenue",
       render: (value: number) => {
-        if (!value || isNaN(value)) return "$0.00M";
-        return `$${(value / 1000000).toFixed(2)}M`;
+        if (!value || isNaN(value)) return "R0.00M";
+        return `R${(value / 1000000).toFixed(2)}M`;
       },
       responsive: ["sm", "md", "lg"],
     },

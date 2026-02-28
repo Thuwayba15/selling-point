@@ -51,8 +51,8 @@ export const DashboardExpiringContracts = ({
       dataIndex: "contractValue",
       key: "value",
       render: (value: number) => {
-        if (!value || isNaN(value)) return "$0K";
-        return `$${(value / 1000).toFixed(0)}K`;
+        if (!value || isNaN(value)) return "R0K";
+        return `R${(value / 1000).toFixed(0)}K`;
       },
       responsive: ["sm", "md", "lg"],
     },

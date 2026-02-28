@@ -34,9 +34,7 @@ const SOURCE_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "ZAR", value: "ZAR" },
-  { label: "USD", value: "USD" },
-  { label: "EUR", value: "EUR" },
+  { label: "R", value: "R" },
 ];
 
 export const OpportunityForm: React.FC<OpportunityFormProps> = ({
@@ -78,7 +76,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
         stage: 1,
         source: 1,
         probability: 50,
-        currency: "ZAR",
+        currency: "R",
         ...initialValues,
       }}
       onFinish={handleFinish}
