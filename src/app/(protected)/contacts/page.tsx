@@ -125,8 +125,13 @@ const ContactsPage = () => {
     if (!selectedContact) return;
 
     const contactData = {
-      ...values,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      phoneNumber: values.phoneNumber,
+      position: values.position,
       isPrimaryContact: values.isPrimaryContact ?? false,
+      isActive: selectedContact.isActive ?? true,
     };
     const success = await updateContact(selectedContact.id, contactData);
     if (success) {
@@ -167,6 +172,8 @@ const ContactsPage = () => {
         pageNumber: currentPage,
         pageSize,
       });
+    } else {
+      message.error("Unable to delete contact");
     }
   };
 

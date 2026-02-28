@@ -7,7 +7,7 @@ export interface IClientOption {
 }
 
 // Fetch active clients for use in dropdowns
-// Only returns clients where isActive=true and isDeleted=false
+// Only returns clients where isActive=true
 export async function fetchActiveClientsForDropdown(
   pageSize: number = 1000
 ): Promise<IClientOption[]> {
@@ -17,7 +17,6 @@ export async function fetchActiveClientsForDropdown(
       params: {
         pageSize,
         isActive: true,
-        isDeleted: false,
       },
     });
     

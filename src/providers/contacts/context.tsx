@@ -13,6 +13,7 @@ export interface IContact {
   phoneNumber?: string;
   position?: string;
   isPrimaryContact: boolean;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -44,6 +45,7 @@ export interface IContactsActionContext {
   getContacts: (params?: {
     clientId?: string;
     searchTerm?: string;
+    isActive?: boolean;
     pageNumber?: number;
     pageSize?: number;
   }) => Promise<void>;
