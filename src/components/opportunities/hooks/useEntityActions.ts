@@ -9,7 +9,6 @@ import { useContractsActions } from "@/providers/contracts";
 import { useDocumentsActions } from "@/providers/documents";
 import { useNotesActions } from "@/providers/notes";
 import { ActivityType, Priority, RelatedToType } from "@/providers/activities/context";
-import dayjs from "dayjs";
 import type { EntityType } from "./useEntityModals";
 import type { IActivity } from "@/providers/activities/context";
 import type { IProposal } from "@/providers/proposals/context";
@@ -385,6 +384,12 @@ export const useEntityActions = ({
           typeof contractData.status === "number" ? contractData.status : undefined;
         const currentStatus =
           typeof selectedEntity.status === "number" ? selectedEntity.status : undefined;
+
+        if (requestedStatus === 3 || requestedStatus === 4) {
+          message.info("Expired and Renewed are system-managed statuses and cannot be set manually");
+          return false;
+        }
+
         const shouldActivate = requestedStatus === 2 && currentStatus !== 2;
         const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
 

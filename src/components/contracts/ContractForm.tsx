@@ -22,8 +22,8 @@ interface ContractFormProps {
 const STATUS_OPTIONS = [
   { label: "Draft", value: 1 },
   { label: "Active", value: 2 },
-  { label: "Expired", value: 3 },
-  { label: "Renewed", value: 4 },
+  { label: "Expired (System Managed)", value: 3, disabled: true },
+  { label: "Renewed (System Managed)", value: 4, disabled: true },
   { label: "Cancelled", value: 5 },
 ];
 

@@ -399,6 +399,7 @@ const OpportunityWorkspacePage = () => {
           onApproveEntity={handleApproveEntity}
           onRejectEntity={handleRejectEntity}
           onDeleteEntity={handleDeleteEntity}
+          onRefreshWorkspace={refreshWorkspace}
           onBackToOpportunities={() => filters.navigateToList(filters.buildQueryString())}
         />
 

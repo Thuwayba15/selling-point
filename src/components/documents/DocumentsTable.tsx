@@ -5,6 +5,9 @@ import { Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import type { IDocument } from "@/providers/documents/context";
+import { Typography } from "antd";
+
+const { Text } = Typography;
 
 const categoryColorMap: Record<number, string> = {
   1: "blue", // Proposal
@@ -119,6 +122,12 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
       dataSource={documents}
       rowKey="id"
       loading={loading}
+      expandable={{
+        rowExpandable: (record) => Boolean(record.description?.trim()),
+        expandedRowRender: (record) => (
+          <Text type="secondary">{record.description?.trim() || "No description"}</Text>
+        ),
+      }}
       pagination={{
         current: pagination.current,
         pageSize: pagination.pageSize,

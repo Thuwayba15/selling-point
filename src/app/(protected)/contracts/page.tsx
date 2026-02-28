@@ -156,21 +156,48 @@ const ContractsPage = () => {
   const handleEditSubmit = async (values: Partial<IContract>) => {
     if (!contract?.id) return;
 
+    const requestedStatus = typeof values.status === "number" ? values.status : undefined;
+    const currentStatus = typeof contract.status === "number" ? contract.status : undefined;
+
+    if (requestedStatus === 3 || requestedStatus === 4) {
+      message.info("Expired and Renewed are system-managed statuses and cannot be set manually");
+      return;
+    }
+
+    const shouldActivate = requestedStatus === 2 && currentStatus !== 2;
+    const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
+
     const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+    const { status: _status, ...restValues } = values;
     const contractData = {
-      ...values,
+      ...restValues,
       ownerId,
     };
     const success = await updateContract(contract.id, contractData);
-    if (success) {
-      message.success("Contract updated successfully");
-      setIsEditModalOpen(false);
-      editForm.resetFields();
-      // Refresh contract details
-      getContract(contract.id);
-      // Refresh contracts list
-      getContracts({ pageNumber: currentPage, pageSize, status, clientId });
+    if (!success) return;
+
+    if (shouldActivate) {
+      const activated = await activateContract(contract.id);
+      if (!activated) return;
     }
+
+    if (shouldCancel) {
+      const cancelled = await cancelContract(contract.id);
+      if (!cancelled) return;
+    }
+
+    if (shouldActivate) {
+      message.success("Contract updated and activated successfully");
+    } else if (shouldCancel) {
+      message.success("Contract updated and cancelled successfully");
+    } else {
+      message.success("Contract updated successfully");
+    }
+
+    setIsEditModalOpen(false);
+    editForm.resetFields();
+    getContract(contract.id);
+    getContracts({ pageNumber: currentPage, pageSize, status, clientId });
   };
 
   const handleActivate = async () => {

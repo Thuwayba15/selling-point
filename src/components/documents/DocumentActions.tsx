@@ -9,6 +9,7 @@ interface DocumentActionsProps {
   onUpload: () => void;
   onDownload: () => void;
   onDelete: () => void;
+  canUpload?: boolean;
   canDelete: boolean;
   loading?: boolean;
 }
@@ -18,15 +19,18 @@ export const DocumentActions: React.FC<DocumentActionsProps> = ({
   onUpload,
   onDownload,
   onDelete,
+  canUpload = true,
   canDelete,
   loading = false,
 }) => {
   return (
     <Card title="Actions" style={{ marginBottom: 16 }}>
       <Space>
-        <Button type="primary" icon={<UploadOutlined />} onClick={onUpload} loading={loading}>
-          Upload Document
-        </Button>
+        {canUpload && (
+          <Button type="primary" icon={<UploadOutlined />} onClick={onUpload} loading={loading}>
+            Upload Document
+          </Button>
+        )}
         <Button
           icon={<DownloadOutlined />}
           onClick={onDownload}

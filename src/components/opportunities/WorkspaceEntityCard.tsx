@@ -6,6 +6,7 @@ import {
   CalendarOutlined,
   UserOutlined,
   FileTextOutlined,
+  BookOutlined,
   DollarOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
@@ -93,6 +94,7 @@ interface WorkspaceEntityCardProps {
   onApprove?: (entity: any) => void;
   onReject?: (entity: any) => void;
   onDelete?: (entity: any) => void;
+  onViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
 }
 
 export const WorkspaceEntityCard = ({
@@ -108,6 +110,7 @@ export const WorkspaceEntityCard = ({
   onApprove,
   onReject,
   onDelete,
+  onViewDocuments,
 }: WorkspaceEntityCardProps) => {
   const { can } = useRbac();
   const [expanded, setExpanded] = useState(false);
@@ -250,6 +253,7 @@ export const WorkspaceEntityCard = ({
     const canApproveProposal = Boolean(onApprove && can("approve:proposal") && isSubmitted);
     const canRejectProposal = Boolean(onReject && can("reject:proposal") && isSubmitted);
     const canDeleteProposal = Boolean(onDelete && can("delete:proposal") && (isDraft || isRejected));
+    const canViewProposalDocs = Boolean(onViewDocuments && proposal.id);
 
     return (
       <Card
@@ -357,6 +361,19 @@ export const WorkspaceEntityCard = ({
                 }}
               >
                 Delete
+              </Button>
+            )}
+            {canViewProposalDocs && (
+              <Button
+                size="small"
+                type="text"
+                icon={<BookOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDocuments?.("proposal", proposal);
+                }}
+              >
+                Docs
               </Button>
             )}
             <Button
@@ -538,6 +555,7 @@ export const WorkspaceEntityCard = ({
     const canActivateContract = Boolean(onActivate && can("activate:contract") && isDraft);
     const canCancelContract = Boolean(onCancel && can("update:contract") && isActive);
     const canDeleteContract = Boolean(onDelete && can("delete:contract") && isDraft);
+    const canViewContractDocs = Boolean(onViewDocuments && contract.id);
 
     return (
       <Card
@@ -642,6 +660,19 @@ export const WorkspaceEntityCard = ({
                   }}
                 >
                   Delete
+                </Button>
+              )}
+              {canViewContractDocs && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<BookOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewDocuments?.("contract", contract);
+                  }}
+                >
+                  Docs
                 </Button>
               )}
             </Space>
@@ -769,6 +800,7 @@ interface WorkspaceEntityListProps {
   onEntityApprove?: (entity: any) => void;
   onEntityReject?: (entity: any) => void;
   onEntityDelete?: (entity: any) => void;
+  onEntityViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
 }
 
 export const WorkspaceEntityList = ({
@@ -786,6 +818,7 @@ export const WorkspaceEntityList = ({
   onEntityApprove,
   onEntityReject,
   onEntityDelete,
+  onEntityViewDocuments,
 }: WorkspaceEntityListProps) => {
   if (loading) {
     return <Card loading style={{ marginTop: 16 }} />;
@@ -816,6 +849,7 @@ export const WorkspaceEntityList = ({
           onApprove={onEntityApprove}
           onReject={onEntityReject}
           onDelete={onEntityDelete}
+          onViewDocuments={onEntityViewDocuments}
         />
       ))}
     </div>
