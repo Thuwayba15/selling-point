@@ -78,7 +78,7 @@ const ContractsPage = () => {
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [selectedContract, setSelectedContract] = useState<IContract | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [activeTab, setActiveTab] = useState("all");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

@@ -57,7 +57,7 @@ const ProposalsPage = () => {
   const [opportunityId, setOpportunityId] = useState<string | undefined>(undefined);
   const [selectedProposal, setSelectedProposal] = useState<IProposal | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

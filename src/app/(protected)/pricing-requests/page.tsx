@@ -58,7 +58,7 @@ const PricingRequestsPage = () => {
     null,
   );
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [viewMode, setViewMode] = useState<"all" | "pending" | "mine">("all");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

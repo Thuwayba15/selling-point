@@ -101,8 +101,6 @@ export const PricingRequestsTable = ({
                 current: pagination.currentPage,
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} pricing requests`,
                 onChange: onPaginationChange,
               }
             : false

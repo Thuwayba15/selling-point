@@ -133,8 +133,6 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
         pageSize: pagination.pageSize,
         total: pagination.total,
         onChange: pagination.onChange,
-        showSizeChanger: true,
-        showTotal: (total) => `Total ${total} documents`,
       }}
       onRow={(record) => ({
         onClick: () => onSelectDocument(record),

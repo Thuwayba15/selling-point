@@ -101,8 +101,6 @@ export const ProposalsTable = ({
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
                 onChange: onPaginationChange,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} proposals`,
               }
             : false
         }

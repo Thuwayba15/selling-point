@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { App, Button, Form, Modal, Select, Space } from "antd";
+import { App, Button, Form, Modal, Select, Space, Pagination } from "antd";
 import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import { ProposalsFilters } from "@/components/proposals";
 import { PricingRequestsFilters } from "@/components/pricing-requests";
@@ -145,6 +145,16 @@ export const OpportunityWorkspaceContent = ({
   const [isRelatedNoteFormOpen, setIsRelatedNoteFormOpen] = useState(false);
   const [relatedNoteForm] = Form.useForm();
   const [editingRelatedNote, setEditingRelatedNote] = useState<INote | null>(null);
+
+  // Pagination state for workspace tabs
+  const [proposalPageSize, setProposalPageSize] = useState(5);
+  const [proposalCurrentPage, setProposalCurrentPage] = useState(1);
+  const [pricingPageSize, setPricingPageSize] = useState(5);
+  const [pricingCurrentPage, setPricingCurrentPage] = useState(1);
+  const [contractPageSize, setContractPageSize] = useState(5);
+  const [contractCurrentPage, setContractCurrentPage] = useState(1);
+  const [documentPageSize, setDocumentPageSize] = useState(5);
+  const [documentCurrentPage, setDocumentCurrentPage] = useState(1);
 
   const proposalDocOptions = useMemo(
     () =>
@@ -552,6 +562,27 @@ export const OpportunityWorkspaceContent = ({
     [workspaceData.contracts, contractFilters, contractViewMode],
   );
 
+  // Paginated data for workspace tabs
+  const paginatedProposals = useMemo(() => {
+    const start = (proposalCurrentPage - 1) * proposalPageSize;
+    return filteredProposals.slice(start, start + proposalPageSize);
+  }, [filteredProposals, proposalCurrentPage, proposalPageSize]);
+
+  const paginatedPricingRequests = useMemo(() => {
+    const start = (pricingCurrentPage - 1) * pricingPageSize;
+    return filteredPricingRequests.slice(start, start + pricingPageSize);
+  }, [filteredPricingRequests, pricingCurrentPage, pricingPageSize]);
+
+  const paginatedContracts = useMemo(() => {
+    const start = (contractCurrentPage - 1) * contractPageSize;
+    return filteredContracts.slice(start, start + contractPageSize);
+  }, [filteredContracts, contractCurrentPage, contractPageSize]);
+
+  const paginatedDocuments = useMemo(() => {
+    const start = (documentCurrentPage - 1) * documentPageSize;
+    return (workspaceData.documents || []).slice(start, start + documentPageSize);
+  }, [workspaceData.documents, documentCurrentPage, documentPageSize]);
+
   const workspaceItems: WorkspaceTabItem[] = [
     {
       key: "overview",
@@ -599,7 +630,7 @@ export const OpportunityWorkspaceContent = ({
             />
           </div>
           <WorkspaceEntityList
-            entities={filteredPricingRequests}
+            entities={paginatedPricingRequests}
             type="pricingRequest"
             loading={isLoading}
             emptyText="No pricing requests for this opportunity"
@@ -608,6 +639,15 @@ export const OpportunityWorkspaceContent = ({
             onEntityComplete={(entity) => onCompleteEntity("pricingRequest", entity)}
             onEntityDelete={(entity) => onDeleteEntity("pricingRequest", entity)}
           />
+          {filteredPricingRequests.length > 0 && (
+            <Pagination
+              current={pricingCurrentPage}
+              pageSize={pricingPageSize}
+              total={filteredPricingRequests.length}
+              onChange={setPricingCurrentPage}
+              style={{ marginTop: "16px", float: "right" }}
+            />
+          )}
         </>
       ),
     },
@@ -630,7 +670,7 @@ export const OpportunityWorkspaceContent = ({
             />
           </div>
           <WorkspaceEntityList
-            entities={filteredProposals}
+            entities={paginatedProposals}
             type="proposal"
             loading={isLoading}
             emptyText="No proposals for this opportunity"
@@ -642,6 +682,15 @@ export const OpportunityWorkspaceContent = ({
             onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
             onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
           />
+          {filteredProposals.length > 0 && (
+            <Pagination
+              current={proposalCurrentPage}
+              pageSize={proposalPageSize}
+              total={filteredProposals.length}
+              onChange={setProposalCurrentPage}
+              style={{ marginTop: "16px", float: "right" }}
+            />
+          )}
         </>
       ),
     },
@@ -687,7 +736,7 @@ export const OpportunityWorkspaceContent = ({
             </Space>
           </div>
           <WorkspaceEntityList
-            entities={filteredContracts}
+            entities={paginatedContracts}
             type="contract"
             loading={isLoading}
             emptyText="No contracts linked to this opportunity's client"
@@ -698,6 +747,15 @@ export const OpportunityWorkspaceContent = ({
             onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
             onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
           />
+          {filteredContracts.length > 0 && (
+            <Pagination
+              current={contractCurrentPage}
+              pageSize={contractPageSize}
+              total={filteredContracts.length}
+              onChange={setContractCurrentPage}
+              style={{ marginTop: "16px", float: "right" }}
+            />
+          )}
         </>
       ),
     },
@@ -717,13 +775,13 @@ export const OpportunityWorkspaceContent = ({
             loading={isLoading}
           />
           <DocumentsTable
-            documents={workspaceData.documents || []}
+            documents={paginatedDocuments}
             loading={isLoading}
             pagination={{
-              current: 1,
-              pageSize: Math.max((workspaceData.documents || []).length, 1),
+              current: documentCurrentPage,
+              pageSize: documentPageSize,
               total: (workspaceData.documents || []).length,
-              onChange: () => undefined,
+              onChange: setDocumentCurrentPage,
             }}
             onSelectDocument={setSelectedWorkspaceDocument}
             selectedDocumentId={selectedWorkspaceDocument?.id}

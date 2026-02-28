@@ -18,6 +18,8 @@ import {
   UpOutlined,
   EditOutlined,
   DeleteOutlined,
+  PlusOutlined,
+  MinusOutlined,
 } from "@ant-design/icons";
 import type { IActivity } from "@/providers/activities/context";
 import type { IProposal } from "@/providers/proposals/context";
@@ -395,14 +397,12 @@ export const WorkspaceEntityCard = ({
             <Button
               size="small"
               type="text"
-              icon={expanded ? <UpOutlined /> : <DownOutlined />}
+              icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
               onClick={(e) => {
                 e.stopPropagation();
                 setExpanded((prev) => !prev);
               }}
-            >
-              {expanded ? "Collapse" : "Expand"}
-            </Button>
+            />
           </Space>
 
           {expanded && (
@@ -535,14 +535,12 @@ export const WorkspaceEntityCard = ({
                 <Button
                   size="small"
                   type="text"
-                  icon={expanded ? <UpOutlined /> : <DownOutlined />}
+                  icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
                   onClick={(e) => {
                     e.stopPropagation();
                     setExpanded((prev) => !prev);
                   }}
-                >
-                  {expanded ? "Collapse" : "Expand"}
-                </Button>
+                />
               )}
             </Space>
           )}

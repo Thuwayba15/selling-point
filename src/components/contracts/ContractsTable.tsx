@@ -109,8 +109,6 @@ export const ContractsTable = ({
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
                 onChange: onPaginationChange,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} contracts`,
               }
             : false
         }
