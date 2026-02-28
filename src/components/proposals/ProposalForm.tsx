@@ -8,6 +8,7 @@ import type { FormInstance } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IProposal, IProposalLineItem } from "@/providers/proposals/context";
 import type { ProposalFormValues, ProposalLineItemFormValues } from "@/types/forms";
+import { calculateProposalTotals } from "@/utils/proposal";
 import { useStyles } from "./style";
 
 interface ProposalFormProps {
@@ -27,10 +28,6 @@ const STATUS_OPTIONS = [
   { label: "Approved", value: 4 },
 ];
 
-const CURRENCY_OPTIONS = [
-  { label: "R", value: "R" },
-];
-
 export const ProposalForm: React.FC<ProposalFormProps> = ({
   form,
   initialValues,
@@ -47,11 +44,34 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
   const [isAddingLineItem, setIsAddingLineItem] = React.useState(false);
   const [lineItemForm] = Form.useForm();
 
+  // Re-initialize line items when initialValues changes
+  React.useEffect(() => {
+    console.log("[ProposalForm.useEffect] Re-initializing line items for proposal ID:", initialValues?.id);
+    console.log("[ProposalForm.useEffect] initialValues:", initialValues);
+    console.log("[ProposalForm.useEffect] initialValues.lineItems:", initialValues?.lineItems);
+    setLineItems(initialValues?.lineItems || []);
+  }, [initialValues?.id]);
+
   const handleAddLineItem = (values: ProposalLineItemFormValues) => {
+    console.log("[ProposalForm.handleAddLineItem] Adding line item:", values);
     const quantity = typeof values.quantity === "string" ? parseFloat(values.quantity) : values.quantity;
     const unitPrice = typeof values.unitPrice === "string" ? parseFloat(values.unitPrice) : values.unitPrice;
     const discount = typeof values.discount === "string" ? parseFloat(values.discount) : values.discount || 0;
     const taxRate = typeof values.taxRate === "string" ? parseFloat(values.taxRate) : values.taxRate || 0;
+
+    const subtotal = quantity * unitPrice;
+    const discountAmount = subtotal * (discount / 100);
+    const afterDiscount = subtotal - discountAmount;
+    const taxAmount = afterDiscount * (taxRate / 100);
+    const total = afterDiscount + taxAmount;
+
+    console.log("[ProposalForm.handleAddLineItem] Calculated total:", {
+      subtotal,
+      discountAmount,
+      afterDiscount,
+      taxAmount,
+      total,
+    });
 
     const newLineItem: IProposalLineItem = {
       id: Math.random().toString(),
@@ -61,14 +81,13 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       unitPrice,
       discount,
       taxRate,
-      total:
-        quantity *
-        unitPrice *
-        (1 - discount / 100) *
-        (1 + taxRate / 100),
+      total,
     };
 
-    setLineItems([...lineItems, newLineItem]);
+    console.log("[ProposalForm.handleAddLineItem] New line item:", newLineItem);
+    const updatedLineItems = [...lineItems, newLineItem];
+    console.log("[ProposalForm.handleAddLineItem] Updated lineItems:", updatedLineItems);
+    setLineItems(updatedLineItems);
     lineItemForm.resetFields();
     setIsAddingLineItem(false);
   };
@@ -85,17 +104,26 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           ? values.validUntil.toISOString()
           : undefined;
 
+    // Calculate totals from line items
+    const totals = calculateProposalTotals(lineItems);
+
+    // Ensure currency is always R, and all required fields are present
     const proposalData: Partial<IProposal> = {
-      title: values.title,
+      title: values.title || "",
       clientId: values.clientId,
       opportunityId: values.opportunityId,
       status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status || 1,
-      description: values.description,
-      currency: values.currency || "R",
+      description: values.description || "",
+      currency: "R", // Always force to R, not allowing selection of other currencies
       validUntil,
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      totalAmount: totals.totalAmount,
       ...(values.notes ? { notes: values.notes } : {}),
     };
 
+    console.log("[ProposalForm.handleFinish] Proposal data:", JSON.stringify(proposalData, null, 2));
+    console.log("[ProposalForm.handleFinish] Line items:", JSON.stringify(lineItems, null, 2));
     // Pass both proposal data and line items separately
     onSubmit(proposalData, lineItems);
   };
@@ -138,7 +166,13 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       title: "Total",
       dataIndex: "total",
       key: "total",
-      render: (total) => `${total.toLocaleString()}`,
+      render: (total, record) => {
+        console.log("[ProposalForm.lineItemColumns] Rendering total for record:", record);
+        // Use total field if available, otherwise calculate from the line item
+        const lineTotal = total !== undefined ? total : (record.total || (record.quantity || 0) * (record.unitPrice || 0));
+        console.log("[ProposalForm.lineItemColumns] Calculated lineTotal:", lineTotal);
+        return `${lineTotal.toLocaleString()}`;
+      },
     },
     {
       title: "Action",
@@ -154,18 +188,24 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       ),
     },
   ];
-
+console.log("[ProposalForm.render] initialValues:", initialValues);
+console.log("[ProposalForm.render] lineItems state:", lineItems);
+const formInitialValues = {
+  status: 1,
+  title: initialValues?.title || "",
+  clientId: initialValues?.clientId,
+  opportunityId: initialValues?.opportunityId,
+  description: initialValues?.description || "",
+  notes: initialValues?.notes,
+  validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
+};
+console.log("[ProposalForm.render] formInitialValues being set:", formInitialValues);
   return (
     <>
       <Form
         form={form}
         layout="vertical"
-        initialValues={{
-          status: 1,
-          currency: "R",
-          ...initialValues,
-          validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
-        }}
+        initialValues={formInitialValues}
         onFinish={handleFinish}
         autoComplete="off"
       >
@@ -221,10 +261,6 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           <DatePicker className={styles.fullWidthControl} />
         </Form.Item>
 
-        <Form.Item label="Currency" name="currency">
-          <Select placeholder="Select currency" options={CURRENCY_OPTIONS} />
-        </Form.Item>
-
         <Form.Item label="Status" name="status">
           <Select placeholder="Select status" options={STATUS_OPTIONS} disabled />
         </Form.Item>
@@ -255,6 +291,37 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
           scroll={{ x: "max-content" }}
           size="small"
         />
+
+        {lineItems.length > 0 && (
+          <div className={styles.summarySection}>
+            {(() => {
+              const totals = calculateProposalTotals(lineItems);
+              const currency = "R";
+              return (
+                <>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryLabel}>Subtotal:</span>
+                    <span className={styles.summaryValue}>
+                      {currency} {totals.subtotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryLabel}>Tax:</span>
+                    <span className={styles.summaryValue}>
+                      {currency} {totals.tax.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={`${styles.summaryLabel} ${styles.totalAmount}`}>Total:</span>
+                    <span className={`${styles.summaryValue} ${styles.totalAmount}`}>
+                      {currency} {totals.totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
 
         {!isAddingLineItem ? (
           <Button

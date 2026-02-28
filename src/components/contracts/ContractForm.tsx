@@ -28,7 +28,7 @@ const STATUS_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "R", value: "R" },
+  { label: "ZAR (R)", value: "R" },
 ];
 
 export const ContractForm: React.FC<ContractFormProps> = ({

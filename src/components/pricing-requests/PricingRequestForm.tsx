@@ -29,7 +29,7 @@ const PRIORITY_OPTIONS = [
 ];
 
 const CURRENCY_OPTIONS = [
-  { label: "R", value: "R" },
+  { label: "ZAR (R)", value: "R" },
 ];
 
 export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({

@@ -37,6 +37,11 @@ export const ProposalsTable = ({
   onPaginationChange,
 }: ProposalsTableProps) => {
   const { styles } = useStyles();
+  
+  console.log("[ProposalsTable] Rendering proposals:", {
+    count: proposals?.length || 0,
+    firstProposal: proposals?.[0],
+  });
 
   const columns: ColumnsType<IProposal> = [
     {

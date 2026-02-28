@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
-import { App, Button, Form, Modal } from "antd";
+import { App, Modal } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useProposalsState, useProposalsActions } from "@/providers/proposals";
 import { useClientsState, useClientsActions } from "@/providers/clients";
@@ -14,10 +13,15 @@ import {
   ProposalDetails,
   ProposalActions,
   ProposalForm,
+  CreateProposalForm,
+  EditProposalForm,
 } from "@/components/proposals";
 import { useStyles } from "@/components/proposals/style";
-import { IProposal, IProposalLineItem } from "@/providers/proposals/context";
+import { IProposal } from "@/providers/proposals/context";
 import { useRbac } from "@/hooks/useRbac";
+import { calculateProposalTotals } from "@/utils/proposal";
+import type { CreateProposalPayload } from "@/components/proposals/CreateProposalForm";
+import type { UpdateProposalPayload } from "@/components/proposals/EditProposalForm";
 
 const ProposalsPage = () => {
   const { styles } = useStyles();
@@ -33,14 +37,12 @@ const ProposalsPage = () => {
     createProposal,
     updateProposal,
     addLineItem,
-    updateLineItem,
     deleteLineItem,
     submitProposal,
     approveProposal,
     rejectProposal,
     deleteProposal,
     clearError,
-    clearProposal,
   } = useProposalsActions();
 
   // Clients provider for dropdown
@@ -60,8 +62,6 @@ const ProposalsPage = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [createForm] = Form.useForm();
-  const [editForm] = Form.useForm();
 
   const initializedRef = useRef(false);
 
@@ -84,9 +84,21 @@ const ProposalsPage = () => {
   // Load proposal details when selected
   useEffect(() => {
     if (selectedProposal?.id) {
+      console.log("[Load proposal details] selectedProposal.id:", selectedProposal.id);
       getProposal(selectedProposal.id);
     }
   }, [selectedProposal?.id]);
+
+  // Update displayed totals when proposal data changes
+  useEffect(() => {
+    if (proposal?.id && selectedProposal?.id === proposal.id) {
+      console.log("[useEffect] Proposal updated with totals:", {
+        subtotal: proposal.subtotal,
+        tax: proposal.tax,
+        totalAmount: proposal.totalAmount,
+      });
+    }
+  }, [proposal?.subtotal, proposal?.tax, proposal?.totalAmount, proposal?.id, selectedProposal?.id]);
 
   // Show error messages
   useEffect(() => {
@@ -118,19 +130,14 @@ const ProposalsPage = () => {
   };
 
   const handleCreateClick = () => {
-    createForm.resetFields();
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateSubmit = async (
-    values: Partial<IProposal>,
-    lineItems?: IProposalLineItem[],
-  ) => {
-    const success = await createProposal(values);
+  const handleCreateSubmit = async (payload: CreateProposalPayload) => {
+    const success = await createProposal(payload);
     if (success) {
       message.success("Proposal created successfully");
       setIsCreateModalOpen(false);
-      createForm.resetFields();
       setCurrentPage(1);
 
       // Refresh proposals list
@@ -146,66 +153,70 @@ const ProposalsPage = () => {
 
   const handleCreateCancel = () => {
     setIsCreateModalOpen(false);
-    createForm.resetFields();
   };
 
-  const handleEdit = () => {
-    if (!selectedProposal) return;
-    const formValues = {
-      ...selectedProposal,
-      validUntil: selectedProposal.validUntil ? dayjs(selectedProposal.validUntil) : undefined,
-    };
-    editForm.setFieldsValue(formValues);
+  const handleEdit = async () => {
+    if (!selectedProposal?.id) return;
+    console.log("[handleEdit] Selected proposal:", selectedProposal);
+    console.log("[handleEdit] Fetching fresh proposal data for ID:", selectedProposal.id);
+    // Always fetch fresh proposal data before editing to ensure all fields are populated
+    await getProposal(selectedProposal.id);
+    console.log("[handleEdit] After getProposal, proposal state:", proposal);
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = async (values: Partial<IProposal>, lineItems?: IProposalLineItem[]) => {
+  const handleEditSubmit = async (payload: UpdateProposalPayload) => {
     if (!selectedProposal) return;
 
-    const success = await updateProposal(selectedProposal.id, values);
-    if (success) {
-      message.success("Proposal updated successfully");
-      setIsEditModalOpen(false);
-      editForm.resetFields();
+    const { lineItems, ...proposalData } = payload;
 
-      // Sync line items if provided
+    // Calculate totals from form line items before any API calls
+    const totals = lineItems && lineItems.length > 0 
+      ? calculateProposalTotals(lineItems) 
+      : { subtotal: 0, tax: 0, totalAmount: 0 };
+
+    // Single update call with all data including totals
+    const success = await updateProposal(selectedProposal.id, {
+      ...proposalData,
+      ...totals,
+      currency: "R",
+    });
+
+    if (success) {
+      // Handle line items
       if (lineItems && selectedProposal.id) {
         const existingLineItems = proposal?.lineItems || [];
+        const existingIds = new Set(existingLineItems.map(item => item.id));
 
-        // Identify new items (no id) and add them
-        const newItems = lineItems.filter((item) => !item.id || item.id.startsWith("temp-"));
+        const newItems = lineItems.filter(item => !item.id || !existingIds.has(item.id));
         for (const item of newItems) {
-          const { id, ...lineItemData } = item;
-          await addLineItem(selectedProposal.id, lineItemData);
+          await addLineItem(selectedProposal.id, {
+            productServiceName: item.productServiceName,
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            discount: item.discount,
+            taxRate: item.taxRate,
+          });
         }
 
-        // Identify removed items and delete them
-        const removedItems = existingLineItems.filter(
-          (existingItem) => !lineItems.find((item) => item.id === existingItem.id),
-        );
-        for (const item of removedItems) {
-          if (item.id) {
-            await deleteLineItem(selectedProposal.id, item.id);
-          }
+        const newItemIds = new Set(lineItems.filter(item => item.id).map(item => item.id));
+        const deletedItems = existingLineItems.filter(item => item.id && !newItemIds.has(item.id));
+        for (const item of deletedItems) {
+          if (item.id) await deleteLineItem(selectedProposal.id, item.id);
         }
       }
 
-      await fetchProposals({
-        status,
-        clientId,
-        opportunityId,
-        pageNumber: currentPage,
-        pageSize,
-      });
-      if (selectedProposal.id === proposal?.id) {
-        await getProposal(selectedProposal.id);
-      }
+      message.success("Proposal updated successfully");
+      setIsEditModalOpen(false);
+
+      await fetchProposals({ status, clientId, opportunityId, pageNumber: currentPage, pageSize });
+      await getProposal(selectedProposal.id);
     }
   };
 
   const handleEditCancel = () => {
     setIsEditModalOpen(false);
-    editForm.resetFields();
   };
 
   const handleSubmit = async () => {
@@ -362,8 +373,7 @@ const ProposalsPage = () => {
         footer={null}
         width={800}
       >
-        <ProposalForm
-          form={createForm}
+        <CreateProposalForm
           loading={isPending}
           onSubmit={handleCreateSubmit}
           onCancel={handleCreateCancel}
@@ -380,15 +390,16 @@ const ProposalsPage = () => {
         footer={null}
         width={800}
       >
-        <ProposalForm
-          form={editForm}
-          initialValues={selectedProposal || undefined}
-          loading={isPending}
-          onSubmit={handleEditSubmit}
-          onCancel={handleEditCancel}
-          opportunities={opportunitiesList}
-          clients={clientsList}
-        />
+        {proposal && (
+          <EditProposalForm
+            proposal={proposal}
+            loading={isPending}
+            onSubmit={handleEditSubmit}
+            onCancel={handleEditCancel}
+            opportunities={opportunitiesList}
+            clients={clientsList}
+          />
+        )}
       </Modal>
     </div>
   );
