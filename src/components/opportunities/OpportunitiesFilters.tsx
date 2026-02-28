@@ -17,6 +17,10 @@ interface OpportunitiesFiltersProps {
   showMyOpportunities?: boolean;
   onShowMyOpportunitiesChange?: (value: boolean) => void;
   showMyOpportunitiesToggle?: boolean;
+  initialSearchTerm?: string;
+  initialClientId?: string;
+  initialStage?: number;
+  initialOwnerId?: string;
 }
 
 const STAGE_OPTIONS = [
@@ -35,13 +39,25 @@ export const OpportunitiesFilters = ({
   showMyOpportunities = false,
   onShowMyOpportunitiesChange,
   showMyOpportunitiesToggle = false,
+  initialSearchTerm = "",
+  initialClientId,
+  initialStage,
+  initialOwnerId,
 }: OpportunitiesFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [clientId, setClientId] = useState<string | undefined>(undefined);
-  const [stage, setStage] = useState<number | undefined>(undefined);
-  const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [clientId, setClientId] = useState<string | undefined>(initialClientId);
+  const [stage, setStage] = useState<number | undefined>(initialStage);
+  const [ownerId, setOwnerId] = useState<string | undefined>(initialOwnerId);
+
+  const handleClear = () => {
+    setSearchTerm("");
+    setClientId(undefined);
+    setStage(undefined);
+    setOwnerId(undefined);
+    onClear();
+  };
 
   const handleApply = () => {
     onApplyFilters({
@@ -95,15 +111,6 @@ export const OpportunitiesFilters = ({
             />
           </Form.Item>
 
-          <Form.Item label="Owner ID" className={styles.filterItem}>
-            <Input
-              placeholder="Owner user id"
-              value={ownerId}
-              onChange={(e) => setOwnerId(e.target.value)}
-              allowClear
-            />
-          </Form.Item>
-
           {showMyOpportunitiesToggle && (
             <Form.Item label="My Opportunities" className={styles.filterItem}>
               <Switch checked={showMyOpportunities} onChange={onShowMyOpportunitiesChange} />
@@ -116,7 +123,7 @@ export const OpportunitiesFilters = ({
                 Apply Filters
               </Button>
               {hasActiveFilters && (
-                <Button icon={<ClearOutlined />} onClick={onClear} danger>
+                <Button icon={<ClearOutlined />} onClick={handleClear} danger>
                   Clear Filters
                 </Button>
               )}

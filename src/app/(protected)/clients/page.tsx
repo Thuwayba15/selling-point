@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Modal, Form, App } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { getAxiosInstance } from "@/lib/api";
 import { useStyles } from "@/components/clients/style";
 import {
   ClientsHeader,
@@ -14,6 +15,7 @@ import {
   ClientForm,
   type Client,
 } from "@/components/clients";
+import { EntityWorkspaceTabs, WorkspaceEntityList, type WorkspaceTabItem } from "@/components/common";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import type { IClient } from "@/providers/clients/context";
 
@@ -36,6 +38,25 @@ const ClientsPage = () => {
 
   // Selected Client State
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [workspaceTab, setWorkspaceTab] = useState("overview");
+  const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [workspaceData, setWorkspaceData] = useState<{
+    contacts: Array<{ id: string; title: string; subtitle?: string }>;
+    opportunities: Array<{ id: string; title: string; subtitle?: string }>;
+    contracts: Array<{ id: string; title: string; subtitle?: string }>;
+    documents: Array<{ id: string; title: string; subtitle?: string }>;
+    notes: Array<{ id: string; title: string; subtitle?: string }>;
+    activities: Array<{ id: string; title: string; subtitle?: string }>;
+  }>(
+    {
+      contacts: [],
+      opportunities: [],
+      contracts: [],
+      documents: [],
+      notes: [],
+      activities: [],
+    },
+  );
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -109,6 +130,137 @@ const ClientsPage = () => {
       actions.getClient(selectedClient.id);
       actions.getClientStats(selectedClient.id);
     }
+  }, [selectedClient?.id]);
+
+  useEffect(() => {
+    const loadWorkspaceData = async () => {
+      if (!selectedClient?.id) {
+        setWorkspaceData({
+          contacts: [],
+          opportunities: [],
+          contracts: [],
+          documents: [],
+          notes: [],
+          activities: [],
+        });
+        return;
+      }
+
+      setWorkspaceLoading(true);
+      try {
+        const api = getAxiosInstance();
+        const [contactsRes, opportunitiesRes, contractsRes, documentsRes, notesRes, activitiesRes] =
+          await Promise.all([
+            api.get(`/api/contacts/by-client/${selectedClient.id}`).catch(() => ({ data: [] })),
+            api
+              .get("/api/opportunities", {
+                params: { clientId: selectedClient.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/contracts", {
+                params: { clientId: selectedClient.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/documents", {
+                params: { relatedToType: 1, relatedToId: selectedClient.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/notes", {
+                params: { relatedToType: 1, relatedToId: selectedClient.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/activities", {
+                params: { relatedToType: 1, relatedToId: selectedClient.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+          ]);
+
+        const contacts = (contactsRes.data?.items || contactsRes.data || []).map(
+          (item: {
+            id: string;
+            firstName?: string;
+            lastName?: string;
+            email?: string;
+          }) => ({
+            id: item.id,
+            title: `${item.firstName || ""} ${item.lastName || ""}`.trim() || "Unnamed Contact",
+            subtitle: item.email,
+          }),
+        );
+
+        const opportunities = (opportunitiesRes.data?.items || opportunitiesRes.data || []).map(
+          (item: {
+            id: string;
+            title?: string;
+            stageName?: string;
+            statusName?: string;
+          }) => ({
+            id: item.id,
+            title: item.title || "Untitled Opportunity",
+            subtitle: item.stageName || item.statusName,
+          }),
+        );
+
+        const contracts = (contractsRes.data?.items || contractsRes.data || []).map(
+          (item: {
+            id: string;
+            contractNumber?: string;
+            statusName?: string;
+          }) => ({
+            id: item.id,
+            title: item.contractNumber || "Contract",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const documents = (documentsRes.data?.items || documentsRes.data || []).map(
+          (item: {
+            id: string;
+            fileName?: string;
+            categoryName?: string;
+          }) => ({
+            id: item.id,
+            title: item.fileName || "Document",
+            subtitle: item.categoryName,
+          }),
+        );
+
+        const notes = (notesRes.data?.items || notesRes.data || []).map(
+          (item: {
+            id: string;
+            content?: string;
+            createdByName?: string;
+          }) => ({
+            id: item.id,
+            title: item.content || "Note",
+            subtitle: item.createdByName,
+          }),
+        );
+
+        const activities = (activitiesRes.data?.items || activitiesRes.data || []).map(
+          (item: {
+            id: string;
+            title?: string;
+            typeName?: string;
+            statusName?: string;
+          }) => ({
+            id: item.id,
+            title: item.title || item.typeName || "Activity",
+            subtitle: item.statusName,
+          }),
+        );
+
+        setWorkspaceData({ contacts, opportunities, contracts, documents, notes, activities });
+      } finally {
+        setWorkspaceLoading(false);
+      }
+    };
+
+    loadWorkspaceData();
   }, [selectedClient?.id]);
 
   // Show error messages
@@ -190,6 +342,7 @@ const ClientsPage = () => {
   // Handlers: Delete Client
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
+    setWorkspaceTab("overview");
   };
 
   const handleDelete = async () => {
@@ -228,6 +381,89 @@ const ClientsPage = () => {
     createdAt: client.createdAt,
   }));
 
+  const workspaceItems: WorkspaceTabItem[] = [
+    {
+      key: "overview",
+      label: "Overview",
+      content: (
+        <>
+          <ClientDetails client={selectedClient} />
+          {selectedClient && (
+            <>
+              <ClientStatsComponent stats={state.clientStats} loading={state.isLoadingDetails} />
+              <ClientActions
+                clientId={selectedClient.id}
+                clientName={selectedClient.name}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "contacts",
+      label: "Contacts",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.contacts}
+          emptyText={workspaceLoading ? "Loading contacts..." : "No contacts for this client"}
+        />
+      ),
+    },
+    {
+      key: "opportunities",
+      label: "Opportunities",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.opportunities}
+          emptyText={workspaceLoading ? "Loading opportunities..." : "No opportunities for this client"}
+        />
+      ),
+    },
+    {
+      key: "contracts",
+      label: "Contracts",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.contracts}
+          emptyText={workspaceLoading ? "Loading contracts..." : "No contracts for this client"}
+        />
+      ),
+    },
+    {
+      key: "documents",
+      label: "Documents",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.documents}
+          emptyText={workspaceLoading ? "Loading documents..." : "No documents for this client"}
+        />
+      ),
+    },
+    {
+      key: "notes",
+      label: "Notes",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.notes}
+          emptyText={workspaceLoading ? "Loading notes..." : "No notes for this client"}
+        />
+      ),
+    },
+    {
+      key: "activities",
+      label: "Activities",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.activities}
+          emptyText={workspaceLoading ? "Loading activities..." : "No activities for this client"}
+        />
+      ),
+    },
+  ];
+
   return (
     <div className={styles.pageContainer}>
       <ClientsHeader onCreateClick={handleCreateClick} />
@@ -260,19 +496,15 @@ const ClientsPage = () => {
         />
 
         <div className={styles.detailsPanel}>
-          <ClientDetails client={selectedClient} />
-
-          {selectedClient && (
-            <>
-              <ClientStatsComponent stats={state.clientStats} loading={state.isLoadingDetails} />
-
-              <ClientActions
-                clientId={selectedClient.id}
-                clientName={selectedClient.name}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            </>
+          {selectedClient ? (
+            <EntityWorkspaceTabs
+              title={`${selectedClient.name} Workspace`}
+              items={workspaceItems}
+              activeKey={workspaceTab}
+              onChange={setWorkspaceTab}
+            />
+          ) : (
+            <ClientDetails client={null} />
           )}
         </div>
       </div>
