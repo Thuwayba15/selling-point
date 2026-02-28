@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Form, Radio, message } from "antd";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Form, Tabs, message, Spin } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthActions } from "@/providers/auth";
-import type { RegisterPayload } from "@/providers/auth";
+import type { RegisterPayload, UserRole } from "@/providers/auth";
 import type { RegisterFormValues } from "@/types/forms";
 import AuthInput from "./AuthInput";
 import AuthButton from "./AuthButton";
@@ -10,19 +10,79 @@ import AuthTitle from "./AuthTitle";
 import AuthLink from "./AuthLink";
 import { useStyles } from "./style";
 
-type RegistrationMode = "new" | "join" | "default";
+type RegistrationMode = "default" | "new" | "invite";
 
 const RegisterForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { register } = useAuthActions();
   const { styles } = useStyles();
   const [form] = Form.useForm();
-  const [mode, setMode] = useState<RegistrationMode>("default");
   const [loading, setLoading] = useState(false);
+  const [verifyingToken, setVerifyingToken] = useState(false);
+
+  // State for invite data (from token)
+  const [inviteData, setInviteData] = useState<{
+    tenantId: string;
+    role: UserRole;
+    email: string;
+  } | null>(null);
+
+  // Check for invitation token
+  const inviteToken = searchParams.get("token");
+  const hasInviteToken = !!inviteToken;
+
+  // Auto-set mode to "invite" if invite token exists
+  const [mode, setMode] = useState<RegistrationMode>("default");
+
+  // Verify token and load invite data
+  useEffect(() => {
+    if (inviteToken) {
+      verifyInvitationToken(inviteToken);
+    }
+  }, [inviteToken]);
+
+  const verifyInvitationToken = async (token: string) => {
+    setVerifyingToken(true);
+    try {
+      const response = await fetch(`/api/invitations/verify?token=${encodeURIComponent(token)}`);
+      
+      if (!response.ok) {
+        message.error("Invalid or expired invitation link");
+        return;
+      }
+
+      const data = await response.json();
+      
+      setInviteData({
+        tenantId: data.tenantId,
+        role: data.role,
+        email: data.email,
+      });
+
+      setMode("invite");
+      
+      // Pre-fill email
+      form.setFieldValue("email", data.email);
+      
+      message.success("Invitation verified! Please complete your registration.");
+    } catch (error) {
+      console.error("Token verification error:", error);
+      message.error("Failed to verify invitation token");
+    } finally {
+      setVerifyingToken(false);
+    }
+  };
 
   const onFinish = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
+      if (mode === "invite" && !inviteData) {
+        message.error("An invite is required to join an organization. Please check your email for an invite link.");
+        setLoading(false);
+        return;
+      }
+
       const payload: RegisterPayload = {
         email: values.email,
         password: values.password,
@@ -33,9 +93,9 @@ const RegisterForm = () => {
 
       if (mode === "new") {
         payload.tenantName = values.tenantName;
-      } else if (mode === "join") {
-        payload.tenantId = values.tenantId;
-        payload.role = values.role;
+      } else if (mode === "invite" && inviteData) {
+        payload.tenantId = inviteData.tenantId;
+        payload.role = inviteData.role;
       }
 
       const success = await register(payload);
@@ -52,22 +112,81 @@ const RegisterForm = () => {
     }
   };
 
+  // Show loading spinner while verifying token
+  if (verifyingToken) {
+    return (
+      <div style={{ textAlign: "center", padding: "60px 0" }}>
+        <Spin size="large" />
+        <p style={{ marginTop: 16, color: "#666" }}>Verifying invitation...</p>
+      </div>
+    );
+  }
+
+  const tabItems = [
+    {
+      key: "default",
+      label: "Demo Registration",
+      children: (
+        <div style={{ marginTop: 20 }}>
+          <p style={{ color: "#666", marginBottom: 20 }}>
+            Register with our shared demo organization to explore the platform.
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: "new",
+      label: "Create Organization",
+      children: (
+        <Form.Item
+          label="Organization Name"
+          name="tenantName"
+          rules={[{ required: true, message: "Please enter your organization name" }]}
+          style={{ marginTop: 20 }}
+        >
+          <AuthInput placeholder="Acme Corp" />
+        </Form.Item>
+      ),
+    },
+    {
+      key: "invite",
+      label: "Join via Invite",
+      children: (
+        <div style={{ marginTop: 20 }}>
+          {inviteData ? (
+            <div>
+              <p style={{ color: "#52c41a", marginBottom: 10 }}>
+                ✓ Your invitation is valid!
+              </p>
+              <p style={{ color: "#666", marginBottom: 20 }}>
+                You'll be joining as: <strong>{inviteData.role}</strong>
+              </p>
+            </div>
+          ) : (
+            <p style={{ color: "#666", marginBottom: 20 }}>
+              Check your email for an invite link to join an organization.
+            </p>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <Form form={form} layout="vertical" name="register" onFinish={onFinish}>
       <AuthTitle>Register</AuthTitle>
 
-      <Form.Item label="Registration Type">
-        <Radio.Group value={mode} onChange={(e) => setMode(e.target.value)}>
-          <Radio value="default">Default (Shared Demo)</Radio>
-          <Radio value="new">Create New Organisation</Radio>
-          <Radio value="join">Join Existing Organisation</Radio>
-        </Radio.Group>
-      </Form.Item>
+      <Tabs
+        activeKey={mode}
+        onChange={(key) => setMode(key as RegistrationMode)}
+        items={tabItems}
+      />
 
       <Form.Item
         label="First Name"
         name="firstName"
         rules={[{ required: true, message: "Please enter your first name" }]}
+        style={{ marginTop: 20 }}
       >
         <AuthInput placeholder="John" />
       </Form.Item>
@@ -99,41 +218,6 @@ const RegisterForm = () => {
       <Form.Item label="Phone Number (Optional)" name="phoneNumber">
         <AuthInput placeholder="+1234567890" />
       </Form.Item>
-
-      {mode === "new" && (
-        <Form.Item
-          label="Organisation Name"
-          name="tenantName"
-          rules={[{ required: true, message: "Please enter your organisation name" }]}
-        >
-          <AuthInput placeholder="Acme Corp" />
-        </Form.Item>
-      )}
-
-      {mode === "join" && (
-        <>
-          <Form.Item
-            label="Organisation ID (Tenant ID)"
-            name="tenantId"
-            rules={[{ required: true, message: "Please enter the organisation ID" }]}
-          >
-            <AuthInput placeholder="00000000-0000-0000-0000-000000000000" />
-          </Form.Item>
-
-          <Form.Item
-            label="Role"
-            name="role"
-            rules={[{ required: true, message: "Please select a role" }]}
-            initialValue="SalesRep"
-          >
-            <Radio.Group>
-              <Radio value="SalesRep">Sales Rep</Radio>
-              <Radio value="SalesManager">Sales Manager</Radio>
-              <Radio value="BusinessDevelopmentManager">Business Development Manager</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </>
-      )}
 
       <AuthButton type="primary" htmlType="submit" block loading={loading}>
         Register

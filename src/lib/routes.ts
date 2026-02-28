@@ -13,4 +13,5 @@ export const ROUTES = {
   reports: "/reports",
   notes: "/notes",
   documents: "/documents",
+  invitations: "/admin/invitations",
 } as const;
