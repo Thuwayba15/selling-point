@@ -19,6 +19,7 @@ import { NotesProvider } from "@/providers/notes";
 import { DocumentsProvider } from "@/providers/documents";
 import { antdTheme } from "@/theme/theme";
 import { ReportsProvider } from "@/providers/reports";
+import { InvitationsProvider } from "@/providers/invitations";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,11 +44,13 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                             <NotesProvider>
                               <DocumentsProvider>
                                 <ReportsProvider>
-                                  <AntdRegistry>
-                                    <ConfigProvider theme={antdTheme}>
-                                      <App>{children}</App>
-                                    </ConfigProvider>
-                                  </AntdRegistry>
+                                  <InvitationsProvider>
+                                    <AntdRegistry>
+                                      <ConfigProvider theme={antdTheme}>
+                                        <App>{children}</App>
+                                      </ConfigProvider>
+                                    </AntdRegistry>
+                                  </InvitationsProvider>
                                 </ReportsProvider>
                               </DocumentsProvider>
                             </NotesProvider>
