@@ -35,10 +35,8 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(NotesReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Notes (with filters)
   // GET /api/notes
-  // ============================================================================
   const getNotes = async (params?: {
     relatedToType?: RelatedToType;
     relatedToId?: string;
@@ -65,10 +63,8 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Get Single Note
   // GET /api/notes/{id}
-  // ============================================================================
   const getNote = async (id: string) => {
     dispatch(getNotePending());
     try {
@@ -79,10 +75,8 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Create Note
   // POST /api/notes
-  // ============================================================================
   const createNote = async (note: Partial<INote>) => {
     dispatch(createNotePending());
     try {
@@ -93,10 +87,8 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Update Note
   // PUT /api/notes/{id}
-  // ============================================================================
   const updateNote = async (id: string, note: Partial<INote>) => {
     dispatch(updateNotePending());
     try {
@@ -107,10 +99,8 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Delete Note
   // DELETE /api/notes/{id}
-  // ============================================================================
   const deleteNote = async (id: string) => {
     dispatch(deleteNotePending());
     try {
@@ -121,9 +111,7 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };

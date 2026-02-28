@@ -20,10 +20,8 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(UsersReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Users (with filters)
   // GET /api/users
-  // ============================================================================
   const getUsers = async (params?: {
     role?: string;
     searchTerm?: string;
@@ -51,10 +49,8 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Get Single User
   // GET /api/users/{id}
-  // ============================================================================
   const getUser = async (id: string) => {
     dispatch(getUserPending());
     try {
@@ -65,9 +61,7 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };
@@ -92,9 +86,7 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// ============================================================================
 // Custom Hooks
-// ============================================================================
 export const useUsersState = () => {
   const context = useContext(UsersStateContext);
   if (!context) {

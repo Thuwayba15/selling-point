@@ -55,10 +55,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
   const [state, dispatch] = useReducer(ActivitiesReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Activities (with filters)
   // GET /api/activities
-  // ============================================================================
   const getActivities = async (params?: {
     assignedToId?: string;
     type?: ActivityType;
@@ -88,10 +86,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Get My Activities
   // GET /api/activities/my-activities
-  // ============================================================================
   const getMyActivities = async (params?: {
     status?: ActivityStatus;
     pageNumber?: number;
@@ -117,10 +113,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Get Upcoming Activities
   // GET /api/activities/upcoming
-  // ============================================================================
   const getUpcomingActivities = async (params?: {
     daysAhead?: number;
     pageNumber?: number;
@@ -148,10 +142,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Get Overdue Activities
   // GET /api/activities/overdue
-  // ============================================================================
   const getOverdueActivities = async (params?: {
     pageNumber?: number;
     pageSize?: number;
@@ -178,10 +170,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Get Single Activity
   // GET /api/activities/{id}
-  // ============================================================================
   const getActivity = async (id: string) => {
     dispatch(getActivityPending());
     try {
@@ -192,10 +182,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Get Activity Participants
   // GET /api/activities/{activityId}/participants
-  // ============================================================================
   const getActivityParticipants = async (activityId: string) => {
     dispatch(getActivityParticipantsPending());
     try {
@@ -210,10 +198,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Create Activity
   // POST /api/activities
-  // ============================================================================
   const createActivity = async (activity: Partial<IActivity>) => {
     dispatch(createActivityPending());
     try {
@@ -224,10 +210,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Update Activity
   // PUT /api/activities/{id}
-  // ============================================================================
   const updateActivity = async (id: string, activity: Partial<IActivity>) => {
     dispatch(updateActivityPending());
     try {
@@ -238,10 +222,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Delete Activity
   // DELETE /api/activities/{id}
-  // ============================================================================
   const deleteActivity = async (id: string) => {
     dispatch(deleteActivityPending());
     try {
@@ -252,10 +234,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Complete Activity
   // PUT /api/activities/{id}/complete
-  // ============================================================================
   const completeActivity = async (id: string, outcome?: string) => {
     dispatch(completeActivityPending());
     try {
@@ -266,10 +246,8 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Cancel Activity
   // PUT /api/activities/{id}/cancel
-  // ============================================================================
   const cancelActivity = async (id: string) => {
     dispatch(cancelActivityPending());
     try {
@@ -280,9 +258,7 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };
@@ -316,9 +292,7 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
   );
 };
 
-// ============================================================================
 // Custom Hooks
-// ============================================================================
 export const useActivitiesState = () => {
   const context = useContext(ActivitiesStateContext);
   if (!context) {
