@@ -26,7 +26,6 @@ export async function fetchActiveClientsForDropdown(
       name: client.name,
     }));
   } catch (error) {
-    console.error("Failed to fetch active clients:", error);
     return [];
   }
 }

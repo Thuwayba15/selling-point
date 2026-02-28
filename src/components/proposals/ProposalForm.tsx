@@ -46,14 +46,10 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
 
   // Re-initialize line items when initialValues changes
   React.useEffect(() => {
-    console.log("[ProposalForm.useEffect] Re-initializing line items for proposal ID:", initialValues?.id);
-    console.log("[ProposalForm.useEffect] initialValues:", initialValues);
-    console.log("[ProposalForm.useEffect] initialValues.lineItems:", initialValues?.lineItems);
     setLineItems(initialValues?.lineItems || []);
   }, [initialValues?.id]);
 
   const handleAddLineItem = (values: ProposalLineItemFormValues) => {
-    console.log("[ProposalForm.handleAddLineItem] Adding line item:", values);
     const quantity = typeof values.quantity === "string" ? parseFloat(values.quantity) : values.quantity;
     const unitPrice = typeof values.unitPrice === "string" ? parseFloat(values.unitPrice) : values.unitPrice;
     const discount = typeof values.discount === "string" ? parseFloat(values.discount) : values.discount || 0;
@@ -64,14 +60,6 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
     const afterDiscount = subtotal - discountAmount;
     const taxAmount = afterDiscount * (taxRate / 100);
     const total = afterDiscount + taxAmount;
-
-    console.log("[ProposalForm.handleAddLineItem] Calculated total:", {
-      subtotal,
-      discountAmount,
-      afterDiscount,
-      taxAmount,
-      total,
-    });
 
     const newLineItem: IProposalLineItem = {
       id: Math.random().toString(),
@@ -84,9 +72,7 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       total,
     };
 
-    console.log("[ProposalForm.handleAddLineItem] New line item:", newLineItem);
     const updatedLineItems = [...lineItems, newLineItem];
-    console.log("[ProposalForm.handleAddLineItem] Updated lineItems:", updatedLineItems);
     setLineItems(updatedLineItems);
     lineItemForm.resetFields();
     setIsAddingLineItem(false);
@@ -122,8 +108,6 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       ...(values.notes ? { notes: values.notes } : {}),
     };
 
-    console.log("[ProposalForm.handleFinish] Proposal data:", JSON.stringify(proposalData, null, 2));
-    console.log("[ProposalForm.handleFinish] Line items:", JSON.stringify(lineItems, null, 2));
     // Pass both proposal data and line items separately
     onSubmit(proposalData, lineItems);
   };
@@ -167,10 +151,8 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       dataIndex: "total",
       key: "total",
       render: (total, record) => {
-        console.log("[ProposalForm.lineItemColumns] Rendering total for record:", record);
         // Use total field if available, otherwise calculate from the line item
         const lineTotal = total !== undefined ? total : (record.total || (record.quantity || 0) * (record.unitPrice || 0));
-        console.log("[ProposalForm.lineItemColumns] Calculated lineTotal:", lineTotal);
         return `${lineTotal.toLocaleString()}`;
       },
     },
@@ -188,8 +170,6 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       ),
     },
   ];
-console.log("[ProposalForm.render] initialValues:", initialValues);
-console.log("[ProposalForm.render] lineItems state:", lineItems);
 const formInitialValues = {
   status: 1,
   title: initialValues?.title || "",
@@ -199,7 +179,7 @@ const formInitialValues = {
   notes: initialValues?.notes,
   validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
 };
-console.log("[ProposalForm.render] formInitialValues being set:", formInitialValues);
+
   return (
     <>
       <Form

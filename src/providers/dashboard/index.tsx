@@ -48,7 +48,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         const { data } = await api.get("/api/dashboard/overview");
-        console.log("[Dashboard] Overview Response:", data);
 
         // Ensure we have valid data structure with defaults for missing fields
         const overview = data || {
@@ -62,7 +61,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getDashboardOverviewSuccess({ overview }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch dashboard overview");
-        console.error("[Dashboard] Overview Error:", message, error);
         dispatch(getDashboardOverviewError(message));
       }
     };
@@ -145,7 +143,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         const { data } = await api.get("/api/dashboard/activities-summary");
-        console.log("[Dashboard] Activity Summary Response:", data);
 
         // API returns { totalCount, upcomingCount, overdueCount, completedTodayCount, completedThisWeekCount, byType: { 1: count, 2: count, ... } }
         const activityData = data || {
@@ -160,7 +157,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getActivitySummarySuccess({ activitySummary: activityData }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch activity summary");
-        console.error("[Dashboard] Activity Summary Error:", message, error);
         dispatch(getActivitySummaryError(message));
       }
     };
@@ -174,7 +170,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get("/api/dashboard/contracts-expiring", {
           params: { days },
         });
-        console.log("[Dashboard] Expiring Contracts Response:", data);
 
         // API returns either { contracts: [...], totalCount } or just an array
         const contractsList = Array.isArray(data)
@@ -190,7 +185,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         dispatch(getExpiringContractsSuccess({ expiringContracts: contractsList }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch expiring contracts");
-        console.error("[Dashboard] Expiring Contracts Error:", message, error);
         dispatch(getExpiringContractsError(message));
       }
     };

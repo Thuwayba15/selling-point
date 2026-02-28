@@ -83,7 +83,6 @@ const ProposalsPage = () => {
   // Load proposal details when selected
   useEffect(() => {
     if (selectedProposal?.id) {
-      console.log("[Load proposal details] selectedProposal.id:", selectedProposal.id);
       getProposal(selectedProposal.id);
     }
   }, [selectedProposal?.id]);
@@ -91,11 +90,7 @@ const ProposalsPage = () => {
   // Update displayed totals when proposal data changes
   useEffect(() => {
     if (proposal?.id && selectedProposal?.id === proposal.id) {
-      console.log("[useEffect] Proposal updated with totals:", {
-        subtotal: proposal.subtotal,
-        tax: proposal.tax,
-        totalAmount: proposal.totalAmount,
-      });
+      // Totals updated
     }
   }, [proposal?.subtotal, proposal?.tax, proposal?.totalAmount, proposal?.id, selectedProposal?.id]);
 
@@ -156,11 +151,8 @@ const ProposalsPage = () => {
 
   const handleEdit = async () => {
     if (!selectedProposal?.id) return;
-    console.log("[handleEdit] Selected proposal:", selectedProposal);
-    console.log("[handleEdit] Fetching fresh proposal data for ID:", selectedProposal.id);
     // Always fetch fresh proposal data before editing to ensure all fields are populated
     await getProposal(selectedProposal.id);
-    console.log("[handleEdit] After getProposal, proposal state:", proposal);
     setIsEditModalOpen(true);
   };
 

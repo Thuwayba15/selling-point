@@ -27,14 +27,6 @@ const STATUS_COLORS: Record<number, string> = {
 export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => {
   const { styles } = useStyles();
 
-  console.log("[ProposalDetails] Rendering proposal:", {
-    id: proposal?.id,
-    title: proposal?.title,
-    lineItemsCount: proposal?.lineItems?.length || 0,
-    totalAmount: proposal?.totalAmount,
-    currency: proposal?.currency,
-  });
-
   if (loading) {
     return (
       <Card className={styles.detailsCard} title="Proposal Details">
