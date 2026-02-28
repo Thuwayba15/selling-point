@@ -72,11 +72,11 @@ export const SideNav = () => {
       icon: <FileTextOutlined />,
       label: <Link href={ROUTES.notes}>Notes</Link>,
     },
-    {
-      key: ROUTES.documents,
-      icon: <FolderOutlined />,
-      label: <Link href={ROUTES.documents}>Documents</Link>,
-    },
+    // {
+    //   key: ROUTES.documents,
+    //   icon: <FolderOutlined />,
+    //   label: <Link href={ROUTES.documents}>Documents</Link>,
+    // },
     ...(can("view:reports")
       ? [
           {

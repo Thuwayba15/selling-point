@@ -441,7 +441,7 @@ const NotesPage = () => {
 
       <Card title="Selected Note">
         {selectedNote ? (
-          <Space direction="vertical">
+          <Space orientation="vertical">
             <div>ID: {selectedNote.id}</div>
             <div>
               Related To Type: {relatedTypeLabelMap[selectedNote.relatedToType] ||

@@ -95,6 +95,7 @@ interface WorkspaceEntityCardProps {
   onReject?: (entity: any) => void;
   onDelete?: (entity: any) => void;
   onViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
+  onViewNotes?: (type: "proposal" | "contract", entity: any) => void;
 }
 
 export const WorkspaceEntityCard = ({
@@ -111,6 +112,7 @@ export const WorkspaceEntityCard = ({
   onReject,
   onDelete,
   onViewDocuments,
+  onViewNotes,
 }: WorkspaceEntityCardProps) => {
   const { can } = useRbac();
   const [expanded, setExpanded] = useState(false);
@@ -181,7 +183,7 @@ export const WorkspaceEntityCard = ({
       onClick={() => onClick?.(activity)}
       style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
     >
-      <Space direction="vertical" style={{ width: "100%" }} size="small">
+      <Space orientation="vertical" style={{ width: "100%" }} size="small">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
@@ -254,6 +256,7 @@ export const WorkspaceEntityCard = ({
     const canRejectProposal = Boolean(onReject && can("reject:proposal") && isSubmitted);
     const canDeleteProposal = Boolean(onDelete && can("delete:proposal") && (isDraft || isRejected));
     const canViewProposalDocs = Boolean(onViewDocuments && proposal.id);
+    const canViewProposalNotes = Boolean(onViewNotes && proposal.id);
 
     return (
       <Card
@@ -262,7 +265,7 @@ export const WorkspaceEntityCard = ({
         onClick={() => onClick?.(proposal)}
         style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
       >
-        <Space direction="vertical" style={{ width: "100%" }} size="small">
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Text strong>{proposal.title || "—"}</Text>
             <Tag color={PROPOSAL_STATUS_COLORS[proposalStatus]}>{statusNames[proposalStatus]}</Tag>
@@ -376,6 +379,19 @@ export const WorkspaceEntityCard = ({
                 Docs
               </Button>
             )}
+            {canViewProposalNotes && (
+              <Button
+                size="small"
+                type="text"
+                icon={<FileTextOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewNotes?.("proposal", proposal);
+                }}
+              >
+                Notes
+              </Button>
+            )}
             <Button
               size="small"
               type="text"
@@ -395,7 +411,7 @@ export const WorkspaceEntityCard = ({
               <div>
                 <Text strong>Line Items</Text>
                 {proposal.lineItems && proposal.lineItems.length > 0 ? (
-                  <Space direction="vertical" style={{ width: "100%", marginTop: 8 }} size={8}>
+                  <Space orientation="vertical" style={{ width: "100%", marginTop: 8 }} size={8}>
                     {proposal.lineItems.map((item) => (
                       <div key={item.id} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: 8 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
@@ -442,7 +458,7 @@ export const WorkspaceEntityCard = ({
         onClick={() => onClick?.(pricingRequest)}
         style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
       >
-        <Space direction="vertical" style={{ width: "100%" }} size="small">
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Text strong>{pricingRequest.opportunityTitle || "—"}</Text>
             <Space size="small">
@@ -556,6 +572,7 @@ export const WorkspaceEntityCard = ({
     const canCancelContract = Boolean(onCancel && can("update:contract") && isActive);
     const canDeleteContract = Boolean(onDelete && can("delete:contract") && isDraft);
     const canViewContractDocs = Boolean(onViewDocuments && contract.id);
+    const canViewContractNotes = Boolean(onViewNotes && contract.id);
 
     return (
       <Card
@@ -564,7 +581,7 @@ export const WorkspaceEntityCard = ({
         onClick={() => onClick?.(contract)}
         style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
       >
-        <Space direction="vertical" style={{ width: "100%" }} size="small">
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Text strong>{contract.contractNumber || "—"}</Text>
             <Tag color={CONTRACT_STATUS_COLORS[status]}>{statusNames[status] || "—"}</Tag>
@@ -675,6 +692,19 @@ export const WorkspaceEntityCard = ({
                   Docs
                 </Button>
               )}
+              {canViewContractNotes && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<FileTextOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewNotes?.("contract", contract);
+                  }}
+                >
+                  Notes
+                </Button>
+              )}
             </Space>
           )}
 
@@ -704,7 +734,7 @@ export const WorkspaceEntityCard = ({
         onClick={() => onClick?.(document)}
         style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
       >
-        <Space direction="vertical" style={{ width: "100%" }} size="small">
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Text strong>
               <FileTextOutlined /> {document.originalFileName || document.fileName}
@@ -748,7 +778,7 @@ export const WorkspaceEntityCard = ({
       onClick={() => onClick?.(note)}
       style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
     >
-      <Space direction="vertical" style={{ width: "100%" }} size="small">
+      <Space orientation="vertical" style={{ width: "100%" }} size="small">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text type="secondary">
             <UserOutlined /> {note.createdByName || "Unknown"}
@@ -801,6 +831,7 @@ interface WorkspaceEntityListProps {
   onEntityReject?: (entity: any) => void;
   onEntityDelete?: (entity: any) => void;
   onEntityViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
+  onEntityViewNotes?: (type: "proposal" | "contract", entity: any) => void;
 }
 
 export const WorkspaceEntityList = ({
@@ -819,6 +850,7 @@ export const WorkspaceEntityList = ({
   onEntityReject,
   onEntityDelete,
   onEntityViewDocuments,
+  onEntityViewNotes,
 }: WorkspaceEntityListProps) => {
   if (loading) {
     return <Card loading style={{ marginTop: 16 }} />;
@@ -850,6 +882,7 @@ export const WorkspaceEntityList = ({
           onReject={onEntityReject}
           onDelete={onEntityDelete}
           onViewDocuments={onEntityViewDocuments}
+          onViewNotes={onEntityViewNotes}
         />
       ))}
     </div>

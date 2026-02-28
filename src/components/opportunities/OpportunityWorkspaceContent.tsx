@@ -8,6 +8,7 @@ import { ProposalsFilters } from "@/components/proposals";
 import { PricingRequestsFilters } from "@/components/pricing-requests";
 import { ContractsFilters } from "@/components/contracts";
 import { DocumentActions, DocumentsTable, DocumentUploadForm } from "@/components/documents";
+import { NotesTable, NotesActions, NoteForm } from "@/components/notes";
 import {
   OpportunityDetails,
   OpportunityActions,
@@ -19,6 +20,7 @@ import { useStyles } from "@/components/opportunities/style";
 import { getAxiosInstance } from "@/lib/api";
 import { useRbac } from "@/hooks/useRbac";
 import { useDocumentsActions } from "@/providers/documents";
+import { useNotesActions } from "@/providers/notes";
 import { IOpportunity } from "@/providers/opportunities/context";
 import type { IProposal } from "@/providers/proposals/context";
 import type { IPricingRequest } from "@/providers/pricing-requests/context";
@@ -99,6 +101,7 @@ export const OpportunityWorkspaceContent = ({
   const { message, modal } = App.useApp();
   const { can } = useRbac();
   const documentsActions = useDocumentsActions();
+  const notesActions = useNotesActions();
   const [proposalFilters, setProposalFilters] = useState<{
     status?: number;
     clientId?: string;
@@ -130,6 +133,18 @@ export const OpportunityWorkspaceContent = ({
   const [isWorkspaceUploadOpen, setIsWorkspaceUploadOpen] = useState(false);
   const [workspaceUploadForm] = Form.useForm();
   const workspaceUploadWatchedType = Form.useWatch("relatedToType", workspaceUploadForm);
+  const [selectedWorkspaceNote, setSelectedWorkspaceNote] = useState<INote | null>(null);
+  const [isRelatedNotesModalOpen, setIsRelatedNotesModalOpen] = useState(false);
+  const [relatedNotesTarget, setRelatedNotesTarget] = useState<RelatedDocsTarget | null>(null);
+  const [relatedNotes, setRelatedNotes] = useState<INote[]>([]);
+  const [isRelatedNotesLoading, setIsRelatedNotesLoading] = useState(false);
+  const [selectedRelatedNote, setSelectedRelatedNote] = useState<INote | null>(null);
+  const [isWorkspaceNoteFormOpen, setIsWorkspaceNoteFormOpen] = useState(false);
+  const [workspaceNoteForm] = Form.useForm();
+  const [editingWorkspaceNote, setEditingWorkspaceNote] = useState<INote | null>(null);
+  const [isRelatedNoteFormOpen, setIsRelatedNoteFormOpen] = useState(false);
+  const [relatedNoteForm] = Form.useForm();
+  const [editingRelatedNote, setEditingRelatedNote] = useState<INote | null>(null);
 
   const proposalDocOptions = useMemo(
     () =>
@@ -299,6 +314,149 @@ export const OpportunityWorkspaceContent = ({
       await onRefreshWorkspace();
     },
     [documentsActions, message, onRefreshWorkspace, selectedOpportunity?.id],
+  );
+
+  const loadRelatedNotes = useCallback(async (target: RelatedDocsTarget) => {
+    setIsRelatedNotesLoading(true);
+    try {
+      const api = getAxiosInstance();
+      const { data } = await api.get("/api/notes", {
+        params: {
+          relatedToType: target.relatedToType,
+          relatedToId: target.relatedToId,
+          pageNumber: 1,
+          pageSize: 1000,
+        },
+      });
+
+      setRelatedNotes((data?.items || data || []) as INote[]);
+    } catch {
+      setRelatedNotes([]);
+      message.error("Failed to load related notes");
+    } finally {
+      setIsRelatedNotesLoading(false);
+    }
+  }, [message]);
+
+  const handleOpenEntityNotes = useCallback(
+    async (type: "proposal" | "contract", entity: IProposal | IContract) => {
+      if (!entity?.id) return;
+
+      const target: RelatedDocsTarget = {
+        relatedToType: type === "proposal" ? RelatedToType.Proposal : RelatedToType.Contract,
+        relatedToId: entity.id,
+        title:
+          type === "proposal"
+            ? (entity as IProposal).title || "Proposal"
+            : (entity as IContract).contractNumber || (entity as IContract).title || "Contract",
+      };
+
+      setSelectedRelatedNote(null);
+      setRelatedNotesTarget(target);
+      setIsRelatedNotesModalOpen(true);
+      await loadRelatedNotes(target);
+    },
+    [loadRelatedNotes],
+  );
+
+  const handleDeleteNote = useCallback(
+    (note: INote | null, afterDelete?: () => Promise<void> | void) => {
+      if (!note) return;
+      if (!can("delete:note")) {
+        message.error("You do not have permission to delete notes");
+        return;
+      }
+
+      modal.confirm({
+        title: "Delete Note",
+        content: `Are you sure you want to delete this note?`,
+        okText: "Delete",
+        okType: "danger",
+        onOk: async () => {
+          const success = await notesActions.deleteNote(note.id);
+          if (!success) return;
+
+          message.success("Note deleted successfully");
+          await onRefreshWorkspace();
+          await Promise.resolve(afterDelete?.());
+        },
+      });
+    },
+    [can, notesActions, message, modal, onRefreshWorkspace],
+  );
+
+  const handleCreateWorkspaceNote = useCallback(
+    async (values: any) => {
+      if (!selectedOpportunity?.id) return;
+
+      if (editingWorkspaceNote) {
+        // Update existing note
+        const success = await notesActions.updateNote(editingWorkspaceNote.id, {
+          content: values.content,
+        });
+
+        if (!success) return;
+
+        message.success("Note updated successfully");
+        setEditingWorkspaceNote(null);
+        setIsWorkspaceNoteFormOpen(false);
+        workspaceNoteForm.resetFields();
+        await onRefreshWorkspace();
+      } else {
+        // Create new note
+        const success = await notesActions.createNote({
+          content: values.content,
+          relatedToType: RelatedToType.Opportunity,
+          relatedToId: selectedOpportunity.id,
+        });
+
+        if (!success) return;
+
+        message.success("Note created successfully");
+        setIsWorkspaceNoteFormOpen(false);
+        workspaceNoteForm.resetFields();
+        await onRefreshWorkspace();
+      }
+    },
+    [notesActions, message, onRefreshWorkspace, selectedOpportunity?.id, workspaceNoteForm, editingWorkspaceNote],
+  );
+
+  const handleCreateRelatedNote = useCallback(
+    async (values: any) => {
+      if (!relatedNotesTarget) return;
+
+      if (editingRelatedNote) {
+        // Update existing note
+        const success = await notesActions.updateNote(editingRelatedNote.id, {
+          content: values.content,
+        });
+
+        if (!success) return;
+
+        message.success("Note updated successfully");
+        setEditingRelatedNote(null);
+        setIsRelatedNoteFormOpen(false);
+        relatedNoteForm.resetFields();
+        await onRefreshWorkspace();
+        await loadRelatedNotes(relatedNotesTarget);
+      } else {
+        // Create new note
+        const success = await notesActions.createNote({
+          content: values.content,
+          relatedToType: relatedNotesTarget.relatedToType,
+          relatedToId: relatedNotesTarget.relatedToId,
+        });
+
+        if (!success) return;
+
+        message.success("Note created successfully");
+        setIsRelatedNoteFormOpen(false);
+        relatedNoteForm.resetFields();
+        await onRefreshWorkspace();
+        await loadRelatedNotes(relatedNotesTarget);
+      }
+    },
+    [notesActions, message, onRefreshWorkspace, relatedNotesTarget, relatedNoteForm, loadRelatedNotes, editingRelatedNote],
   );
 
   const proposalClientOptions = useMemo(
@@ -482,6 +640,7 @@ export const OpportunityWorkspaceContent = ({
             onEntityReject={(entity) => onRejectEntity("proposal", entity)}
             onEntityDelete={(entity) => onDeleteEntity("proposal", entity)}
             onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
+            onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
           />
         </>
       ),
@@ -537,6 +696,7 @@ export const OpportunityWorkspaceContent = ({
             onEntityCancel={(entity) => onCancelEntity("contract", entity)}
             onEntityDelete={(entity) => onDeleteEntity("contract", entity)}
             onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
+            onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
           />
         </>
       ),
@@ -576,17 +736,25 @@ export const OpportunityWorkspaceContent = ({
       label: "Notes",
       content: (
         <>
-          <WorkspaceTabActions
-            entityType="note"
-            onCreateClick={onCreateEntity}
-          />
-          <WorkspaceEntityList
-            entities={workspaceData.notes}
-            type="note"
+          <NotesActions
+            note={selectedWorkspaceNote}
+            onAdd={() => setIsWorkspaceNoteFormOpen(true)}
+            onEdit={() => {
+              if (selectedWorkspaceNote) {
+                setEditingWorkspaceNote(selectedWorkspaceNote);
+                setIsWorkspaceNoteFormOpen(true);
+              }
+            }}
+            onDelete={() => handleDeleteNote(selectedWorkspaceNote, async () => {
+              setSelectedWorkspaceNote(null);
+            })}
             loading={isLoading}
-            emptyText="No notes for this opportunity"
-            onEntityEdit={(entity) => onEditEntity("note", entity)}
-            onEntityDelete={(entity) => onDeleteEntity("note", entity)}
+          />
+          <NotesTable
+            notes={workspaceData.notes || []}
+            loading={isLoading}
+            onSelectNote={setSelectedWorkspaceNote}
+            selectedNoteId={selectedWorkspaceNote?.id}
           />
         </>
       ),
@@ -676,6 +844,72 @@ export const OpportunityWorkspaceContent = ({
         form={workspaceUploadForm}
         loading={isLoading}
         relatedToType={workspaceUploadWatchedType}
+      />
+
+      <Modal
+        title={relatedNotesTarget ? `${relatedNotesTarget.title} Notes` : "Related Notes"}
+        open={isRelatedNotesModalOpen}
+        onCancel={() => {
+          setIsRelatedNotesModalOpen(false);
+          setRelatedNotesTarget(null);
+          setRelatedNotes([]);
+          setSelectedRelatedNote(null);
+        }}
+        footer={null}
+        width={800}
+      >
+        <NotesActions
+          note={selectedRelatedNote}
+          onAdd={() => setIsRelatedNoteFormOpen(true)}
+          onEdit={() => {
+            if (selectedRelatedNote) {
+              setEditingRelatedNote(selectedRelatedNote);
+              setIsRelatedNoteFormOpen(true);
+            }
+          }}
+          onDelete={() =>
+            handleDeleteNote(selectedRelatedNote, async () => {
+              setSelectedRelatedNote(null);
+              if (relatedNotesTarget) {
+                await loadRelatedNotes(relatedNotesTarget);
+              }
+            })
+          }
+          loading={isRelatedNotesLoading}
+        />
+
+        <NotesTable
+          notes={relatedNotes}
+          loading={isRelatedNotesLoading}
+          onSelectNote={setSelectedRelatedNote}
+          selectedNoteId={selectedRelatedNote?.id}
+        />
+      </Modal>
+
+      <NoteForm
+        open={isWorkspaceNoteFormOpen}
+        onCancel={() => {
+          setIsWorkspaceNoteFormOpen(false);
+          setEditingWorkspaceNote(null);
+        }}
+        onSubmit={handleCreateWorkspaceNote}
+        form={workspaceNoteForm}
+        loading={isLoading}
+        relatedToType={RelatedToType.Opportunity}
+        note={editingWorkspaceNote}
+      />
+
+      <NoteForm
+        open={isRelatedNoteFormOpen}
+        onCancel={() => {
+          setIsRelatedNoteFormOpen(false);
+          setEditingRelatedNote(null);
+        }}
+        onSubmit={handleCreateRelatedNote}
+        form={relatedNoteForm}
+        loading={isRelatedNotesLoading}
+        relatedToType={relatedNotesTarget?.relatedToType}
+        note={editingRelatedNote}
       />
     </>
   );

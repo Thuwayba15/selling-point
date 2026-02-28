@@ -77,37 +77,45 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Create Note
   // POST /api/notes
-  const createNote = async (note: Partial<INote>) => {
+  const createNote = async (note: Partial<INote>): Promise<boolean> => {
     dispatch(createNotePending());
     try {
       const response = await api.post("/api/notes", note);
       dispatch(createNoteSuccess(response.data));
+      return true;
     } catch (error: unknown) {
-      dispatch(createNoteError(getErrorMessage(error, "Failed to create note")));
+      const message = getErrorMessage(error, "Failed to create note");
+      dispatch(createNoteError(message));
+      return false;
     }
   };
 
   // Update Note
   // PUT /api/notes/{id}
-  const updateNote = async (id: string, note: Partial<INote>) => {
+  const updateNote = async (id: string, note: Partial<INote>): Promise<boolean> => {
     dispatch(updateNotePending());
     try {
       const response = await api.put(`/api/notes/${id}`, note);
       dispatch(updateNoteSuccess(response.data));
+      return true;
     } catch (error: unknown) {
-      dispatch(updateNoteError(getErrorMessage(error, "Failed to update note")));
+      const message = getErrorMessage(error, "Failed to update note");
+      dispatch(updateNoteError(message));
+      return false;
     }
   };
 
   // Delete Note
   // DELETE /api/notes/{id}
-  const deleteNote = async (id: string) => {
+  const deleteNote = async (id: string): Promise<boolean> => {
     dispatch(deleteNotePending());
     try {
       await api.delete(`/api/notes/${id}`);
       dispatch(deleteNoteSuccess());
+      return true;
     } catch (error: unknown) {
       dispatch(deleteNoteError(getErrorMessage(error, "Failed to delete note")));
+      return false;
     }
   };
 
