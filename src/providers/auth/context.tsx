@@ -37,6 +37,7 @@ export type RegisterPayload = {
   lastName: string;
   phoneNumber?: string;
   tenantName?: string;
+  inviteToken?: string;
   tenantId?: string;
   role?: UserRole;
 };

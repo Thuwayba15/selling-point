@@ -17,6 +17,7 @@ import {
   type AuthUser,
   type AuthActions,
   type RegisterPayload,
+  type UserRole,
 } from "./context";
 
 import { authReducer } from "./reducer";
@@ -159,4 +160,4 @@ export const useAuthActions = () => {
   return ctx;
 };
 
-export type { RegisterPayload };
+export type { UserRole, AuthUser, RegisterPayload };
