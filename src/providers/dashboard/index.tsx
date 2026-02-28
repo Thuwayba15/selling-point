@@ -48,10 +48,21 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         const { data } = await api.get("/api/dashboard/overview");
+        console.log("[Dashboard] Overview Response:", data);
 
-        dispatch(getDashboardOverviewSuccess({ overview: data }));
+        // Ensure we have valid data structure with defaults for missing fields
+        const overview = data || {
+          opportunities: { totalCount: 0, wonCount: 0, winRate: 0, pipelineValue: 0 },
+          pipeline: { stages: [], weightedPipelineValue: 0 },
+          activities: { upcomingCount: 0, overdueCount: 0, completedTodayCount: 0 },
+          contracts: { totalActiveCount: 0, expiringThisMonthCount: 0, totalContractValue: 0 },
+          revenue: { thisMonth: 0, thisQuarter: 0, thisYear: 0, monthlyTrend: [] },
+        };
+
+        dispatch(getDashboardOverviewSuccess({ overview }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch dashboard overview");
+        console.error("[Dashboard] Overview Error:", message, error);
         dispatch(getDashboardOverviewError(message));
       }
     };
@@ -64,7 +75,30 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         const { data } = await api.get("/api/dashboard/pipeline-metrics");
 
-        dispatch(getPipelineMetricsSuccess({ pipelineMetrics: data }));
+        // API returns flat structure: { stage, stageName, count, totalValue, averageProbability, conversionToNext }
+        // Map totalValue to value field for component compatibility
+        const transformedStages = (data?.stages || []).map((stage: any) => {
+          const avgDealSize = stage.count > 0 ? stage.totalValue / stage.count : 0;
+          return {
+            stage: stage.stage,
+            stageName: stage.stageName,
+            count: stage.count || 0,
+            value: stage.totalValue || 0,  // Use totalValue as the value for the chart
+            avgDealSize,
+            totalValue: stage.totalValue,
+            averageProbability: stage.averageProbability,
+            conversionToNext: stage.conversionToNext,
+          };
+        });
+
+        const pipelineData = {
+          stages: transformedStages,
+          totalCount: data?.totalCount || 0,
+          totalValue: data?.totalValue || 0,
+          weightedValue: data?.weightedPipelineValue || data?.weightedValue || 0,
+        };
+
+        dispatch(getPipelineMetricsSuccess({ pipelineMetrics: pipelineData }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch pipeline metrics");
         dispatch(getPipelineMetricsError(message));
@@ -81,7 +115,23 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
           params: { topCount },
         });
 
-        dispatch(getSalesPerformanceSuccess({ salesPerformance: data || [] }));
+        // API returns { topPerformers: [...], averageDealsPerUser, averageRevenuePerUser }
+        // Extract and transform the topPerformers array
+        const topPerformers = Array.isArray(data) ? data : data?.topPerformers || [];
+        
+        const salesPerformanceData = topPerformers.map((performer: any) => ({
+          userId: performer.userId,
+          userName: performer.userName || 'Unknown',
+          opportunitiesCount: performer.opportunitiesCount || 0,
+          wonCount: performer.wonCount || 0,
+          lostCount: performer.lostCount || 0,
+          totalRevenue: performer.totalRevenue || 0,
+          winRate: performer.opportunitiesCount > 0 
+            ? (performer.wonCount / performer.opportunitiesCount) * 100 
+            : 0,
+        }));
+
+        dispatch(getSalesPerformanceSuccess({ salesPerformance: salesPerformanceData }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch sales performance");
         dispatch(getSalesPerformanceError(message));
@@ -95,10 +145,22 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         const { data } = await api.get("/api/dashboard/activities-summary");
+        console.log("[Dashboard] Activity Summary Response:", data);
 
-        dispatch(getActivitySummarySuccess({ activitySummary: data }));
+        // API returns { totalCount, upcomingCount, overdueCount, completedTodayCount, completedThisWeekCount, byType: { 1: count, 2: count, ... } }
+        const activityData = data || {
+          totalCount: 0,
+          upcomingCount: 0,
+          overdueCount: 0,
+          completedTodayCount: 0,
+          completedThisWeekCount: 0,
+          byType: {},
+        };
+
+        dispatch(getActivitySummarySuccess({ activitySummary: activityData }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch activity summary");
+        console.error("[Dashboard] Activity Summary Error:", message, error);
         dispatch(getActivitySummaryError(message));
       }
     };
@@ -112,17 +174,23 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await api.get("/api/dashboard/contracts-expiring", {
           params: { days },
         });
+        console.log("[Dashboard] Expiring Contracts Response:", data);
 
-        dispatch(
-          getExpiringContractsSuccess({
-            expiringContracts: {
-              contracts: data?.contracts || data || [],
-              totalCount: data?.totalCount || (Array.isArray(data) ? data.length : 0),
-            },
-          }),
-        );
+        // API returns either { contracts: [...], totalCount } or just an array
+        const contractsList = Array.isArray(data)
+          ? {
+              contracts: data,
+              totalCount: data.length,
+            }
+          : {
+              contracts: data?.contracts || [],
+              totalCount: data?.totalCount || (data?.contracts?.length || 0),
+            };
+
+        dispatch(getExpiringContractsSuccess({ expiringContracts: contractsList }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch expiring contracts");
+        console.error("[Dashboard] Expiring Contracts Error:", message, error);
         dispatch(getExpiringContractsError(message));
       }
     };

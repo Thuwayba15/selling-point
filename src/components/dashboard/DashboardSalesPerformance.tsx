@@ -3,6 +3,7 @@
 import { Table, Empty, Skeleton } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { ISalesPerformance } from "@/providers/dashboard/context";
+import { formatCurrency, formatPercentage } from "@/utils/currency";
 import { useStyles } from "./style";
 
 interface DashboardSalesPerformanceProps {
@@ -31,24 +32,28 @@ export const DashboardSalesPerformance = ({
   const columns: ColumnsType<ISalesPerformance> = [
     {
       title: "Sales Rep",
-      dataIndex: "firstName",
+      dataIndex: "userName",
       key: "name",
-      render: (_, record) => `${record.firstName} ${record.lastName}`,
+      render: (value: string) => value || "Unknown",
       responsive: ["xs", "sm", "md", "lg"],
     },
     {
       title: "Revenue",
-      dataIndex: "revenue",
+      dataIndex: "totalRevenue",
       key: "revenue",
-      render: (value: number) => {
-        if (!value || isNaN(value)) return "R0.00M";
-        return `R${(value / 1000000).toFixed(2)}M`;
-      },
+      render: (value: number) => formatCurrency(value),
       responsive: ["sm", "md", "lg"],
     },
     {
+      title: "Opportunities",
+      dataIndex: "opportunitiesCount",
+      key: "opportunities",
+      render: (value: number) => value || 0,
+      responsive: ["md", "lg"],
+    },
+    {
       title: "Won",
-      dataIndex: "opportunitiesWon",
+      dataIndex: "wonCount",
       key: "won",
       render: (value: number) => value || 0,
       responsive: ["md", "lg"],
@@ -57,10 +62,7 @@ export const DashboardSalesPerformance = ({
       title: "Win Rate",
       dataIndex: "winRate",
       key: "winRate",
-      render: (value: number) => {
-        if (!value || isNaN(value)) return "0.0%";
-        return `${value.toFixed(1)}%`;
-      },
+      render: (value: number) => formatPercentage(value),
       responsive: ["md", "lg"],
     },
   ];

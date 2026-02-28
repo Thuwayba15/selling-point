@@ -60,6 +60,9 @@ export interface IStageMetrics {
   count: number;
   value: number;
   avgDealSize: number;
+  totalValue?: number;
+  averageProbability?: number;
+  conversionToNext?: number;
 }
 
 export interface IPipelineMetrics {
@@ -71,23 +74,21 @@ export interface IPipelineMetrics {
 
 export interface ISalesPerformance {
   userId: string;
-  firstName: string;
-  lastName: string;
-  revenue: number;
-  opportunitiesWon: number;
+  userName: string;
+  opportunitiesCount: number;
+  wonCount: number;
+  lostCount: number;
+  totalRevenue: number;
   winRate: number;
 }
 
 export interface IActivitySummary {
-  meeting: number;
-  call: number;
-  email: number;
-  task: number;
-  presentation: number;
-  other: number;
-  pending: number;
-  completed: number;
-  cancelled: number;
+  totalCount: number;
+  upcomingCount: number;
+  overdueCount: number;
+  completedTodayCount: number;
+  completedThisWeekCount: number;
+  byType: Record<number, number>;
 }
 
 export interface IExpiringContract {

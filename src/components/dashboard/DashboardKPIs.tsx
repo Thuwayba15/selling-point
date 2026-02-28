@@ -1,8 +1,7 @@
 "use client";
 
 import { Space, Skeleton } from "antd";
-import { IDashboardOverview } from "@/providers/dashboard/context";
-import { useStyles } from "./style";
+import { IDashboardOverview } from "@/providers/dashboard/context";import { formatCurrency, formatPercentage } from "@/utils/currency";import { useStyles } from "./style";
 
 interface DashboardKPIsProps {
   overview?: IDashboardOverview;

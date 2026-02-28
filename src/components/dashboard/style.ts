@@ -237,9 +237,9 @@ export const useStyles = createStyles(({ token, css }) => ({
   barValue: css`
     font-size: ${token.fontSizeSM}px;
     font-weight: ${token.fontWeightStrong};
-    color: ${token.colorBgContainer};
+    color: ${token.colorPrimary};
     text-align: center;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-top: ${token.marginXS}px;
 
     @media (max-width: 768px) {
       font-size: 11px;
@@ -288,5 +288,82 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   spaceBetweenSections: css`
     margin-top: 2rem;
+  `,
+
+  totalActivityCard: css`
+    margin-top: 1rem;
+  `,
+
+  chartGrid: css`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: ${token.marginLG}px;
+    margin-bottom: ${token.marginLG}px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  `,
+
+  chartCard: css`
+    background: ${token.colorBgContainer};
+    border: 1px solid ${token.colorBorder};
+    border-radius: ${token.borderRadius}px;
+    padding: ${token.paddingLG}px;
+    display: flex;
+    flex-direction: column;
+    gap: ${token.marginMD}px;
+  `,
+
+  chartTitle: css`
+    font-size: ${token.fontSizeLG}px;
+    font-weight: ${token.fontWeightStrong};
+    color: ${token.colorText};
+    margin: 0;
+    text-align: center;
+  `,
+
+  pieChart: css`
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    @media (max-width: 768px) {
+      width: 150px;
+      height: 150px;
+    }
+  `,
+
+  legendContainer: css`
+    display: flex;
+    flex-direction: column;
+    gap: ${token.marginXS}px;
+    margin-top: ${token.marginMD}px;
+  `,
+
+  legendItem: css`
+    display: flex;
+    align-items: center;
+    gap: ${token.marginSM}px;
+    font-size: ${token.fontSize}px;
+  `,
+
+  legendColor: css`
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  `,
+
+  legendLabel: css`
+    flex: 1;
+    color: ${token.colorText};
+  `,
+
+  legendValue: css`
+    font-weight: ${token.fontWeightStrong};
+    color: ${token.colorTextSecondary};
   `,
 }));

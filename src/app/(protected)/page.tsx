@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Card, Space, Typography, App } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { useRbac } from "@/hooks/useRbac";
 import { useDashboardState, useDashboardActions } from "@/providers/dashboard";
 import {
   DashboardKPIs,
@@ -18,6 +19,7 @@ const { Title } = Typography;
 const DashboardPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
+  const { isAdmin, isManager } = useRbac();
   const {
     isPending,
     isError,
@@ -45,7 +47,7 @@ const DashboardPage = () => {
     getSalesPerformance();
     getActivitySummary();
     getExpiringContracts();
-  }, []);
+  }, [getDashboardOverview, getPipelineMetrics, getSalesPerformance, getActivitySummary, getExpiringContracts]);
 
   // Handle errors
   useEffect(() => {
@@ -53,7 +55,7 @@ const DashboardPage = () => {
       message.error(errorMessage);
       clearError();
     }
-  }, [isError, errorMessage]);
+  }, [isError, errorMessage, clearError, message]);
 
   return (
     <div className={styles.container}>
@@ -75,6 +77,25 @@ const DashboardPage = () => {
             <div className={styles.section}>
               <Card title="Pipeline by Stage">
                 <DashboardPipeline pipelineMetrics={pipelineMetrics} isLoading={isPending} />
+              </Card>
+            </div>
+          )}
+
+          {/* Activities Summary Section */}
+          {(activitySummary || isPending) && (
+            <div className={styles.section}>
+              <DashboardActivitySummary activitySummary={activitySummary} isLoading={isPending} />
+            </div>
+          )}
+
+          {/* Sales Performance Section - Admin and Sales Managers only */}
+          {(isAdmin || isManager) && (salesPerformance || isPending) && (
+            <div className={styles.section}>
+              <Card title="Sales Performance">
+                <DashboardSalesPerformance
+                  salesPerformance={salesPerformance}
+                  isLoading={isPending}
+                />
               </Card>
             </div>
           )}
