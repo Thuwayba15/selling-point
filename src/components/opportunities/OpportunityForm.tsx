@@ -14,6 +14,8 @@ interface OpportunityFormProps {
   onSubmit: (values: Partial<IOpportunity>) => void;
   onCancel: () => void;
   clients?: Array<{ id: string; name: string }>;
+  contacts?: Array<{ id: string; firstName: string; lastName: string; email: string }>;
+  onClientChange?: (clientId: string | undefined) => void;
 }
 
 const STAGE_OPTIONS = [
@@ -44,6 +46,8 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   onSubmit,
   onCancel,
   clients = [],
+  contacts = [],
+  onClientChange,
 }) => {
   const { styles } = useStyles();
   const handleFinish = (values: OpportunityFormValues) => {
@@ -51,6 +55,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     const opportunityData: Partial<IOpportunity> = {
       title: values.title,
       clientId: values.clientId,
+      ...(values.contactId ? { contactId: values.contactId } : {}),
       estimatedValue:
         typeof values.estimatedValue === "string"
           ? parseFloat(values.estimatedValue)
@@ -68,10 +73,17 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     onSubmit(opportunityData);
   };
 
+  const handleFormValuesChange = (changedValues: Record<string, unknown>) => {
+    if ("clientId" in changedValues) {
+      onClientChange?.(changedValues.clientId as string | undefined);
+    }
+  };
+
   return (
     <Form
       form={form}
       layout="vertical"
+      onValuesChange={handleFormValuesChange}
       initialValues={{
         stage: 1,
         source: 1,
@@ -104,6 +116,21 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           options={clients.map((client) => ({
             value: client.id,
             label: client.name,
+          }))}
+        />
+      </Form.Item>
+
+      <Form.Item label="Contact" name="contactId">
+        <Select
+          placeholder="Select a contact (optional)"
+          showSearch
+          allowClear
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          options={contacts.map((contact) => ({
+            value: contact.id,
+            label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ""}`,
           }))}
         />
       </Form.Item>

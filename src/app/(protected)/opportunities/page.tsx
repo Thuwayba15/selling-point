@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { App, Button, Form, Input, Modal, Select } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { getAxiosInstance } from "@/lib/api";
 import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
@@ -17,6 +18,7 @@ import {
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
+import type { IUser } from "@/providers/users/context";
 
 const OpportunitiesPage = () => {
   const { styles } = useStyles();
@@ -58,8 +60,13 @@ const OpportunitiesPage = () => {
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
   const [showMyOpportunities, setShowMyOpportunities] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<IOpportunity | null>(null);
+  const [assignableUsers, setAssignableUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [createModalClientId, setCreateModalClientId] = useState<string | undefined>(undefined);
+  const [editModalClientId, setEditModalClientId] = useState<string | undefined>(undefined);
+  const [createModalContacts, setCreateModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
+  const [editModalContacts, setEditModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,6 +78,7 @@ const OpportunitiesPage = () => {
   const [assignForm] = Form.useForm();
 
   const initializedRef = useRef(false);
+  const isSalesRep = Boolean(user?.roles?.includes("SalesRep"));
 
   // Initialize data on mount
   useEffect(() => {
@@ -78,14 +86,79 @@ const OpportunitiesPage = () => {
       initializedRef.current = true;
       // Fetch clients list
       clientsActions.getClients({
+        isActive: true,
         pageNumber: 1,
         pageSize: 1000,
       });
       // Fetch opportunities
-      getOpportunities({ pageNumber: currentPage, pageSize });
+      getOpportunities({ isActive: true, pageNumber: currentPage, pageSize });
       getOpportunityPipeline();
     }
   }, []);
+
+  // Fetch users for assignment dropdown
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/users", {
+          params: { isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const users = (data?.items || data || []) as IUser[];
+        const options = users.map((item) => ({
+          id: item.id,
+          label: item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
+        }));
+        setAssignableUsers(options);
+      } catch (error) {
+        setAssignableUsers([]);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
+  // Fetch contacts for create modal when clientId changes
+  useEffect(() => {
+    if (!createModalClientId) {
+      setCreateModalContacts([]);
+      return;
+    }
+    const loadContacts = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/contacts", {
+          params: { clientId: createModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        setCreateModalContacts(contactsData);
+      } catch (error) {
+        setCreateModalContacts([]);
+      }
+    };
+    loadContacts();
+  }, [createModalClientId]);
+
+  // Fetch contacts for edit modal when clientId changes
+  useEffect(() => {
+    if (!editModalClientId) {
+      setEditModalContacts([]);
+      return;
+    }
+    const loadContacts = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/contacts", {
+          params: { clientId: editModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        setEditModalContacts(contactsData);
+      } catch (error) {
+        setEditModalContacts([]);
+      }
+    };
+    loadContacts();
+  }, [editModalClientId]);
 
   // Map clients for the form
   const clientsList = (clientsState.clients || []).map((client) => ({
@@ -113,21 +186,13 @@ const OpportunitiesPage = () => {
       return;
     }
 
-    await getOpportunities(params);
+      await getOpportunities({ ...params, isActive: true });
   };
 
   const fetchPipeline = async (overrideOwnerId?: string, useMy = showMyOpportunities) => {
     const pipelineOwnerId = useMy ? user?.id : (overrideOwnerId ?? ownerId);
     await getOpportunityPipeline({ ownerId: pipelineOwnerId });
   };
-
-  useEffect(() => {
-    if (!initializedRef.current) {
-      initializedRef.current = true;
-      fetchOpportunities({ pageNumber: currentPage, pageSize });
-      fetchPipeline();
-    }
-  }, []);
 
   useEffect(() => {
     if (selectedOpportunity?.id) {
@@ -145,6 +210,8 @@ const OpportunitiesPage = () => {
 
   const handleCreateClick = () => {
     createForm.resetFields();
+    setCreateModalClientId(undefined);
+    setCreateModalContacts([]);
     setIsCreateModalOpen(true);
   };
 
@@ -173,11 +240,14 @@ const OpportunitiesPage = () => {
   const handleCreateCancel = () => {
     setIsCreateModalOpen(false);
     createForm.resetFields();
+    setCreateModalClientId(undefined);
+    setCreateModalContacts([]);
   };
 
   const handleEdit = () => {
     if (!selectedOpportunity) return;
     editForm.setFieldsValue(selectedOpportunity);
+    setEditModalClientId(selectedOpportunity.clientId);
     setIsEditModalOpen(true);
   };
 
@@ -210,24 +280,28 @@ const OpportunitiesPage = () => {
   const handleEditCancel = () => {
     setIsEditModalOpen(false);
     editForm.resetFields();
+    setEditModalClientId(undefined);
+    setEditModalContacts([]);
   };
 
   const handleUpdateStage = () => {
     if (!selectedOpportunity) return;
     stageForm.setFieldsValue({
       stage: selectedOpportunity.stage,
-      reason: "",
+      notes: "",
+      lossReason: "",
     });
     setIsStageModalOpen(true);
   };
 
-  const handleStageSubmit = async (values: { stage: number; reason?: string }) => {
+  const handleStageSubmit = async (values: { stage: number; notes?: string; lossReason?: string }) => {
     if (!selectedOpportunity) return;
 
     const success = await updateOpportunityStage(
       selectedOpportunity.id,
       values.stage,
-      values.reason,
+      values.notes,
+      values.lossReason,
     );
     if (success) {
       message.success("Stage updated successfully");
@@ -356,6 +430,7 @@ const OpportunitiesPage = () => {
   };
 
   const handleShowMyOpportunitiesChange = (value: boolean) => {
+    if (!isSalesRep) return;
     setShowMyOpportunities(value);
     if (value) setOwnerId(undefined);
     setCurrentPage(1);
@@ -400,6 +475,7 @@ const OpportunitiesPage = () => {
           clients={clientsList}
           showMyOpportunities={showMyOpportunities}
           onShowMyOpportunitiesChange={handleShowMyOpportunitiesChange}
+          showMyOpportunitiesToggle={isSalesRep}
         />
 
         <OpportunitiesTable
@@ -436,7 +512,7 @@ const OpportunitiesPage = () => {
           />
         </div> */}
 
-        <div style={{ marginBottom: "24px" }}>
+        <div className={styles.sectionSpacing}>
           <OpportunityStageHistory
             stageHistory={stageHistory}
             loading={isLoadingDetails}
@@ -457,6 +533,8 @@ const OpportunitiesPage = () => {
             onCancel={handleCreateCancel}
             loading={isPending}
             clients={clientsList}
+            contacts={createModalContacts}
+            onClientChange={setCreateModalClientId}
           />
         </Modal>
 
@@ -474,6 +552,8 @@ const OpportunitiesPage = () => {
             onCancel={handleEditCancel}
             loading={isPending}
             clients={clientsList}
+            contacts={editModalContacts}
+            onClientChange={setEditModalClientId}
           />
         </Modal>
 
@@ -502,8 +582,25 @@ const OpportunitiesPage = () => {
               />
             </Form.Item>
 
-            <Form.Item name="reason" label="Reason">
-              <Input.TextArea rows={3} placeholder="Optional reason for stage change" />
+            <Form.Item name="notes" label="Notes">
+              <Input.TextArea rows={3} placeholder="Optional notes for stage change" />
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) => prevValues.stage !== currentValues.stage}
+            >
+              {({ getFieldValue }) =>
+                getFieldValue("stage") === 6 ? (
+                  <Form.Item
+                    name="lossReason"
+                    label="Loss Reason"
+                    rules={[{ required: true, message: "Loss reason is required for Closed Lost" }]}
+                  >
+                    <Input.TextArea rows={3} placeholder="Reason for lost opportunity" />
+                  </Form.Item>
+                ) : null
+              }
             </Form.Item>
 
             <Form.Item>
@@ -524,10 +621,20 @@ const OpportunitiesPage = () => {
           <Form form={assignForm} layout="vertical" onFinish={handleAssignSubmit}>
             <Form.Item
               name="userId"
-              label="User ID"
-              rules={[{ required: true, message: "Please enter a user id" }]}
+              label="Assign To"
+              rules={[{ required: true, message: "Please select a user" }]}
             >
-              <Input placeholder="Sales rep user id" />
+              <Select
+                placeholder="Select a user"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
+                options={assignableUsers.map((item) => ({
+                  value: item.id,
+                  label: item.label,
+                }))}
+              />
             </Form.Item>
 
             <Form.Item>

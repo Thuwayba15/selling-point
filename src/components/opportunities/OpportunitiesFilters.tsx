@@ -16,6 +16,7 @@ interface OpportunitiesFiltersProps {
   clients?: Array<{ id: string; name: string }>;
   showMyOpportunities?: boolean;
   onShowMyOpportunitiesChange?: (value: boolean) => void;
+  showMyOpportunitiesToggle?: boolean;
 }
 
 const STAGE_OPTIONS = [
@@ -33,6 +34,7 @@ export const OpportunitiesFilters = ({
   clients = [],
   showMyOpportunities = false,
   onShowMyOpportunitiesChange,
+  showMyOpportunitiesToggle = false,
 }: OpportunitiesFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
@@ -102,9 +104,11 @@ export const OpportunitiesFilters = ({
             />
           </Form.Item>
 
-          <Form.Item label="My Opportunities" className={styles.filterItem}>
-            <Switch checked={showMyOpportunities} onChange={onShowMyOpportunitiesChange} />
-          </Form.Item>
+          {showMyOpportunitiesToggle && (
+            <Form.Item label="My Opportunities" className={styles.filterItem}>
+              <Switch checked={showMyOpportunities} onChange={onShowMyOpportunitiesChange} />
+            </Form.Item>
+          )}
 
           <Form.Item label=" " className={styles.filterItem}>
             <div className={styles.filtersActions}>

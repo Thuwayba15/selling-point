@@ -38,17 +38,25 @@ export const OpportunityStageHistory = ({
 
   const columns: ColumnsType<IOpportunityStageHistory> = [
     {
-      title: "Stage",
-      dataIndex: "stage",
-      key: "stage",
+      title: "From Stage",
+      dataIndex: "fromStage",
+      key: "fromStage",
+      render: (stage) => (
+        <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
+      ),
+    },
+    {
+      title: "To Stage",
+      dataIndex: "toStage",
+      key: "toStage",
       render: (stage) => (
         <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
       ),
     },
     {
       title: "Reason",
-      dataIndex: "reason",
-      key: "reason",
+      dataIndex: "notes",
+      key: "notes",
       render: (reason) => reason || "—",
     },
     {
@@ -71,7 +79,7 @@ export const OpportunityStageHistory = ({
         <Table
           columns={columns}
           dataSource={stageHistory}
-          rowKey={(record, index) => record.id || `${record.stage ?? "stage"}-${index}`}
+          rowKey={(record, index) => record.id || `${record.toStage ?? "stage"}-${index}`}
           pagination={false}
           scroll={{ x: "max-content" }}
           size="small"
