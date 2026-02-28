@@ -83,7 +83,6 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
       setSelectedFile(null);
       form.resetFields();
     } catch (error) {
-      console.error("Upload form error:", error);
       if (error instanceof Error) {
         console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);

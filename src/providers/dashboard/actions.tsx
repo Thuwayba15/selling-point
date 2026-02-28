@@ -39,9 +39,7 @@ export enum DashboardActionEnums {
   clearError = "CLEAR_ERROR",
 }
 
-// ============================================================================
 // Dashboard Overview Actions
-// ============================================================================
 export const getDashboardOverviewPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getDashboardOverviewPending,
   () => ({ isPending: true, isSuccess: false, isError: false }),
@@ -67,9 +65,7 @@ export const getDashboardOverviewError = createAction<IDashboardStateContext, st
   }),
 );
 
-// ============================================================================
 // Pipeline Metrics Actions
-// ============================================================================
 export const getPipelineMetricsPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getPipelineMetricsPending,
   () => ({ isPending: true, isSuccess: false, isError: false }),
@@ -95,9 +91,7 @@ export const getPipelineMetricsError = createAction<IDashboardStateContext, stri
   }),
 );
 
-// ============================================================================
 // Sales Performance Actions
-// ============================================================================
 export const getSalesPerformancePending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getSalesPerformancePending,
   () => ({ isPending: true, isSuccess: false, isError: false }),
@@ -123,9 +117,7 @@ export const getSalesPerformanceError = createAction<IDashboardStateContext, str
   }),
 );
 
-// ============================================================================
 // Activity Summary Actions
-// ============================================================================
 export const getActivitySummaryPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getActivitySummaryPending,
   () => ({ isPending: true, isSuccess: false, isError: false }),
@@ -151,9 +143,7 @@ export const getActivitySummaryError = createAction<IDashboardStateContext, stri
   }),
 );
 
-// ============================================================================
 // Expiring Contracts Actions
-// ============================================================================
 export const getExpiringContractsPending = createAction<IDashboardStateContext>(
   DashboardActionEnums.getExpiringContractsPending,
   () => ({ isPending: true, isSuccess: false, isError: false }),
@@ -179,9 +169,7 @@ export const getExpiringContractsError = createAction<IDashboardStateContext, st
   }),
 );
 
-// ============================================================================
 // Utility Actions
-// ============================================================================
 export const clearError = createAction<IDashboardStateContext>(
   DashboardActionEnums.clearError,
   () => ({ isPending: false, isSuccess: false, isError: false, errorMessage: undefined }),

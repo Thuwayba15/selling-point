@@ -11,6 +11,7 @@ export interface IProposalLineItem {
   discount?: number;
   taxRate?: number;
   total?: number;
+  totalPrice?: number; // API returns this field
 }
 
 export interface IProposal {
@@ -62,8 +63,8 @@ export interface IProposalsActionContext {
     pageSize?: number;
   }) => Promise<void>;
   getProposal: (id: string) => Promise<void>;
-  createProposal: (proposal: Partial<IProposal>) => Promise<boolean>;
-  updateProposal: (id: string, proposal: Partial<IProposal>) => Promise<boolean>;
+  createProposal: (proposal: ICreateProposalPayload) => Promise<boolean>;
+  updateProposal: (id: string, proposal: IUpdateProposalPayload) => Promise<boolean>;
   addLineItem: (proposalId: string, lineItem: Partial<IProposalLineItem>) => Promise<boolean>;
   updateLineItem: (
     proposalId: string,
@@ -84,6 +85,14 @@ export const INITIAL_STATE: IProposalsStateContext = {
   isLoadingDetails: false,
   isSuccess: false,
   isError: false,
+};
+
+export type ICreateProposalPayload = Omit<Partial<IProposal>, "lineItems"> & {
+  lineItems?: Array<Partial<IProposalLineItem>>;
+};
+
+export type IUpdateProposalPayload = Omit<Partial<IProposal>, "lineItems"> & {
+  lineItems?: Array<Partial<IProposalLineItem>>;
 };
 
 export const ProposalsStateContext = createContext<IProposalsStateContext>(INITIAL_STATE);

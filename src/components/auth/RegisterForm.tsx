@@ -67,7 +67,6 @@ const RegisterForm = () => {
       
       message.success("Invitation verified! Please complete your registration.");
     } catch (error) {
-      console.error("Token verification error:", error);
       message.error("Failed to verify invitation token");
     } finally {
       setVerifyingToken(false);

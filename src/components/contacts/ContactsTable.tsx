@@ -88,9 +88,10 @@ export const ContactsTable = ({
         }
         onRow={(record) => ({
           onClick: () => onSelectContact(record),
-          style: { cursor: "pointer" },
         })}
-        rowClassName={(record) => (record.id === selectedContactId ? "ant-table-row-selected" : "")}
+        rowClassName={(record) =>
+          `${styles.clickableRow} ${record.id === selectedContactId ? "ant-table-row-selected" : ""}`
+        }
       />
     </Card>
   );

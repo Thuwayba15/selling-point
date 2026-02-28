@@ -15,7 +15,7 @@ import {
 import { useStyles } from "@/components/contacts/style";
 import { IContact } from "@/providers/contacts/context";
 import type { ContactFormValues } from "@/types/forms";
-import { getAxiosInstance } from "@/lib/api";
+import { fetchActiveClientsForDropdown, type IClientOption } from "@/utils/clients";
 
 const ContactsPage = () => {
   const { styles } = useStyles();
@@ -33,15 +33,15 @@ const ContactsPage = () => {
     clearContact,
   } = useContactsActions();
 
-  // Local state
+  // Local State
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
+  const [clients, setClients] = useState<IClientOption[]>([]);
 
-  // Modal states
+  // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [createForm] = Form.useForm();
@@ -50,24 +50,17 @@ const ContactsPage = () => {
   // Prevent double-fetching on mount
   const initializedRef = useRef(false);
 
-  // Fetch clients for dropdowns
+  // Fetch active clients for dropdowns
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const api = getAxiosInstance();
-        const { data } = await api.get("/api/clients", {
-          params: { pageSize: 1000 }, // Get all clients
-        });
-        setClients(data.items || []);
-      } catch (error) {
-        console.error("Failed to fetch clients:", error);
-      }
+    const loadClients = async () => {
+      const activeClients = await fetchActiveClientsForDropdown();
+      setClients(activeClients);
     };
 
-    fetchClients();
+    loadClients();
   }, []);
 
-  // Initialize: fetch contacts on mount
+  // Initialize contacts on mount
   useEffect(() => {
     if (!initializedRef.current) {
       initializedRef.current = true;
@@ -75,14 +68,14 @@ const ContactsPage = () => {
     }
   }, []);
 
-  // Effect: handle selection change
+  // Handle contact selection change
   useEffect(() => {
     if (selectedContact) {
       getContact(selectedContact.id);
     }
   }, [selectedContact?.id]);
 
-  // Effect: handle errors
+  // Handle errors
   useEffect(() => {
     if (isError && errorMessage) {
       message.error(errorMessage);
@@ -90,7 +83,7 @@ const ContactsPage = () => {
     }
   }, [isError, errorMessage]);
 
-  // Handlers
+  // Handlers: Create Contact
   const handleCreateClick = () => {
     createForm.resetFields();
     setIsCreateModalOpen(true);
@@ -121,6 +114,7 @@ const ContactsPage = () => {
     createForm.resetFields();
   };
 
+  // Handlers: Edit Contact
   const handleEdit = () => {
     if (!selectedContact) return;
     editForm.setFieldsValue(selectedContact);
@@ -131,8 +125,13 @@ const ContactsPage = () => {
     if (!selectedContact) return;
 
     const contactData = {
-      ...values,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      phoneNumber: values.phoneNumber,
+      position: values.position,
       isPrimaryContact: values.isPrimaryContact ?? false,
+      isActive: selectedContact.isActive ?? true,
     };
     const success = await updateContact(selectedContact.id, contactData);
     if (success) {
@@ -157,6 +156,7 @@ const ContactsPage = () => {
     editForm.resetFields();
   };
 
+  // Handlers: Delete Contact
   const handleDelete = async () => {
     if (!selectedContact) return;
 
@@ -172,9 +172,12 @@ const ContactsPage = () => {
         pageNumber: currentPage,
         pageSize,
       });
+    } else {
+      message.error("Unable to delete contact");
     }
   };
 
+  // Handlers: Set Primary Contact
   const handleSetPrimary = async () => {
     if (!selectedContact) return;
 
@@ -192,10 +195,12 @@ const ContactsPage = () => {
     }
   };
 
+  // Handlers: Contact Selection
   const handleSelectContact = (contact: IContact) => {
     setSelectedContact(contact);
   };
 
+  // Handlers: Filters
   const handleApplyFilters = (filters: { searchTerm?: string; clientId?: string }) => {
     setSearchTerm(filters.searchTerm);
     setClientId(filters.clientId);
@@ -217,6 +222,7 @@ const ContactsPage = () => {
     });
   };
 
+  // Handlers: Pagination
   const handlePaginationChange = (page: number, newPageSize: number) => {
     setCurrentPage(page);
     setPageSize(newPageSize);

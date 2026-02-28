@@ -58,12 +58,6 @@ export const PricingRequestsTable = ({
       render: (opportunityTitle) => opportunityTitle || "—",
     },
     {
-      title: "Client",
-      dataIndex: "clientName",
-      key: "clientName",
-      render: (clientName) => clientName || "—",
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",

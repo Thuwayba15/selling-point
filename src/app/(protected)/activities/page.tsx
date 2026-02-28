@@ -20,8 +20,8 @@ import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/oppo
 import { useProposalsState, useProposalsActions } from "@/providers/proposals";
 import { useContractsState, useContractsActions } from "@/providers/contracts";
 import { useUsersState, useUsersActions } from "@/providers/users";
-import { RelatedToType } from "@/providers/activities/context";
-import type { IActivity, ActivityType, ActivityStatus, Priority } from "@/providers/activities/context";
+import { RelatedToType, ActivityType, Priority } from "@/providers/activities/context";
+import type { IActivity, ActivityStatus } from "@/providers/activities/context";
 
 const ActivitiesPage = () => {
   const { styles } = useStyles();
@@ -282,12 +282,20 @@ const ActivitiesPage = () => {
 
   // Edit handlers
   const handleEdit = () => {
-    if (!selectedActivity) return;
+    if (!selectedActivity || !activitiesState.activity) return;
+    
+    const activity = activitiesState.activity;
     const formValues: Record<string, unknown> = {
-      ...activitiesState.activity,
-      dueDate: activitiesState.activity?.dueDate
-        ? dayjs(activitiesState.activity.dueDate)
-        : undefined,
+      subject: activity.subject || "",
+      type: activity.type || ActivityType.Task,
+      priority: activity.priority || Priority.Medium,
+      dueDate: activity.dueDate ? dayjs(activity.dueDate) : undefined,
+      assignedToId: activity.assignedToId || "",
+      description: activity.description || "",
+      location: activity.location || "",
+      duration: activity.duration || undefined,
+      relatedToType: activity.relatedToType || undefined,
+      relatedToId: activity.relatedToType ? activity.relatedToId : undefined,
     };
     editForm.setFieldsValue(formValues);
     setIsEditModalOpen(true);

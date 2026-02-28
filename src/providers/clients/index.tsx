@@ -32,10 +32,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
   const [state, dispatch] = useReducer(ClientsReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Clients (with filters)
   // GET /api/clients
-  // ============================================================================
   const getClients = async (params?: {
     searchTerm?: string;
     industry?: string;
@@ -63,91 +61,73 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching clients:", error);
       dispatch(getClientsError(getErrorMessage(error, "Failed to fetch clients")));
     }
   };
 
-  // ============================================================================
   // Get Single Client
   // GET /api/clients/{id}
-  // ============================================================================
   const getClient = async (id: string) => {
     dispatch(getClientPending());
     try {
       const response = await api.get(`/api/clients/${id}`);
       dispatch(getClientSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching client:", error);
       dispatch(getClientError(getErrorMessage(error, "Failed to fetch client")));
     }
   };
 
-  // ============================================================================
   // Get Client Stats
   // GET /api/clients/{id}/stats
-  // ============================================================================
   const getClientStats = async (id: string) => {
     dispatch(getClientStatsPending());
     try {
       const response = await api.get(`/api/clients/${id}/stats`);
       dispatch(getClientStatsSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching client stats:", error);
       dispatch(
         getClientStatsError(getErrorMessage(error, "Failed to fetch client stats")),
       );
     }
   };
 
-  // ============================================================================
   // Create Client
   // POST /api/clients
-  // ============================================================================
   const createClient = async (client: Partial<IClient>) => {
     dispatch(createClientPending());
     try {
       const response = await api.post("/api/clients", client);
       dispatch(createClientSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error creating client:", error);
       dispatch(createClientError(getErrorMessage(error, "Failed to create client")));
     }
   };
 
-  // ============================================================================
   // Update Client
   // PUT /api/clients/{id}
-  // ============================================================================
   const updateClient = async (id: string, client: Partial<IClient>) => {
     dispatch(updateClientPending());
     try {
       const response = await api.put(`/api/clients/${id}`, client);
       dispatch(updateClientSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error updating client:", error);
       dispatch(updateClientError(getErrorMessage(error, "Failed to update client")));
     }
   };
 
-  // ============================================================================
   // Delete Client
   // DELETE /api/clients/{id}
-  // ============================================================================
   const deleteClient = async (id: string) => {
     dispatch(deleteClientPending());
     try {
       await api.delete(`/api/clients/${id}`);
       dispatch(deleteClientSuccess());
     } catch (error: unknown) {
-      console.error("Error deleting client:", error);
       dispatch(deleteClientError(getErrorMessage(error, "Failed to delete client")));
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };
@@ -175,10 +155,7 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     </ClientsStateContext.Provider>
   );
 };
-
-// ============================================================================
-// Custom Hooks
-// ============================================================================
+// Custom Hook
 export const useClientsState = () => {
   const context = useContext(ClientsStateContext);
   if (!context) {

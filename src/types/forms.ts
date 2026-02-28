@@ -45,6 +45,7 @@ export interface ClientFormValues {
 export interface OpportunityFormValues {
   title: string;
   clientId: string;
+  contactId?: string;
   estimatedValue: number | string;
   currency: string;
   stage: number | string;

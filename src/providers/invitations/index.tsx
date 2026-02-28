@@ -18,9 +18,7 @@ import {
 export const InvitationsProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(InvitationsReducer, INITIAL_STATE);
 
-  // ============================================================================
   // Generate Invitation Link
-  // ============================================================================
   const generateInvitationLink = useCallback(
     (tenantId: string, invitedEmail: string, role: UserRole): IInvitation => {
       const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -41,16 +39,12 @@ export const InvitationsProvider = ({ children }: { children: React.ReactNode })
     [],
   );
 
-  // ============================================================================
   // Get Generated Invitations
-  // ============================================================================
   const getGeneratedInvitations = useCallback(() => {
     return state.generatedInvitations;
   }, [state.generatedInvitations]);
 
-  // ============================================================================
   // Delete Generated Invitation
-  // ============================================================================
   const deleteGeneratedInvitation = useCallback((id: string) => {
     dispatch(removeGeneratedInvitation(id));
   }, []);
@@ -70,9 +64,7 @@ export const InvitationsProvider = ({ children }: { children: React.ReactNode })
   );
 };
 
-// ============================================================================
 // Hooks
-// ============================================================================
 export const useInvitationsState = () => {
   const context = useContext(InvitationsStateContext);
   if (!context) {

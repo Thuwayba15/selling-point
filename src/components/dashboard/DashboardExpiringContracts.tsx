@@ -2,7 +2,8 @@
 
 import { Table, Empty, Skeleton, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { IExpiringContractsList } from "@/providers/dashboard/context";
+import { IExpiringContractsList, IExpiringContract } from "@/providers/dashboard/context";
+import { formatCurrency } from "@/utils/currency";
 import { useStyles } from "./style";
 
 interface DashboardExpiringContractsProps {
@@ -39,7 +40,7 @@ export const DashboardExpiringContracts = ({
     return "blue";
   };
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<IExpiringContract> = [
     {
       title: "Client",
       dataIndex: "clientName",
@@ -50,10 +51,7 @@ export const DashboardExpiringContracts = ({
       title: "Value",
       dataIndex: "contractValue",
       key: "value",
-      render: (value: number) => {
-        if (!value || isNaN(value)) return "$0K";
-        return `$${(value / 1000).toFixed(0)}K`;
-      },
+      render: (value: number) => formatCurrency(value),
       responsive: ["sm", "md", "lg"],
     },
     {

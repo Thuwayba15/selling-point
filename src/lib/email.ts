@@ -27,18 +27,12 @@ export const sendEmail = async ({
   htmlContent,
   textContent,
 }: SendEmailParams): Promise<boolean> => {
-  console.log("[email] Attempting to send email to:", to);
-  console.log("[email] Subject:", subject);
-  console.log("[email] BREVO_API_KEY configured:", !!BREVO_API_KEY);
-  console.log("[email] SENDER_EMAIL:", SENDER_EMAIL);
 
   if (!BREVO_API_KEY) {
-    console.warn("[email] ❌ BREVO_API_KEY is not configured. Email sending is disabled.");
     return false;
   }
 
   try {
-    console.log("[email] Making request to Brevo API...");
     const payload = {
       sender: {
         name: SENDER_NAME,
@@ -54,8 +48,6 @@ export const sendEmail = async ({
       textContent: textContent || htmlContent.replace(/<[^>]*>/g, ""),
     };
 
-    console.log("[email] Request payload:", JSON.stringify(payload, null, 2));
-
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
@@ -65,19 +57,14 @@ export const sendEmail = async ({
       body: JSON.stringify(payload),
     });
 
-    console.log("[email] Response status:", response.status, response.statusText);
-
     if (!response.ok) {
       const error = await response.json();
-      console.error("[email] ❌ Brevo API error:", JSON.stringify(error, null, 2));
       return false;
     }
 
     const result = await response.json();
-    console.log("[email] ✅ Success! Response:", result);
     return true;
   } catch (error) {
-    console.error("Error sending email:", error);
     return false;
   }
 };

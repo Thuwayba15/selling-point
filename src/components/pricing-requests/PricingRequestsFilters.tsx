@@ -67,15 +67,6 @@ export const PricingRequestsFilters = ({
             />
           </Form.Item>
 
-          <Form.Item label="Assigned To ID" className={styles.filterItem}>
-            <Input
-              placeholder="Assigned user id"
-              value={assignedToId}
-              onChange={(e) => setAssignedToId(e.target.value)}
-              allowClear
-            />
-          </Form.Item>
-
           <Form.Item label=" " className={styles.filterItem}>
             <div className={styles.filtersActions}>
               <Button type="primary" onClick={handleApply}>

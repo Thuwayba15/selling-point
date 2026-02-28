@@ -90,7 +90,7 @@ export const ContractsTable = ({
       dataIndex: "contractValue",
       key: "contractValue",
       render: (value, record) =>
-        value != null ? `${record.currency || "ZAR"} ${value.toLocaleString()}` : "—",
+        value != null ? `${record.currency || "R"} ${value.toLocaleString()}` : "—",
     },
   ];
 

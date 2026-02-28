@@ -58,6 +58,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
       stage?: number;
       ownerId?: string;
       searchTerm?: string;
+      isActive?: boolean;
       pageNumber?: number;
       pageSize?: number;
     }) => {
@@ -65,11 +66,17 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.get("/api/opportunities", { params });
+        const { data } = await api.get("/api/opportunities", {
+          params: { ...params, isActive: params?.isActive ?? true },
+        });
+
+        const activeOpportunities = (data.items || []).filter(
+          (item: IOpportunity) => item.isActive !== false,
+        );
 
         dispatch(
           getOpportunitiesSuccess({
-            opportunities: data.items || [],
+            opportunities: activeOpportunities,
             pagination: {
               currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
               pageSize: data.pageSize ?? params?.pageSize ?? 10,
@@ -95,9 +102,13 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         const api = getAxiosInstance();
         const { data } = await api.get("/api/opportunities/my-opportunities", { params });
 
+        const activeOpportunities = (data.items || []).filter(
+          (item: IOpportunity) => item.isActive !== false,
+        );
+
         dispatch(
           getMyOpportunitiesSuccess({
-            opportunities: data.items || [],
+            opportunities: activeOpportunities,
             pagination: {
               currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
               pageSize: data.pageSize ?? params?.pageSize ?? 10,
@@ -198,13 +209,19 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
     const updateOpportunityStage = async (
       id: string,
       stage: number,
-      reason?: string,
+      notes?: string,
+      lossReason?: string,
     ): Promise<boolean> => {
       dispatch(updateOpportunityStagePending());
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.put(`/api/opportunities/${id}/stage`, { stage, reason });
+        const payload = {
+          stage,
+          notes,
+          lossReason: stage === 6 ? lossReason ?? null : null,
+        };
+        const { data } = await api.put(`/api/opportunities/${id}/stage`, payload);
 
         dispatch(updateOpportunityStageSuccess(data));
         return true;

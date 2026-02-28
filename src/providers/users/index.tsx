@@ -20,10 +20,8 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(UsersReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Users (with filters)
   // GET /api/users
-  // ============================================================================
   const getUsers = async (params?: {
     role?: string;
     searchTerm?: string;
@@ -47,29 +45,23 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching users:", error);
       dispatch(getUsersError(getErrorMessage(error, "Failed to fetch users")));
     }
   };
 
-  // ============================================================================
   // Get Single User
   // GET /api/users/{id}
-  // ============================================================================
   const getUser = async (id: string) => {
     dispatch(getUserPending());
     try {
       const response = await api.get(`/api/users/${id}`);
       dispatch(getUserSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching user:", error);
       dispatch(getUserError(getErrorMessage(error, "Failed to fetch user")));
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };
@@ -94,9 +86,7 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// ============================================================================
 // Custom Hooks
-// ============================================================================
 export const useUsersState = () => {
   const context = useContext(UsersStateContext);
   if (!context) {

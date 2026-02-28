@@ -48,6 +48,7 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
     const getContacts = async (params?: {
       clientId?: string;
       searchTerm?: string;
+      isActive?: boolean;
       pageNumber?: number;
       pageSize?: number;
     }) => {
@@ -55,14 +56,18 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        // Add isDeleted=false to filter out soft-deleted contacts
+        // Contacts API supports isActive filtering; default to active contacts only
         const { data } = await api.get("/api/contacts", {
-          params: { ...params, isDeleted: false },
+          params: { ...params, isActive: params?.isActive ?? true },
         });
+
+        const activeContacts = (data.items || []).filter(
+          (contact: IContact) => contact.isActive !== false,
+        );
 
         dispatch(
           getContactsSuccess({
-            contacts: data.items || [],
+            contacts: activeContacts,
             pagination: {
               currentPage: data.currentPage ?? data.pageNumber ?? params?.pageNumber ?? 1,
               pageSize: data.pageSize ?? params?.pageSize ?? 10,
@@ -83,12 +88,10 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        // Add isDeleted=false to filter out soft-deleted contacts
-        const { data } = await api.get(`/api/contacts/by-client/${clientId}`, {
-          params: { isDeleted: false },
-        });
+        const { data } = await api.get(`/api/contacts/by-client/${clientId}`);
+        const activeContacts = (data || []).filter((contact: IContact) => contact.isActive !== false);
 
-        dispatch(getContactsByClientSuccess({ contacts: data || [] }));
+        dispatch(getContactsByClientSuccess({ contacts: activeContacts }));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch client contacts");
         dispatch(getContactsByClientError(message));
@@ -135,7 +138,17 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.put(`/api/contacts/${id}`, contact);
+        const payload = {
+          firstName: contact.firstName,
+          lastName: contact.lastName,
+          email: contact.email,
+          phoneNumber: contact.phoneNumber,
+          position: contact.position,
+          isPrimaryContact: contact.isPrimaryContact ?? false,
+          isActive: contact.isActive ?? true,
+        };
+
+        const { data } = await api.put(`/api/contacts/${id}`, payload);
 
         dispatch(updateContactSuccess(data));
         return true;
@@ -174,7 +187,31 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
         dispatch(deleteContactSuccess());
         return true;
       } catch (error: unknown) {
-        const message = getErrorMessage(error, "Failed to delete contact");
+        const maybeError = error as {
+          response?: {
+            status?: number;
+            data?: {
+              detail?: string;
+              title?: string;
+            };
+          };
+        };
+
+        const status = maybeError.response?.status;
+        const apiDetail = maybeError.response?.data?.detail || maybeError.response?.data?.title;
+
+        let message = getErrorMessage(error, "Failed to delete contact");
+
+        if (status === 403) {
+          message =
+            apiDetail ||
+            "You do not have permission to delete contacts. Allowed roles: Admin, SalesManager, BusinessDevelopmentManager.";
+        }
+
+        if (status === 404) {
+          message = apiDetail || "Contact not found or already deleted.";
+        }
+
         dispatch(deleteContactError(message));
         return false;
       }

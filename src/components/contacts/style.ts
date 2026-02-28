@@ -83,6 +83,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     margin-bottom: ${token.marginLG}px;
   `,
 
+  clickableRow: css`
+    cursor: pointer;
+  `,
+
   selectedRow: css`
     display: flex;
     gap: ${token.marginLG}px;

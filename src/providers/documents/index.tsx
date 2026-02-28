@@ -88,10 +88,6 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
         description?: string;
       }
     ): Promise<boolean> => {
-      console.log("uploadDocument called with file:", file ? `${file.name} (${file.size} bytes)` : "FILE IS NULL/UNDEFINED!");
-      console.log("File object type:", Object.prototype.toString.call(file));
-      console.log("File instanceof File:", file instanceof File);
-      console.log("File keys:", Object.keys(file));
       dispatch(uploadDocumentPending());
 
       try {
@@ -113,23 +109,6 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
           formData.append("Description", data.description);
         }
 
-        // Log FormData contents for debugging
-        console.log("FormData entries:", {
-          file: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          category: data.category,
-          relatedToType: data.relatedToType,
-          relatedToId: data.relatedToId,
-          description: data.description,
-        });
-        
-        // Log actual FormData entries
-        console.log("Actual FormData contents:");
-        for (let pair of (formData as any).entries()) {
-          console.log(pair[0], ":", pair[1]);
-        }
-
         // Use axios directly (not the instance) to avoid Content-Type: application/json default header
         const token = storage.get(TOKEN_STORAGE_KEY);
         const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -138,18 +117,13 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
             Authorization: token ? `Bearer ${token}` : undefined,
           },
         });
-        console.log("Upload response:", response.status, response.data);
 
         dispatch(uploadDocumentSuccess());
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to upload document");
-        console.error("Upload error details:", error);
         if (error && typeof error === 'object' && 'response' in error) {
           const axiosError = error as any;
-          console.error("API response status:", axiosError.response?.status);
-          console.error("API response data:", axiosError.response?.data);
-          console.error("API validation errors:", JSON.stringify(axiosError.response?.data?.errors, null, 2));
         }
         dispatch(uploadDocumentError(message));
         return false;

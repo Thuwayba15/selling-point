@@ -160,15 +160,6 @@ const DocumentsPage = () => {
 
   const handleUploadSubmit = async (values: any, file: File) => {
     try {
-      console.log("Upload form values:", values);
-      console.log("File:", file);
-      console.log("Upload payload:", {
-        category: values.category,
-        relatedToType: values.relatedToType,
-        relatedToId: values.relatedToId,
-        description: values.description,
-      });
-
       const success = await documentsActions.uploadDocument(file, {
         category: values.category,
         relatedToType: values.relatedToType,
@@ -180,12 +171,8 @@ const DocumentsPage = () => {
         message.success("Document uploaded successfully");
         setIsUploadModalOpen(false);
         await fetchDocuments(currentPage, pageSize);
-      } else {
-        // Error message is already shown by documentsState.errorMessage
-        console.error("Upload failed:", documentsState.errorMessage);
-      }
+      } 
     } catch (error) {
-      console.error("Upload submission error:", error);
       message.error(
         error instanceof Error ? error.message : "Failed to upload document"
       );

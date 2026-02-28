@@ -28,30 +28,31 @@ const ClientsPage = () => {
   // Use ref to track if we've initialized
   const initializedRef = useRef(false);
 
-  // Filter state
+  // Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [industry, setIndustry] = useState<string | undefined>(undefined);
   const [clientType, setClientType] = useState<number | undefined>(undefined);
-  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
+  const [isActive, setIsActive] = useState<boolean | undefined>(true); // Default to active clients only
 
-  // Selected client
+  // Selected Client State
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
-  // Pagination
+  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Modal states
+  // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
 
-  // Initialize data on mount ONLY
+  // Initialize data on mount
   useEffect(() => {
     if (!initializedRef.current) {
       initializedRef.current = true;
       actions.getClients({
+        isActive: true, // Default to showing only active clients
         pageNumber: 1,
         pageSize: 10,
       });
@@ -102,7 +103,7 @@ const ClientsPage = () => {
     [searchTerm, industry, clientType, isActive, actions],
   );
 
-  // Load client details and stats when selected
+  // Load client details when selected
   useEffect(() => {
     if (selectedClient?.id) {
       actions.getClient(selectedClient.id);
@@ -118,7 +119,7 @@ const ClientsPage = () => {
     }
   }, [state.isError, state.errorMessage]);
 
-  // Handlers
+  // Handlers: Create Client
   const handleCreateClick = () => {
     createForm.resetFields();
     setIsCreateModalOpen(true);
@@ -150,7 +151,7 @@ const ClientsPage = () => {
     createForm.resetFields();
   };
 
-  // Edit handlers
+  // Handlers: Edit Client
   const handleEdit = () => {
     if (!selectedClient) return;
     editForm.setFieldsValue(selectedClient);
@@ -186,7 +187,7 @@ const ClientsPage = () => {
     editForm.resetFields();
   };
 
-  // Delete and select handlers
+  // Handlers: Delete Client
   const handleSelectClient = (client: Client) => {
     setSelectedClient(client);
   };
@@ -194,21 +195,26 @@ const ClientsPage = () => {
   const handleDelete = async () => {
     if (!selectedClient?.id) return;
 
-    await actions.deleteClient(selectedClient.id);
-    message.success("Client deleted successfully");
-    setSelectedClient(null);
-    // Refresh the list
-    await actions.getClients({
-      searchTerm,
-      industry,
-      clientType,
-      isActive,
-      pageNumber: currentPage,
-      pageSize,
-    });
+    try {
+      await actions.deleteClient(selectedClient.id);
+      message.success("Client marked as inactive");
+      setSelectedClient(null);
+      
+      // Refresh the list to remove the deleted client
+      await actions.getClients({
+        searchTerm,
+        industry,
+        clientType,
+        isActive,
+        pageNumber: currentPage,
+        pageSize,
+      });
+    } catch (error) {
+      message.error("Failed to delete client");
+    }
   };
 
-  // Map provider data to component props
+  // Data Mapping: Convert provider data to component props
   const clients: Client[] = (state.clients || []).map((client) => ({
     id: client.id,
     name: client.name,
