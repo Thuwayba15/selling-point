@@ -335,7 +335,12 @@ const ProposalsPage = () => {
       <div className={styles.mainContent}>
         <ProposalsHeader onCreateClick={handleCreateClick} />
 
-        <ProposalsFilters onApplyFilters={handleApplyFilters} onClear={handleClearFilters} />
+        <ProposalsFilters 
+          clients={clientsList}
+          opportunities={opportunitiesList}
+          onApplyFilters={handleApplyFilters} 
+          onClear={handleClearFilters} 
+        />
 
         <ProposalsTable
           proposals={proposals || []}
