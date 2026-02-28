@@ -191,6 +191,15 @@ const OpportunityWorkspacePage = () => {
     }
   }, [opportunity?.id, opportunityId]);
 
+  // Set page title
+  useEffect(() => {
+    if (selectedOpportunity?.title) {
+      document.title = `${selectedOpportunity.title} - Workspace | Selling Point`;
+    } else {
+      document.title = "Opportunity Workspace | Selling Point";
+    }
+  }, [selectedOpportunity?.title]);
+
   // Load workspace data
   useEffect(() => {
     loadWorkspaceData(selectedOpportunity);

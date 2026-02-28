@@ -170,4 +170,9 @@ export const useStyles = createStyles(({ token, css }) => ({
   chartPlaceholder: css`
     height: 320px;
   `,
+
+  workspacePagination: css`
+    margin-top: ${token.margin}px;
+    float: right;
+  `,
 }));

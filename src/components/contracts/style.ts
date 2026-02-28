@@ -152,6 +152,10 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 140px;
   `,
 
+  workspaceFilterActionsItem: css`
+    margin-bottom: 0;
+  `,
+
   workspaceFiltersActions: css`
     display: flex;
     gap: ${token.marginXS}px;

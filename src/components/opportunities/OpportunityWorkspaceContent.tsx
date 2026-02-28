@@ -1,32 +1,30 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { Button, Space, Form } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { App, Button, Form, Modal, Select, Space, Pagination } from "antd";
-import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
-import { ProposalsFilters } from "@/components/proposals";
-import { PricingRequestsFilters } from "@/components/pricing-requests";
-import { ContractsFilters } from "@/components/contracts";
-import { DocumentActions, DocumentsTable, DocumentUploadForm } from "@/components/documents";
-import { NotesTable, NotesActions, NoteForm } from "@/components/notes";
+import { EntityWorkspaceTabs, WorkspaceTabItem } from "@/components/common";
+import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
+import { NoteForm } from "@/components/notes/NoteForm";
 import {
-  OpportunityDetails,
-  OpportunityActions,
-  OpportunityStageHistory,
-} from "@/components/opportunities";
-import { WorkspaceEntityList } from "./WorkspaceEntityCard";
-import { WorkspaceTabActions } from "./WorkspaceTabActions";
-import { useStyles } from "@/components/opportunities/style";
-import { getAxiosInstance } from "@/lib/api";
+  OverviewTab,
+  PricingRequestsTab,
+  ProposalsTab,
+  ContractsTab,
+  DocumentsTab,
+  NotesTab,
+} from "./tabs";
+import { RelatedDocumentsModal, RelatedNotesModal } from "./modals";
+import { useStyles } from "./style";
 import { useRbac } from "@/hooks/useRbac";
-import { useDocumentsActions } from "@/providers/documents";
-import { useNotesActions } from "@/providers/notes";
-import { IOpportunity } from "@/providers/opportunities/context";
-import type { IProposal } from "@/providers/proposals/context";
-import type { IPricingRequest } from "@/providers/pricing-requests/context";
-import type { IContract } from "@/providers/contracts/context";
-import { DocumentCategory, type IDocument, RelatedToType } from "@/providers/documents/context";
-import type { INote } from "@/providers/notes/context";
+import { useWorkspaceDocuments, RelatedDocsTarget } from "@/hooks/useWorkspaceDocuments";
+import { useWorkspaceNotes, RelatedNotesTarget } from "@/hooks/useWorkspaceNotes";
+import { IOpportunity, IOpportunityStageHistory } from "@/providers/opportunities/context";
+import { IPricingRequest } from "@/providers/pricing-requests/context";
+import { IProposal } from "@/providers/proposals/context";
+import { IContract } from "@/providers/contracts/context";
+import { IDocument, RelatedToType as DocRelatedToType } from "@/providers/documents/context";
+import { INote, RelatedToType } from "@/providers/notes/context";
 
 interface WorkspaceData {
   pricingRequests: IPricingRequest[];
@@ -38,16 +36,10 @@ interface WorkspaceData {
 
 type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
 
-type RelatedDocsTarget = {
-  relatedToType: RelatedToType;
-  relatedToId: string;
-  title: string;
-};
-
 interface OpportunityWorkspaceContentProps {
   opportunity: IOpportunity | null;
   selectedOpportunity: IOpportunity | null;
-  stageHistory: any[];
+  stageHistory: IOpportunityStageHistory[];
   isLoadingDetails: boolean;
   isLoading: boolean;
   workspaceData: WorkspaceData;
@@ -98,730 +90,178 @@ export const OpportunityWorkspaceContent = ({
   onBackToOpportunities,
 }: OpportunityWorkspaceContentProps) => {
   const { styles } = useStyles();
-  const { message, modal } = App.useApp();
   const { can } = useRbac();
-  const documentsActions = useDocumentsActions();
-  const notesActions = useNotesActions();
-  const [proposalFilters, setProposalFilters] = useState<{
-    status?: number;
-    clientId?: string;
-    opportunityId?: string;
-  }>({});
-  const [pricingFilters, setPricingFilters] = useState<{
-    status?: number;
-    priority?: number;
-    assignedToId?: string;
-  }>({});
-  const [contractDraftFilters, setContractDraftFilters] = useState<{
-    status?: number;
-    clientId?: string;
-  }>({});
-  const [contractFilters, setContractFilters] = useState<{
-    status?: number;
-    clientId?: string;
-  }>({});
-  const [contractViewMode, setContractViewMode] = useState<"all" | "expiring">("all");
-  const [selectedWorkspaceDocument, setSelectedWorkspaceDocument] = useState<IDocument | null>(null);
-  const [isRelatedDocsModalOpen, setIsRelatedDocsModalOpen] = useState(false);
-  const [relatedDocsTarget, setRelatedDocsTarget] = useState<RelatedDocsTarget | null>(null);
-  const [relatedDocuments, setRelatedDocuments] = useState<IDocument[]>([]);
-  const [isRelatedDocsLoading, setIsRelatedDocsLoading] = useState(false);
-  const [selectedRelatedDocument, setSelectedRelatedDocument] = useState<IDocument | null>(null);
-  const [isRelatedUploadOpen, setIsRelatedUploadOpen] = useState(false);
-  const [relatedUploadForm] = Form.useForm();
-  const relatedUploadWatchedType = Form.useWatch("relatedToType", relatedUploadForm);
-  const [isWorkspaceUploadOpen, setIsWorkspaceUploadOpen] = useState(false);
-  const [workspaceUploadForm] = Form.useForm();
-  const workspaceUploadWatchedType = Form.useWatch("relatedToType", workspaceUploadForm);
-  const [selectedWorkspaceNote, setSelectedWorkspaceNote] = useState<INote | null>(null);
-  const [isRelatedNotesModalOpen, setIsRelatedNotesModalOpen] = useState(false);
-  const [relatedNotesTarget, setRelatedNotesTarget] = useState<RelatedDocsTarget | null>(null);
-  const [relatedNotes, setRelatedNotes] = useState<INote[]>([]);
-  const [isRelatedNotesLoading, setIsRelatedNotesLoading] = useState(false);
-  const [selectedRelatedNote, setSelectedRelatedNote] = useState<INote | null>(null);
-  const [isWorkspaceNoteFormOpen, setIsWorkspaceNoteFormOpen] = useState(false);
-  const [workspaceNoteForm] = Form.useForm();
-  const [editingWorkspaceNote, setEditingWorkspaceNote] = useState<INote | null>(null);
-  const [isRelatedNoteFormOpen, setIsRelatedNoteFormOpen] = useState(false);
-  const [relatedNoteForm] = Form.useForm();
-  const [editingRelatedNote, setEditingRelatedNote] = useState<INote | null>(null);
 
-  // Pagination state for workspace tabs
-  const [proposalPageSize, setProposalPageSize] = useState(5);
-  const [proposalCurrentPage, setProposalCurrentPage] = useState(1);
-  const [pricingPageSize, setPricingPageSize] = useState(5);
-  const [pricingCurrentPage, setPricingCurrentPage] = useState(1);
-  const [contractPageSize, setContractPageSize] = useState(5);
-  const [contractCurrentPage, setContractCurrentPage] = useState(1);
-  const [documentPageSize, setDocumentPageSize] = useState(5);
-  const [documentCurrentPage, setDocumentCurrentPage] = useState(1);
+  // Document management hook
+  const documents = useWorkspaceDocuments(onRefreshWorkspace);
+  const relatedUploadWatchedType = Form.useWatch("relatedToType", documents.relatedUploadForm);
+  const workspaceUploadWatchedType = Form.useWatch("relatedToType", documents.workspaceUploadForm);
 
+  // Note management hook
+  const notes = useWorkspaceNotes(onRefreshWorkspace);
+
+  // Document options for upload dropdowns
   const proposalDocOptions = useMemo(
     () =>
       (workspaceData.proposals || [])
-        .filter((proposal) => proposal.id)
-        .map((proposal) => ({
-          value: proposal.id as string,
-          label: proposal.title || "Proposal",
-        })),
+        .filter((p) => p.id)
+        .map((p) => ({ value: p.id as string, label: p.title || "Proposal" })),
     [workspaceData.proposals],
   );
 
   const contractDocOptions = useMemo(
     () =>
       (workspaceData.contracts || [])
-        .filter((contract) => contract.id)
-        .map((contract) => ({
-          value: contract.id as string,
-          label: contract.contractNumber || contract.title || "Contract",
+        .filter((c) => c.id)
+        .map((c) => ({
+          value: c.id as string,
+          label: c.contractNumber || c.title || "Contract",
         })),
     [workspaceData.contracts],
   );
 
-  const loadRelatedDocuments = useCallback(async (target: RelatedDocsTarget) => {
-    setIsRelatedDocsLoading(true);
-    try {
-      const api = getAxiosInstance();
-      const { data } = await api.get("/api/documents", {
-        params: {
-          relatedToType: target.relatedToType,
-          relatedToId: target.relatedToId,
-          pageNumber: 1,
-          pageSize: 1000,
-        },
-      });
+  // Handle opening entity documents
+  const handleEntityDocuments = (type: "proposal" | "contract", entity: IProposal | IContract) => {
+    if (!entity?.id) return;
+    const target: RelatedDocsTarget = {
+      relatedToType: (type === "proposal" ? DocRelatedToType.Proposal : DocRelatedToType.Contract) as any,
+      relatedToId: entity.id,
+      title:
+        type === "proposal"
+          ? (entity as IProposal).title || "Proposal"
+          : (entity as IContract).contractNumber || (entity as IContract).title || "Contract",
+    };
+    documents.openRelatedDocuments(target);
+  };
 
-      setRelatedDocuments((data?.items || data || []) as IDocument[]);
-    } catch {
-      setRelatedDocuments([]);
-      message.error("Failed to load related documents");
-    } finally {
-      setIsRelatedDocsLoading(false);
-    }
-  }, [message]);
+  // Handle opening entity notes
+  const handleEntityNotes = (type: "proposal" | "contract", entity: IProposal | IContract) => {
+    if (!entity?.id) return;
+    const target: RelatedNotesTarget = {
+      relatedToType: (type === "proposal" ? RelatedToType.Proposal : RelatedToType.Contract) as any,
+      relatedToId: entity.id,
+      title:
+        type === "proposal"
+          ? (entity as IProposal).title || "Proposal"
+          : (entity as IContract).contractNumber || (entity as IContract).title || "Contract",
+    };
+    notes.openRelatedNotes(target);
+  };
 
-  const handleOpenEntityDocuments = useCallback(
-    async (type: "proposal" | "contract", entity: IProposal | IContract) => {
-      if (!entity?.id) return;
-
-      const target: RelatedDocsTarget = {
-        relatedToType: type === "proposal" ? RelatedToType.Proposal : RelatedToType.Contract,
-        relatedToId: entity.id,
-        title:
-          type === "proposal"
-            ? (entity as IProposal).title || "Proposal"
-            : (entity as IContract).contractNumber || (entity as IContract).title || "Contract",
-      };
-
-      setSelectedRelatedDocument(null);
-      setRelatedDocsTarget(target);
-      setIsRelatedDocsModalOpen(true);
-      await loadRelatedDocuments(target);
-    },
-    [loadRelatedDocuments],
-  );
-
-  const handleDownloadDocument = useCallback(
-    async (document: IDocument | null) => {
-      if (!document) return;
-      try {
-        await documentsActions.downloadDocument(
-          document.id,
-          document.originalFileName || document.fileName,
-        );
-        message.success("Document download started");
-      } catch {
-        message.error("Failed to download document");
-      }
-    },
-    [documentsActions, message],
-  );
-
-  const handleDeleteDocument = useCallback(
-    (document: IDocument | null, afterDelete?: () => Promise<void> | void) => {
-      if (!document) return;
-      if (!can("delete:document")) {
-        message.error("You do not have permission to delete documents");
-        return;
-      }
-
-      modal.confirm({
-        title: "Delete Document",
-        content: `Are you sure you want to delete \"${document.originalFileName || document.fileName}\"?`,
-        okText: "Delete",
-        okType: "danger",
-        onOk: async () => {
-          const success = await documentsActions.deleteDocument(document.id);
-          if (!success) return;
-
-          message.success("Document deleted successfully");
-          await onRefreshWorkspace();
-          await Promise.resolve(afterDelete?.());
-        },
-      });
-    },
-    [can, documentsActions, message, modal, onRefreshWorkspace],
-  );
-
-  const handleOpenRelatedUpload = useCallback(() => {
-    if (!relatedDocsTarget) return;
-
-    relatedUploadForm.setFieldsValue({
-      relatedToType: relatedDocsTarget.relatedToType,
-      relatedToId: relatedDocsTarget.relatedToId,
-      category:
-        relatedDocsTarget.relatedToType === RelatedToType.Proposal
-          ? DocumentCategory.Proposal
-          : DocumentCategory.Contract,
-    });
-    setIsRelatedUploadOpen(true);
-  }, [relatedDocsTarget, relatedUploadForm]);
-
-  const handleRelatedUpload = useCallback(
-    async (values: any, file: File) => {
-      if (!relatedDocsTarget) return;
-
-      const success = await documentsActions.uploadDocument(file, {
-        category: values.category,
-        relatedToType: relatedDocsTarget.relatedToType,
-        relatedToId: relatedDocsTarget.relatedToId,
-        description: values.description,
-      });
-
-      if (!success) return;
-
-      message.success("Document uploaded successfully");
-      setIsRelatedUploadOpen(false);
-      await onRefreshWorkspace();
-      await loadRelatedDocuments(relatedDocsTarget);
-    },
-    [documentsActions, loadRelatedDocuments, message, onRefreshWorkspace, relatedDocsTarget],
-  );
-
-  const handleOpenWorkspaceUpload = useCallback(() => {
-    workspaceUploadForm.setFieldsValue({
-      relatedToType: RelatedToType.Opportunity,
-      relatedToId: selectedOpportunity?.id,
-    });
-    setIsWorkspaceUploadOpen(true);
-  }, [selectedOpportunity?.id, workspaceUploadForm]);
-
-  const handleWorkspaceUpload = useCallback(
-    async (values: any, file: File) => {
-      if (!selectedOpportunity?.id) return;
-
-      const success = await documentsActions.uploadDocument(file, {
-        category: values.category,
-        relatedToType: RelatedToType.Opportunity,
-        relatedToId: selectedOpportunity.id,
-        description: values.description,
-      });
-
-      if (!success) return;
-
-      message.success("Document uploaded successfully");
-      setIsWorkspaceUploadOpen(false);
-      await onRefreshWorkspace();
-    },
-    [documentsActions, message, onRefreshWorkspace, selectedOpportunity?.id],
-  );
-
-  const loadRelatedNotes = useCallback(async (target: RelatedDocsTarget) => {
-    setIsRelatedNotesLoading(true);
-    try {
-      const api = getAxiosInstance();
-      const { data } = await api.get("/api/notes", {
-        params: {
-          relatedToType: target.relatedToType,
-          relatedToId: target.relatedToId,
-          pageNumber: 1,
-          pageSize: 1000,
-        },
-      });
-
-      setRelatedNotes((data?.items || data || []) as INote[]);
-    } catch {
-      setRelatedNotes([]);
-      message.error("Failed to load related notes");
-    } finally {
-      setIsRelatedNotesLoading(false);
-    }
-  }, [message]);
-
-  const handleOpenEntityNotes = useCallback(
-    async (type: "proposal" | "contract", entity: IProposal | IContract) => {
-      if (!entity?.id) return;
-
-      const target: RelatedDocsTarget = {
-        relatedToType: type === "proposal" ? RelatedToType.Proposal : RelatedToType.Contract,
-        relatedToId: entity.id,
-        title:
-          type === "proposal"
-            ? (entity as IProposal).title || "Proposal"
-            : (entity as IContract).contractNumber || (entity as IContract).title || "Contract",
-      };
-
-      setSelectedRelatedNote(null);
-      setRelatedNotesTarget(target);
-      setIsRelatedNotesModalOpen(true);
-      await loadRelatedNotes(target);
-    },
-    [loadRelatedNotes],
-  );
-
-  const handleDeleteNote = useCallback(
-    (note: INote | null, afterDelete?: () => Promise<void> | void) => {
-      if (!note) return;
-      if (!can("delete:note")) {
-        message.error("You do not have permission to delete notes");
-        return;
-      }
-
-      modal.confirm({
-        title: "Delete Note",
-        content: `Are you sure you want to delete this note?`,
-        okText: "Delete",
-        okType: "danger",
-        onOk: async () => {
-          const success = await notesActions.deleteNote(note.id);
-          if (!success) return;
-
-          message.success("Note deleted successfully");
-          await onRefreshWorkspace();
-          await Promise.resolve(afterDelete?.());
-        },
-      });
-    },
-    [can, notesActions, message, modal, onRefreshWorkspace],
-  );
-
-  const handleCreateWorkspaceNote = useCallback(
-    async (values: any) => {
-      if (!selectedOpportunity?.id) return;
-
-      if (editingWorkspaceNote) {
-        // Update existing note
-        const success = await notesActions.updateNote(editingWorkspaceNote.id, {
-          content: values.content,
-        });
-
-        if (!success) return;
-
-        message.success("Note updated successfully");
-        setEditingWorkspaceNote(null);
-        setIsWorkspaceNoteFormOpen(false);
-        workspaceNoteForm.resetFields();
-        await onRefreshWorkspace();
-      } else {
-        // Create new note
-        const success = await notesActions.createNote({
-          content: values.content,
-          relatedToType: RelatedToType.Opportunity,
-          relatedToId: selectedOpportunity.id,
-        });
-
-        if (!success) return;
-
-        message.success("Note created successfully");
-        setIsWorkspaceNoteFormOpen(false);
-        workspaceNoteForm.resetFields();
-        await onRefreshWorkspace();
-      }
-    },
-    [notesActions, message, onRefreshWorkspace, selectedOpportunity?.id, workspaceNoteForm, editingWorkspaceNote],
-  );
-
-  const handleCreateRelatedNote = useCallback(
-    async (values: any) => {
-      if (!relatedNotesTarget) return;
-
-      if (editingRelatedNote) {
-        // Update existing note
-        const success = await notesActions.updateNote(editingRelatedNote.id, {
-          content: values.content,
-        });
-
-        if (!success) return;
-
-        message.success("Note updated successfully");
-        setEditingRelatedNote(null);
-        setIsRelatedNoteFormOpen(false);
-        relatedNoteForm.resetFields();
-        await onRefreshWorkspace();
-        await loadRelatedNotes(relatedNotesTarget);
-      } else {
-        // Create new note
-        const success = await notesActions.createNote({
-          content: values.content,
-          relatedToType: relatedNotesTarget.relatedToType,
-          relatedToId: relatedNotesTarget.relatedToId,
-        });
-
-        if (!success) return;
-
-        message.success("Note created successfully");
-        setIsRelatedNoteFormOpen(false);
-        relatedNoteForm.resetFields();
-        await onRefreshWorkspace();
-        await loadRelatedNotes(relatedNotesTarget);
-      }
-    },
-    [notesActions, message, onRefreshWorkspace, relatedNotesTarget, relatedNoteForm, loadRelatedNotes, editingRelatedNote],
-  );
-
-  const proposalClientOptions = useMemo(
-    () =>
-      Array.from(
-        new Map(
-          (workspaceData.proposals || [])
-            .filter((proposal) => proposal.clientId && proposal.clientName)
-            .map((proposal) => [proposal.clientId as string, proposal.clientName as string]),
-        ),
-      ).map(([id, name]) => ({ id, name })),
-    [workspaceData.proposals],
-  );
-
-  const proposalOpportunityOptions = useMemo(
-    () =>
-      Array.from(
-        new Map(
-          (workspaceData.proposals || [])
-            .filter((proposal) => proposal.opportunityId && proposal.opportunityTitle)
-            .map(
-              (proposal) =>
-                [proposal.opportunityId as string, proposal.opportunityTitle as string] as const,
-            ),
-        ),
-      ).map(([id, title]) => ({ id, title })),
-    [workspaceData.proposals],
-  );
-
-  const filteredProposals = useMemo(
-    () =>
-      (workspaceData.proposals || []).filter((proposal) => {
-        if (proposalFilters.status !== undefined && proposal.status !== proposalFilters.status) {
-          return false;
-        }
-        if (proposalFilters.clientId && proposal.clientId !== proposalFilters.clientId) {
-          return false;
-        }
-        if (
-          proposalFilters.opportunityId &&
-          proposal.opportunityId !== proposalFilters.opportunityId
-        ) {
-          return false;
-        }
-        return true;
-      }),
-    [workspaceData.proposals, proposalFilters],
-  );
-
-  const filteredPricingRequests = useMemo(
-    () =>
-      (workspaceData.pricingRequests || []).filter((item) => {
-        if (pricingFilters.status !== undefined && item.status !== pricingFilters.status) {
-          return false;
-        }
-        if (pricingFilters.priority !== undefined && item.priority !== pricingFilters.priority) {
-          return false;
-        }
-        if (pricingFilters.assignedToId && item.assignedToId !== pricingFilters.assignedToId) {
-          return false;
-        }
-        return true;
-      }),
-    [workspaceData.pricingRequests, pricingFilters],
-  );
-
-  const contractClientOptions = useMemo(
-    () =>
-      Array.from(
-        new Map(
-          (workspaceData.contracts || [])
-            .filter((contract) => contract.clientId && contract.clientName)
-            .map((contract) => [contract.clientId as string, contract.clientName as string]),
-        ),
-      ).map(([id, name]) => ({ id, name })),
-    [workspaceData.contracts],
-  );
-
-  const filteredContracts = useMemo(
-    () =>
-      (workspaceData.contracts || []).filter((contract) => {
-        if (contractFilters.status !== undefined && contract.status !== contractFilters.status) {
-          return false;
-        }
-        if (contractFilters.clientId && contract.clientId !== contractFilters.clientId) {
-          return false;
-        }
-        if (contractViewMode === "expiring" && !contract.isExpiringSoon) {
-          return false;
-        }
-        return true;
-      }),
-    [workspaceData.contracts, contractFilters, contractViewMode],
-  );
-
-  // Paginated data for workspace tabs
-  const paginatedProposals = useMemo(() => {
-    const start = (proposalCurrentPage - 1) * proposalPageSize;
-    return filteredProposals.slice(start, start + proposalPageSize);
-  }, [filteredProposals, proposalCurrentPage, proposalPageSize]);
-
-  const paginatedPricingRequests = useMemo(() => {
-    const start = (pricingCurrentPage - 1) * pricingPageSize;
-    return filteredPricingRequests.slice(start, start + pricingPageSize);
-  }, [filteredPricingRequests, pricingCurrentPage, pricingPageSize]);
-
-  const paginatedContracts = useMemo(() => {
-    const start = (contractCurrentPage - 1) * contractPageSize;
-    return filteredContracts.slice(start, start + contractPageSize);
-  }, [filteredContracts, contractCurrentPage, contractPageSize]);
-
-  const paginatedDocuments = useMemo(() => {
-    const start = (documentCurrentPage - 1) * documentPageSize;
-    return (workspaceData.documents || []).slice(start, start + documentPageSize);
-  }, [workspaceData.documents, documentCurrentPage, documentPageSize]);
+  if (!selectedOpportunity) return null;
 
   const workspaceItems: WorkspaceTabItem[] = [
     {
       key: "overview",
       label: "Overview",
       content: (
-        <>
-          <div className={styles.selectedRow}>
-            <div className={styles.detailsPanel}>
-              <OpportunityDetails opportunity={opportunity || null} loading={isLoadingDetails} />
-            </div>
-            {selectedOpportunity && (
-              <OpportunityActions
-                opportunity={selectedOpportunity}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onUpdateStage={onUpdateStage}
-                onAssign={onAssign}
-              />
-            )}
-          </div>
-          <div className={styles.sectionSpacing}>
-            <OpportunityStageHistory
-              stageHistory={stageHistory}
-              loading={isLoadingDetails}
-              hasSelection={Boolean(selectedOpportunity)}
-            />
-          </div>
-        </>
+        <OverviewTab
+          opportunity={opportunity}
+          stageHistory={stageHistory}
+          isLoadingDetails={isLoadingDetails}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onUpdateStage={onUpdateStage}
+          onAssign={onAssign}
+          className={styles.selectedRow}
+          historyClassName={styles.sectionSpacing}
+        />
       ),
     },
     {
       key: "pricing",
       label: "Pricing Requests",
       content: (
-        <>
-          <div className={styles.workspaceToolbarRow}>
-            <WorkspaceTabActions
-              entityType="pricingRequest"
-              onCreateClick={onCreateEntity}
-              compact
-            />
-            <PricingRequestsFilters
-              onApplyFilters={(filters) => setPricingFilters(filters)}
-              onClear={() => setPricingFilters({})}
-            />
-          </div>
-          <WorkspaceEntityList
-            entities={paginatedPricingRequests}
-            type="pricingRequest"
-            loading={isLoading}
-            emptyText="No pricing requests for this opportunity"
-            onEntityEdit={(entity) => onEditEntity("pricingRequest", entity)}
-            onEntityAssign={(entity) => onAssignEntity("pricingRequest", entity)}
-            onEntityComplete={(entity) => onCompleteEntity("pricingRequest", entity)}
-            onEntityDelete={(entity) => onDeleteEntity("pricingRequest", entity)}
-          />
-          {filteredPricingRequests.length > 0 && (
-            <Pagination
-              current={pricingCurrentPage}
-              pageSize={pricingPageSize}
-              total={filteredPricingRequests.length}
-              onChange={setPricingCurrentPage}
-              style={{ marginTop: "16px", float: "right" }}
-            />
-          )}
-        </>
+        <PricingRequestsTab
+          pricingRequests={workspaceData.pricingRequests}
+          isLoading={isLoading}
+          onCreateEntity={onCreateEntity}
+          onEditEntity={(e) => onEditEntity("pricingRequest", e)}
+          onAssignEntity={(e) => onAssignEntity("pricingRequest", e)}
+          onCompleteEntity={(e) => onCompleteEntity("pricingRequest", e)}
+          onDeleteEntity={(e) => onDeleteEntity("pricingRequest", e)}
+          toolbarClassName={styles.workspaceToolbarRow}
+          paginationClassName={styles.workspacePagination}
+        />
       ),
     },
     {
       key: "proposals",
       label: "Proposals",
       content: (
-        <>
-          <div className={styles.workspaceToolbarRow}>
-            <WorkspaceTabActions
-              entityType="proposal"
-              onCreateClick={onCreateEntity}
-              compact
-            />
-            <ProposalsFilters
-              clients={proposalClientOptions}
-              opportunities={proposalOpportunityOptions}
-              onApplyFilters={(filters) => setProposalFilters(filters)}
-              onClear={() => setProposalFilters({})}
-            />
-          </div>
-          <WorkspaceEntityList
-            entities={paginatedProposals}
-            type="proposal"
-            loading={isLoading}
-            emptyText="No proposals for this opportunity"
-            onEntityEdit={(entity) => onEditEntity("proposal", entity)}
-            onEntitySubmit={(entity) => onSubmitEntity("proposal", entity)}
-            onEntityApprove={(entity) => onApproveEntity("proposal", entity)}
-            onEntityReject={(entity) => onRejectEntity("proposal", entity)}
-            onEntityDelete={(entity) => onDeleteEntity("proposal", entity)}
-            onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
-            onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
-          />
-          {filteredProposals.length > 0 && (
-            <Pagination
-              current={proposalCurrentPage}
-              pageSize={proposalPageSize}
-              total={filteredProposals.length}
-              onChange={setProposalCurrentPage}
-              style={{ marginTop: "16px", float: "right" }}
-            />
-          )}
-        </>
+        <ProposalsTab
+          proposals={workspaceData.proposals}
+          isLoading={isLoading}
+          onCreateEntity={onCreateEntity}
+          onEditEntity={(e) => onEditEntity("proposal", e)}
+          onSubmitEntity={(e) => onSubmitEntity("proposal", e)}
+          onApproveEntity={(e) => onApproveEntity("proposal", e)}
+          onRejectEntity={(e) => onRejectEntity("proposal", e)}
+          onDeleteEntity={(e) => onDeleteEntity("proposal", e)}
+          onViewDocuments={handleEntityDocuments}
+          onViewNotes={handleEntityNotes}
+          toolbarClassName={styles.workspaceToolbarRow}
+          paginationClassName={styles.workspacePagination}
+        />
       ),
     },
     {
       key: "contracts",
       label: "Contracts",
       content: (
-        <>
-          <div className={styles.workspaceToolbarRow}>
-            <WorkspaceTabActions
-              entityType="contract"
-              onCreateClick={onCreateEntity}
-              compact
-            />
-            <Space size={8}>
-              <Select
-                value={contractViewMode}
-                onChange={(value) => setContractViewMode(value)}
-                options={[
-                  { label: "All Contracts", value: "all" },
-                  { label: "Expiring Soon", value: "expiring" },
-                ]}
-                className={styles.workspaceViewSelect}
-              />
-              <ContractsFilters
-                compact
-                status={contractDraftFilters.status}
-                clientId={contractDraftFilters.clientId}
-                onStatusChange={(status) =>
-                  setContractDraftFilters((prev) => ({ ...prev, status }))
-                }
-                onClientIdChange={(clientId) =>
-                  setContractDraftFilters((prev) => ({ ...prev, clientId }))
-                }
-                onApplyFilters={() => setContractFilters(contractDraftFilters)}
-                onClear={() => {
-                  setContractDraftFilters({});
-                  setContractFilters({});
-                  setContractViewMode("all");
-                }}
-                clients={contractClientOptions}
-              />
-            </Space>
-          </div>
-          <WorkspaceEntityList
-            entities={paginatedContracts}
-            type="contract"
-            loading={isLoading}
-            emptyText="No contracts linked to this opportunity's client"
-            onEntityEdit={(entity) => onEditEntity("contract", entity)}
-            onEntityActivate={(entity) => onActivateEntity("contract", entity)}
-            onEntityCancel={(entity) => onCancelEntity("contract", entity)}
-            onEntityDelete={(entity) => onDeleteEntity("contract", entity)}
-            onEntityViewDocuments={(type, entity) => handleOpenEntityDocuments(type, entity)}
-            onEntityViewNotes={(type, entity) => handleOpenEntityNotes(type, entity)}
-          />
-          {filteredContracts.length > 0 && (
-            <Pagination
-              current={contractCurrentPage}
-              pageSize={contractPageSize}
-              total={filteredContracts.length}
-              onChange={setContractCurrentPage}
-              style={{ marginTop: "16px", float: "right" }}
-            />
-          )}
-        </>
+        <ContractsTab
+          contracts={workspaceData.contracts}
+          isLoading={isLoading}
+          onCreateEntity={onCreateEntity}
+          onEditEntity={(e) => onEditEntity("contract", e)}
+          onActivateEntity={(e) => onActivateEntity("contract", e)}
+          onCancelEntity={(e) => onCancelEntity("contract", e)}
+          onDeleteEntity={(e) => onDeleteEntity("contract", e)}
+          onViewDocuments={handleEntityDocuments}
+          onViewNotes={handleEntityNotes}
+          toolbarClassName={styles.workspaceToolbarRow}
+          paginationClassName={styles.workspacePagination}
+        />
       ),
     },
     {
       key: "documents",
       label: "Documents",
       content: (
-        <>
-          <DocumentActions
-            selectedDocument={selectedWorkspaceDocument}
-            onUpload={handleOpenWorkspaceUpload}
-            onDownload={() => handleDownloadDocument(selectedWorkspaceDocument)}
-            onDelete={() => handleDeleteDocument(selectedWorkspaceDocument, async () => {
-              setSelectedWorkspaceDocument(null);
-            })}
-            canDelete={can("delete:document")}
-            loading={isLoading}
-          />
-          <DocumentsTable
-            documents={paginatedDocuments}
-            loading={isLoading}
-            pagination={{
-              current: documentCurrentPage,
-              pageSize: documentPageSize,
-              total: (workspaceData.documents || []).length,
-              onChange: setDocumentCurrentPage,
-            }}
-            onSelectDocument={setSelectedWorkspaceDocument}
-            selectedDocumentId={selectedWorkspaceDocument?.id}
-          />
-        </>
+        <DocumentsTab
+          documents={workspaceData.documents}
+          isLoading={isLoading}
+          selectedDocument={documents.selectedDocument}
+          onSelectDocument={documents.setSelectedDocument}
+          onUpload={() => documents.openWorkspaceUpload(selectedOpportunity.id)}
+          onDownload={() => documents.downloadDocument(documents.selectedDocument)}
+          onDelete={() =>
+            documents.deleteDocument(documents.selectedDocument, () =>
+              documents.setSelectedDocument(null),
+            )
+          }
+          canDelete={can("delete:document")}
+        />
       ),
     },
     {
       key: "notes",
       label: "Notes",
       content: (
-        <>
-          <NotesActions
-            note={selectedWorkspaceNote}
-            onAdd={() => setIsWorkspaceNoteFormOpen(true)}
-            onEdit={() => {
-              if (selectedWorkspaceNote) {
-                setEditingWorkspaceNote(selectedWorkspaceNote);
-                setIsWorkspaceNoteFormOpen(true);
-              }
-            }}
-            onDelete={() => handleDeleteNote(selectedWorkspaceNote, async () => {
-              setSelectedWorkspaceNote(null);
-            })}
-            loading={isLoading}
-          />
-          <NotesTable
-            notes={workspaceData.notes || []}
-            loading={isLoading}
-            onSelectNote={setSelectedWorkspaceNote}
-            selectedNoteId={selectedWorkspaceNote?.id}
-          />
-        </>
+        <NotesTab
+          notes={workspaceData.notes}
+          isLoading={isLoading}
+          selectedNote={notes.selectedNote}
+          onSelectNote={notes.setSelectedNote}
+          onAdd={notes.openWorkspaceNoteForm}
+          onEdit={() => notes.selectedNote && notes.editWorkspaceNote(notes.selectedNote)}
+          onDelete={() =>
+            notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))
+          }
+        />
       ),
     },
   ];
-
-  if (!selectedOpportunity) {
-    return null;
-  }
 
   return (
     <>
@@ -834,7 +274,7 @@ export const OpportunityWorkspaceContent = ({
               onClick={onBackToOpportunities}
               aria-label="Back to all opportunities"
             />
-            <span>{`${selectedOpportunity.title || "Opportunity"} Workspace`}</span>
+            {selectedOpportunity.title}
           </Space>
         }
         items={workspaceItems}
@@ -842,132 +282,97 @@ export const OpportunityWorkspaceContent = ({
         onChange={onTabChange}
       />
 
-      <Modal
-        title={relatedDocsTarget ? `${relatedDocsTarget.title} Documents` : "Related Documents"}
-        open={isRelatedDocsModalOpen}
-        onCancel={() => {
-          setIsRelatedDocsModalOpen(false);
-          setRelatedDocsTarget(null);
-          setRelatedDocuments([]);
-          setSelectedRelatedDocument(null);
-        }}
-        footer={null}
-        width={1000}
-      >
-        <DocumentActions
-          selectedDocument={selectedRelatedDocument}
-          onUpload={handleOpenRelatedUpload}
-          onDownload={() => handleDownloadDocument(selectedRelatedDocument)}
-          onDelete={() =>
-            handleDeleteDocument(selectedRelatedDocument, async () => {
-              setSelectedRelatedDocument(null);
-              if (relatedDocsTarget) {
-                await loadRelatedDocuments(relatedDocsTarget);
-              }
-            })
-          }
-          canDelete={can("delete:document")}
-          loading={isRelatedDocsLoading}
-        />
+      {/* Related Documents Modal */}
+      <RelatedDocumentsModal
+        open={documents.isRelatedDocsModalOpen}
+        target={documents.relatedDocsTarget}
+        documents={documents.relatedDocuments}
+        loading={documents.isRelatedDocsLoading}
+        selectedDocument={documents.selectedRelatedDocument}
+        onSelectDocument={documents.setSelectedRelatedDocument}
+        onUpload={documents.openRelatedUpload}
+        onDownload={documents.downloadDocument}
+        onDelete={(doc) =>
+          documents.deleteDocument(doc, async () => {
+            documents.setSelectedRelatedDocument(null);
+            if (documents.relatedDocsTarget) {
+              await documents.openRelatedDocuments(documents.relatedDocsTarget);
+            }
+          })
+        }
+        onClose={documents.closeRelatedDocuments}
+        canDelete={can("delete:document")}
+      />
 
-        <DocumentsTable
-          documents={relatedDocuments}
-          loading={isRelatedDocsLoading}
-          pagination={{
-            current: 1,
-            pageSize: Math.max(relatedDocuments.length, 1),
-            total: relatedDocuments.length,
-            onChange: () => undefined,
-          }}
-          onSelectDocument={setSelectedRelatedDocument}
-          selectedDocumentId={selectedRelatedDocument?.id}
-        />
-      </Modal>
-
+      {/* Related Document Upload */}
       <DocumentUploadForm
-        open={isRelatedUploadOpen}
-        onCancel={() => setIsRelatedUploadOpen(false)}
-        onSubmit={handleRelatedUpload}
-        form={relatedUploadForm}
-        loading={isRelatedDocsLoading}
+        open={documents.isRelatedUploadOpen}
+        onCancel={() => documents.setIsRelatedUploadOpen(false)}
+        onSubmit={documents.handleRelatedUpload}
+        form={documents.relatedUploadForm}
+        loading={documents.isRelatedDocsLoading}
         relatedToType={relatedUploadWatchedType}
         proposalOptions={proposalDocOptions}
         contractOptions={contractDocOptions}
       />
 
+      {/* Workspace Document Upload */}
       <DocumentUploadForm
-        open={isWorkspaceUploadOpen}
-        onCancel={() => setIsWorkspaceUploadOpen(false)}
-        onSubmit={handleWorkspaceUpload}
-        form={workspaceUploadForm}
+        open={documents.isWorkspaceUploadOpen}
+        onCancel={() => documents.setIsWorkspaceUploadOpen(false)}
+        onSubmit={(values, file) =>
+          documents.handleWorkspaceUpload(values, file, selectedOpportunity.id)
+        }
+        form={documents.workspaceUploadForm}
         loading={isLoading}
         relatedToType={workspaceUploadWatchedType}
       />
 
-      <Modal
-        title={relatedNotesTarget ? `${relatedNotesTarget.title} Notes` : "Related Notes"}
-        open={isRelatedNotesModalOpen}
-        onCancel={() => {
-          setIsRelatedNotesModalOpen(false);
-          setRelatedNotesTarget(null);
-          setRelatedNotes([]);
-          setSelectedRelatedNote(null);
+      {/* Related Notes Modal */}
+      <RelatedNotesModal
+        open={notes.isRelatedNotesModalOpen}
+        target={notes.relatedNotesTarget}
+        notes={notes.relatedNotes}
+        loading={notes.isRelatedNotesLoading}
+        selectedNote={notes.selectedRelatedNote}
+        onSelectNote={notes.setSelectedRelatedNote}
+        onAdd={notes.openRelatedNoteForm}
+        onEdit={(note) => {
+          notes.relatedNoteForm.setFieldsValue({ content: note.content });
+          notes.openRelatedNoteForm();
         }}
-        footer={null}
-        width={800}
-      >
-        <NotesActions
-          note={selectedRelatedNote}
-          onAdd={() => setIsRelatedNoteFormOpen(true)}
-          onEdit={() => {
-            if (selectedRelatedNote) {
-              setEditingRelatedNote(selectedRelatedNote);
-              setIsRelatedNoteFormOpen(true);
+        onDelete={(note) =>
+          notes.deleteNote(note, async () => {
+            notes.setSelectedRelatedNote(null);
+            if (notes.relatedNotesTarget) {
+              await notes.openRelatedNotes(notes.relatedNotesTarget);
             }
-          }}
-          onDelete={() =>
-            handleDeleteNote(selectedRelatedNote, async () => {
-              setSelectedRelatedNote(null);
-              if (relatedNotesTarget) {
-                await loadRelatedNotes(relatedNotesTarget);
-              }
-            })
-          }
-          loading={isRelatedNotesLoading}
-        />
-
-        <NotesTable
-          notes={relatedNotes}
-          loading={isRelatedNotesLoading}
-          onSelectNote={setSelectedRelatedNote}
-          selectedNoteId={selectedRelatedNote?.id}
-        />
-      </Modal>
-
-      <NoteForm
-        open={isWorkspaceNoteFormOpen}
-        onCancel={() => {
-          setIsWorkspaceNoteFormOpen(false);
-          setEditingWorkspaceNote(null);
-        }}
-        onSubmit={handleCreateWorkspaceNote}
-        form={workspaceNoteForm}
-        loading={isLoading}
-        relatedToType={RelatedToType.Opportunity}
-        note={editingWorkspaceNote}
+          })
+        }
+        onClose={notes.closeRelatedNotes}
+        canDelete={can("delete:note")}
       />
 
+      {/* Workspace Note Form */}
       <NoteForm
-        open={isRelatedNoteFormOpen}
-        onCancel={() => {
-          setIsRelatedNoteFormOpen(false);
-          setEditingRelatedNote(null);
-        }}
-        onSubmit={handleCreateRelatedNote}
-        form={relatedNoteForm}
-        loading={isRelatedNotesLoading}
-        relatedToType={relatedNotesTarget?.relatedToType}
-        note={editingRelatedNote}
+        open={notes.isWorkspaceNoteFormOpen}
+        onCancel={notes.closeWorkspaceNoteForm}
+        onSubmit={(values) => notes.handleCreateWorkspaceNote(values, selectedOpportunity.id)}
+        form={notes.workspaceNoteForm}
+        loading={isLoading}
+        relatedToType={RelatedToType.Opportunity}
+        note={notes.editingWorkspaceNote}
+      />
+
+      {/* Related Note Form */}
+      <NoteForm
+        open={notes.isRelatedNoteFormOpen}
+        onCancel={notes.closeRelatedNoteForm}
+        onSubmit={notes.handleCreateRelatedNote}
+        form={notes.relatedNoteForm}
+        loading={notes.isRelatedNotesLoading}
+        relatedToType={notes.relatedNotesTarget?.relatedToType}
+        note={notes.editingRelatedNote}
       />
     </>
   );

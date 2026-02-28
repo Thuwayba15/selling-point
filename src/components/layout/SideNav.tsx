@@ -52,31 +52,6 @@ export const SideNav = () => {
       icon: <CalendarOutlined />,
       label: <Link href={ROUTES.activities}>Activities</Link>,
     },
-    // {
-    //   key: ROUTES.pricingRequests,
-    //   icon: <FileTextOutlined />,
-    //   label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
-    // },
-    // {
-    //   key: ROUTES.proposals,
-    //   icon: <FileTextOutlined />,
-    //   label: <Link href={ROUTES.proposals}>Proposals</Link>,
-    // },
-    // {
-    //   key: ROUTES.contracts,
-    //   icon: <FileTextOutlined />,
-    //   label: <Link href={ROUTES.contracts}>Contracts</Link>,
-    // },
-    // {
-    //   key: ROUTES.notes,
-    //   icon: <FileTextOutlined />,
-    //   label: <Link href={ROUTES.notes}>Notes</Link>,
-    // },
-    // {
-    //   key: ROUTES.documents,
-    //   icon: <FolderOutlined />,
-    //   label: <Link href={ROUTES.documents}>Documents</Link>,
-    // },
     ...(can("view:reports")
       ? [
           {

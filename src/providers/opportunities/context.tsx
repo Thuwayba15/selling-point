@@ -30,6 +30,7 @@ export interface IOpportunityStageHistory {
   toStage?: number;
   toStageName?: string;
   notes?: string;
+  lossReason?: string;
   changedAt?: string;
   changedByName?: string;
 }

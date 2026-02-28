@@ -12,12 +12,11 @@ const { Text } = Typography;
 
 const PAGE_NAMES: Record<string, string> = {
   [ROUTES.dashboard]: "Dashboard",
-  [ROUTES.proposals]: "Proposals",
-  [ROUTES.contracts]: "Contracts",
-  // [ROUTES.pricingRequests]: "Pricing Requests",
   [ROUTES.clients]: "Clients",
   [ROUTES.contacts]: "Contacts",
   [ROUTES.opportunities]: "Opportunities",
+  [ROUTES.reports]: "Reports",
+  [ROUTES.invitations]: "Invitations",
 };
 
 export const TopBar = () => {
@@ -32,7 +31,20 @@ export const TopBar = () => {
     router.push(ROUTES.login);
   };
 
-  const pageName = PAGE_NAMES[pathname] || "Page";
+  // Check for dynamic routes
+  let pageName = PAGE_NAMES[pathname];
+  
+  if (!pageName) {
+    // Handle opportunity workspace route
+    if (pathname.startsWith('/opportunities/')) {
+      const pathParts = pathname.split('/');
+      if (pathParts.length >= 3 && pathParts[2]) {
+        pageName = "Opportunity Workspace";
+      }
+    } else {
+      pageName = "Page";
+    }
+  }
 
   const userMenuContent = (
     <div className={styles.userMenuContent}>

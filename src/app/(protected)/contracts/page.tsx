@@ -243,9 +243,11 @@ const ContractsPage = () => {
     setClientId(newClientId);
   };
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = (filters: { status?: number; clientId?: string }) => {
+    setStatus(filters.status);
+    setClientId(filters.clientId);
     setCurrentPage(1);
-    getContracts({ pageNumber: 1, pageSize, status, clientId });
+    getContracts({ pageNumber: 1, pageSize, status: filters.status, clientId: filters.clientId });
   };
 
   const handleClearFilters = () => {
@@ -292,13 +294,9 @@ const ContractsPage = () => {
               children: (
                 <>
                   <ContractsFilters
-                    status={status}
-                    clientId={clientId}
-                    onStatusChange={handleStatusChange}
-                    onClientIdChange={handleClientIdChange}
+                    clients={clientOptions}
                     onApplyFilters={handleApplyFilters}
                     onClear={handleClearFilters}
-                    clients={clientOptions}
                   />
 
                   <ContractsTable

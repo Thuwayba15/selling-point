@@ -1,22 +1,17 @@
 "use client";
 
-import { Card, Select, Button } from "antd";
+import { useState } from "react";
+import { Form, Button, Select } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ContractsFiltersProps {
-  status?: number;
-  clientId?: string;
-  onStatusChange: (status: number | undefined) => void;
-  onClientIdChange: (clientId: string | undefined) => void;
-  onApplyFilters: () => void;
+  clients: Array<{ id: string; name: string }>;
+  onApplyFilters: (filters: { status?: number; clientId?: string }) => void;
   onClear: () => void;
-  clients?: Array<{ id: string; name: string }>;
-  compact?: boolean;
 }
 
 const STATUS_OPTIONS = [
-  { label: "All Statuses", value: undefined },
   { label: "Draft", value: 1 },
   { label: "Active", value: 2 },
   { label: "Expired", value: 3 },
@@ -25,93 +20,72 @@ const STATUS_OPTIONS = [
 ];
 
 export const ContractsFilters = ({
-  status,
-  clientId,
-  onStatusChange,
-  onClientIdChange,
+  clients,
   onApplyFilters,
   onClear,
-  clients = [],
-  compact = false,
 }: ContractsFiltersProps) => {
+  const [form] = Form.useForm();
   const { styles } = useStyles();
+  const [status, setStatus] = useState<number | undefined>(undefined);
+  const [clientId, setClientId] = useState<string | undefined>(undefined);
 
-  const clientOptions = [
-    { label: "All Clients", value: undefined },
-    ...clients.map((client) => ({ label: client.name, value: client.id })),
-  ];
+  const clientOptions = clients.map((client) => ({
+    label: client.name,
+    value: client.id,
+  }));
 
-  const hasActiveFilters = status !== undefined || clientId !== undefined;
+  const handleApply = () => {
+    onApplyFilters({
+      status: status || undefined,
+      clientId: clientId || undefined,
+    });
+  };
 
-  if (compact) {
-    return (
-      <div className={styles.workspaceFiltersBar}>
-        <div className={styles.workspaceFiltersForm}>
-          <div className={styles.workspaceFilterItem}>
-            <Select
-              options={STATUS_OPTIONS.filter((opt) => opt.value !== undefined)}
-              value={status}
-              onChange={onStatusChange}
-              placeholder="Status"
-              allowClear
-              className={styles.workspaceFilterSelect}
-            />
-          </div>
-          <div className={styles.workspaceFilterItem}>
-            <Select
-              options={clients.map((client) => ({ label: client.name, value: client.id }))}
-              value={clientId}
-              onChange={onClientIdChange}
-              placeholder="Client"
-              allowClear
-              className={styles.workspaceFilterSelect}
-            />
-          </div>
-          <div className={styles.workspaceFiltersActions}>
-            <Button type="primary" onClick={onApplyFilters}>
-              Apply
-            </Button>
-            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={onClear} danger />}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleClear = () => {
+    setStatus(undefined);
+    setClientId(undefined);
+    form.resetFields();
+    onClear();
+  };
+
+  const hasActiveFilters = status !== undefined || clientId;
 
   return (
-    <Card className={styles.filtersCard} title="Filters">
-      <div className={styles.filtersRow}>
-        <div className={styles.filterItem}>
-          <label>Status</label>
+    <div className={styles.workspaceFiltersBar}>
+      <Form form={form} layout="inline" className={styles.workspaceFiltersForm}>
+        <Form.Item className={styles.workspaceFilterItem}>
           <Select
-            options={STATUS_OPTIONS}
+            placeholder="Status"
             value={status}
-            onChange={onStatusChange}
-            className={styles.fullWidthControl}
-          />
-        </div>
-        <div className={styles.filterItem}>
-          <label>Client</label>
-          <Select
-            options={clientOptions}
-            value={clientId}
-            onChange={onClientIdChange}
-            placeholder="Select a client"
+            onChange={setStatus}
             allowClear
-            className={styles.fullWidthControl}
+            options={STATUS_OPTIONS}
+            className={styles.workspaceFilterSelect}
           />
-        </div>
-        <div className={styles.filtersActions}>
-          <Button type="primary" onClick={onApplyFilters}>
-            Apply Filters
-          </Button>
-          {hasActiveFilters && (
-            <Button icon={<ClearOutlined />} onClick={onClear} danger>
-              Clear Filters
+        </Form.Item>
+
+        <Form.Item className={styles.workspaceFilterItem}>
+          <Select
+            placeholder="Client"
+            value={clientId}
+            onChange={setClientId}
+            allowClear
+            options={clientOptions}
+            className={styles.workspaceFilterSelect}
+          />
+        </Form.Item>
+
+        <Form.Item className={styles.workspaceFilterActionsItem}>
+          <div className={styles.workspaceFiltersActions}>
+            <Button type="primary" onClick={handleApply}>
+              Apply
             </Button>
-          )}
-        </div>
-      </div>
-    </Card>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </div>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
