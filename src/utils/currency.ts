@@ -1,9 +1,3 @@
-/**
- * Format currency values intelligently:
- * - < 1M: R123,456.78
- * - >= 1M and < 1B: R123.45M
- * - >= 1B: R1.23B
- */
 export function formatCurrency(value: number | undefined | null): string {
   if (value === undefined || value === null || isNaN(value)) {
     return "R0.00";

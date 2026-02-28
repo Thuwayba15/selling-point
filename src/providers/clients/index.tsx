@@ -32,10 +32,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
   const [state, dispatch] = useReducer(ClientsReducer, INITIAL_STATE);
   const api = getAxiosInstance();
 
-  // ============================================================================
   // Get Clients (with filters)
   // GET /api/clients
-  // ============================================================================
   const getClients = async (params?: {
     searchTerm?: string;
     industry?: string;
@@ -67,10 +65,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Get Single Client
   // GET /api/clients/{id}
-  // ============================================================================
   const getClient = async (id: string) => {
     dispatch(getClientPending());
     try {
@@ -81,10 +77,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Get Client Stats
   // GET /api/clients/{id}/stats
-  // ============================================================================
   const getClientStats = async (id: string) => {
     dispatch(getClientStatsPending());
     try {
@@ -97,10 +91,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Create Client
   // POST /api/clients
-  // ============================================================================
   const createClient = async (client: Partial<IClient>) => {
     dispatch(createClientPending());
     try {
@@ -111,10 +103,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Update Client
   // PUT /api/clients/{id}
-  // ============================================================================
   const updateClient = async (id: string, client: Partial<IClient>) => {
     dispatch(updateClientPending());
     try {
@@ -125,10 +115,8 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Delete Client
   // DELETE /api/clients/{id}
-  // ============================================================================
   const deleteClient = async (id: string) => {
     dispatch(deleteClientPending());
     try {
@@ -139,9 +127,7 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   };
 
-  // ============================================================================
   // Utility Actions
-  // ============================================================================
   const clearError = () => {
     dispatch(clearErrorAction());
   };
@@ -169,10 +155,7 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
     </ClientsStateContext.Provider>
   );
 };
-
-// ============================================================================
-// Custom Hooks
-// ============================================================================
+// Custom Hook
 export const useClientsState = () => {
   const context = useContext(ClientsStateContext);
   if (!context) {
