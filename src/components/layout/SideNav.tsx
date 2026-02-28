@@ -52,11 +52,11 @@ export const SideNav = () => {
       icon: <CalendarOutlined />,
       label: <Link href={ROUTES.activities}>Activities</Link>,
     },
-    {
-      key: ROUTES.pricingRequests,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
-    },
+    // {
+    //   key: ROUTES.pricingRequests,
+    //   icon: <FileTextOutlined />,
+    //   label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
+    // },
     {
       key: ROUTES.proposals,
       icon: <FileTextOutlined />,

@@ -89,11 +89,24 @@ export const useOpportunityWorkspaceData = () => {
               .catch(() => ({ data: { items: [] } })),
           ]);
 
+        const proposalsList = (proposalsRes.data?.items || proposalsRes.data || []) as IProposal[];
+        const proposalsWithDetails = await Promise.all(
+          proposalsList.map(async (proposal) => {
+            if (!proposal?.id) return proposal;
+            try {
+              const detailsRes = await api.get(`/api/proposals/${proposal.id}`);
+              return (detailsRes.data || proposal) as IProposal;
+            } catch {
+              return proposal;
+            }
+          }),
+        );
+
         setWorkspaceData({
           pricingRequests: (pricingRequestsRes.data?.items || pricingRequestsRes.data || []).filter(
             (item: IPricingRequest) => item.opportunityId === selectedOpportunity.id
           ) as IPricingRequest[],
-          proposals: (proposalsRes.data?.items || proposalsRes.data || []) as IProposal[],
+          proposals: proposalsWithDetails,
           contracts: (contractsRes.data?.items || contractsRes.data || []) as IContract[],
           documents: (documentsRes.data?.items || documentsRes.data || []) as IDocument[],
           notes: (notesRes.data?.items || notesRes.data || []) as INote[],

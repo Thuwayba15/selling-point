@@ -11,6 +11,7 @@ import { ActivityType, Priority, RelatedToType } from "@/providers/activities/co
 import dayjs from "dayjs";
 import type { EntityType } from "./useEntityModals";
 import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
 import type { CreateProposalPayload } from "@/components/proposals/CreateProposalForm";
 import type { UpdateProposalPayload } from "@/components/proposals/EditProposalForm";
 
@@ -160,11 +161,39 @@ export const useEntityActions = ({
     async (payload: UpdateProposalPayload) => {
       try {
         if (!selectedEntity?.id) return;
+        const { lineItems, ...proposalData } = payload;
+
         const success = await proposalsActions.updateProposal(selectedEntity.id, {
-          ...payload,
+          ...proposalData,
           currency: "R",
         });
         if (!success) return;
+
+        if (lineItems) {
+          const existingLineItems = selectedEntity?.lineItems || [];
+          const existingIds = new Set(existingLineItems.map((item: any) => item.id).filter(Boolean));
+
+          const newItems = lineItems.filter((item) => !item.id || !existingIds.has(item.id));
+          for (const item of newItems) {
+            await proposalsActions.addLineItem(selectedEntity.id, {
+              productServiceName: item.productServiceName,
+              description: item.description,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              discount: item.discount,
+              taxRate: item.taxRate,
+            });
+          }
+
+          const newItemIds = new Set(lineItems.map((item) => item.id).filter(Boolean));
+          const deletedItems = existingLineItems.filter(
+            (item: any) => item.id && !newItemIds.has(item.id),
+          );
+          for (const item of deletedItems) {
+            await proposalsActions.deleteLineItem(selectedEntity.id, item.id);
+          }
+        }
+
         message.success("Proposal updated successfully");
         await onRefresh();
       } catch {
@@ -172,6 +201,58 @@ export const useEntityActions = ({
       }
     },
     [selectedEntity, proposalsActions, message, onRefresh],
+  );
+
+  const handleProposalSubmit = useCallback(
+    async (entity: IProposal) => {
+      try {
+        if (!entity?.id) return;
+        const success = await proposalsActions.submitProposal(entity.id);
+        if (!success) return;
+        message.success("Proposal submitted for approval");
+        await onRefresh();
+      } catch {
+        message.error("Failed to submit proposal");
+      }
+    },
+    [proposalsActions, message, onRefresh],
+  );
+
+  const handleProposalApprove = useCallback(
+    async (entity: IProposal) => {
+      try {
+        if (!entity?.id) return;
+        const success = await proposalsActions.approveProposal(entity.id);
+        if (!success) return;
+        message.success("Proposal approved successfully");
+        await onRefresh();
+      } catch {
+        message.error("Failed to approve proposal");
+      }
+    },
+    [proposalsActions, message, onRefresh],
+  );
+
+  const handleProposalReject = useCallback(
+    async (entity: IProposal) => {
+      if (!entity?.id) return;
+
+      const reason = window.prompt("Please provide a rejection reason:", "")?.trim();
+      if (!reason) {
+        message.error("Rejection reason is required");
+        return;
+      }
+
+      try {
+        const success = await proposalsActions.rejectProposal(entity.id, reason);
+        if (!success) return;
+        message.success("Proposal rejected successfully");
+        await onRefresh();
+      } catch {
+        message.error("Failed to reject proposal");
+      }
+    },
+    [proposalsActions, message, onRefresh],
   );
 
   const handlePricingRequestCreate = useCallback(
@@ -387,6 +468,9 @@ export const useEntityActions = ({
     handleActivityEdit,
     handleProposalCreate,
     handleProposalEdit,
+    handleProposalSubmit,
+    handleProposalApprove,
+    handleProposalReject,
     handlePricingRequestCreate,
     handlePricingRequestEdit,
     handlePricingRequestAssign,

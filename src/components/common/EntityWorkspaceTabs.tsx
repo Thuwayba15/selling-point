@@ -9,7 +9,7 @@ export interface WorkspaceTabItem {
 }
 
 interface EntityWorkspaceTabsProps {
-  title: string;
+  title: React.ReactNode;
   items: WorkspaceTabItem[];
   activeKey: string;
   onChange: (key: string) => void;

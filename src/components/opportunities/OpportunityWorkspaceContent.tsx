@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Button, Space } from "antd";
 import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import {
   OpportunityDetails,
@@ -43,7 +45,11 @@ interface OpportunityWorkspaceContentProps {
   onEditEntity: (type: EntityType, entity: any) => void;
   onAssignEntity: (type: EntityType, entity: any) => void;
   onCompleteEntity: (type: EntityType, entity: any) => void;
+  onSubmitEntity: (type: EntityType, entity: any) => void;
+  onApproveEntity: (type: EntityType, entity: any) => void;
+  onRejectEntity: (type: EntityType, entity: any) => void;
   onDeleteEntity: (type: EntityType, entity: any) => void;
+  onBackToOpportunities: () => void;
 }
 
 export const OpportunityWorkspaceContent = ({
@@ -63,7 +69,11 @@ export const OpportunityWorkspaceContent = ({
   onEditEntity,
   onAssignEntity,
   onCompleteEntity,
+  onSubmitEntity,
+  onApproveEntity,
+  onRejectEntity,
   onDeleteEntity,
+  onBackToOpportunities,
 }: OpportunityWorkspaceContentProps) => {
   const { styles } = useStyles();
 
@@ -134,6 +144,9 @@ export const OpportunityWorkspaceContent = ({
             loading={isLoading}
             emptyText="No proposals for this opportunity"
             onEntityEdit={(entity) => onEditEntity("proposal", entity)}
+            onEntitySubmit={(entity) => onSubmitEntity("proposal", entity)}
+            onEntityApprove={(entity) => onApproveEntity("proposal", entity)}
+            onEntityReject={(entity) => onRejectEntity("proposal", entity)}
             onEntityDelete={(entity) => onDeleteEntity("proposal", entity)}
           />
         </>
@@ -206,7 +219,17 @@ export const OpportunityWorkspaceContent = ({
 
   return (
     <EntityWorkspaceTabs
-      title={`${selectedOpportunity.title || "Opportunity"} Workspace`}
+      title={
+        <Space size={8}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={onBackToOpportunities}
+            aria-label="Back to all opportunities"
+          />
+          <span>{`${selectedOpportunity.title || "Opportunity"} Workspace`}</span>
+        </Space>
+      }
       items={workspaceItems}
       activeKey={activeTab}
       onChange={onTabChange}

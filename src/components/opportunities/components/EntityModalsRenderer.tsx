@@ -125,7 +125,10 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
       >
         <CreateProposalForm
           loading={isPending}
-          onSubmit={onProposalCreate}
+          onSubmit={async (payload) => {
+            await onProposalCreate(payload);
+            closeCreateModal("proposal");
+          }}
           onCancel={() => closeCreateModal("proposal")}
           opportunities={opportunities}
           clients={clients}
@@ -143,7 +146,10 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
           <EditProposalForm
             proposal={selectedEntity}
             loading={isPending}
-            onSubmit={onProposalEdit}
+            onSubmit={async (payload) => {
+              await onProposalEdit(payload);
+              closeEditModal("proposal");
+            }}
             onCancel={() => closeEditModal("proposal")}
             opportunities={opportunities}
             clients={clients}

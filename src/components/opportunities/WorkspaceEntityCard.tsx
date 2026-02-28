@@ -11,6 +11,8 @@ import {
   CheckCircleOutlined,
   CheckOutlined,
   UserAddOutlined,
+  SendOutlined,
+  CloseOutlined,
   DownOutlined,
   UpOutlined,
   EditOutlined,
@@ -85,6 +87,9 @@ interface WorkspaceEntityCardProps {
   onEdit?: (entity: any) => void;
   onAssign?: (entity: any) => void;
   onComplete?: (entity: any) => void;
+  onSubmit?: (entity: any) => void;
+  onApprove?: (entity: any) => void;
+  onReject?: (entity: any) => void;
   onDelete?: (entity: any) => void;
 }
 
@@ -95,6 +100,9 @@ export const WorkspaceEntityCard = ({
   onEdit,
   onAssign,
   onComplete,
+  onSubmit,
+  onApprove,
+  onReject,
   onDelete,
 }: WorkspaceEntityCardProps) => {
   const { can } = useRbac();
@@ -190,7 +198,7 @@ export const WorkspaceEntityCard = ({
           </Text>
         )}
 
-        <Space split="|" size="small" wrap>
+        <Space separator="|" size="small" wrap>
           {activity.priorityName && (
             <Space size={4}>
               <Tag color={PRIORITY_COLORS[activity.priority]} style={{ margin: 0 }}>
@@ -228,6 +236,16 @@ export const WorkspaceEntityCard = ({
       3: "Rejected",
       4: "Approved",
     };
+    const proposalStatus = proposal.status ?? 1;
+    const isDraft = proposalStatus === 1;
+    const isSubmitted = proposalStatus === 2;
+    const isRejected = proposalStatus === 3;
+
+    const canEditProposal = Boolean(onEdit && can("update:proposal") && isDraft);
+    const canSubmitProposal = Boolean(onSubmit && can("update:proposal") && isDraft);
+    const canApproveProposal = Boolean(onApprove && can("approve:proposal") && isSubmitted);
+    const canRejectProposal = Boolean(onReject && can("reject:proposal") && isSubmitted);
+    const canDeleteProposal = Boolean(onDelete && can("delete:proposal") && (isDraft || isRejected));
 
     return (
       <Card
@@ -238,25 +256,21 @@ export const WorkspaceEntityCard = ({
       >
         <Space direction="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Text strong>{proposal.title || "Proposal"}</Text>
-            {proposal.status && (
-              <Tag color={PROPOSAL_STATUS_COLORS[proposal.status]}>{statusNames[proposal.status]}</Tag>
-            )}
+            <Text strong>{proposal.title || "—"}</Text>
+            <Tag color={PROPOSAL_STATUS_COLORS[proposalStatus]}>{statusNames[proposalStatus]}</Tag>
           </div>
 
-          {proposal.description && (
-            <Text type="secondary" ellipsis>
-              {proposal.description}
-            </Text>
-          )}
-
-          <Space split="|" size="small" wrap>
+          <Space separator="|" size="small" wrap>
             {proposal.clientName && (
               <Space size={4}>
                 <UserOutlined />
                 <Text type="secondary">{proposal.clientName}</Text>
               </Space>
             )}
+            <Space size={4}>
+              <FileTextOutlined />
+              <Text type="secondary">{proposal.opportunityTitle || "—"}</Text>
+            </Space>
             {proposal.totalAmount !== undefined && (
               <Space size={4}>
                 <DollarOutlined />
@@ -265,13 +279,127 @@ export const WorkspaceEntityCard = ({
                 </Text>
               </Space>
             )}
-            {proposal.validUntil && (
+            {proposal.createdAt && (
               <Space size={4}>
                 <CalendarOutlined />
-                <Text type="secondary">Valid until: {new Date(proposal.validUntil).toLocaleDateString()}</Text>
+                <Text type="secondary">{new Date(proposal.createdAt).toLocaleDateString()}</Text>
               </Space>
             )}
           </Space>
+
+          <Space size="small" wrap>
+            {canEditProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(proposal);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+            {canSubmitProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<SendOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSubmit?.(proposal);
+                }}
+              >
+                Submit
+              </Button>
+            )}
+            {canApproveProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<CheckOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onApprove?.(proposal);
+                }}
+              >
+                Approve
+              </Button>
+            )}
+            {canRejectProposal && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<CloseOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject?.(proposal);
+                }}
+              >
+                Reject
+              </Button>
+            )}
+            {canDeleteProposal && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(proposal);
+                }}
+              >
+                Delete
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="text"
+              icon={expanded ? <UpOutlined /> : <DownOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded((prev) => !prev);
+              }}
+            >
+              {expanded ? "Collapse" : "Expand"}
+            </Button>
+          </Space>
+
+          {expanded && (
+            <Space orientation="vertical" style={{ width: "100%" }} size="small">
+              {proposal.description && <Text type="secondary">{proposal.description}</Text>}
+              <div>
+                <Text strong>Line Items</Text>
+                {proposal.lineItems && proposal.lineItems.length > 0 ? (
+                  <Space direction="vertical" style={{ width: "100%", marginTop: 8 }} size={8}>
+                    {proposal.lineItems.map((item) => (
+                      <div key={item.id} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: 8 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                          <Text>{item.productServiceName || item.description || "Item"}</Text>
+                          <Text>
+                            {proposal.currency || "R"} {(item.total ?? item.totalPrice ?? 0).toLocaleString()}
+                          </Text>
+                        </div>
+                        <Space size="small" wrap>
+                          <Text type="secondary">Qty: {item.quantity ?? 0}</Text>
+                          <Text type="secondary">Unit: {proposal.currency || "R"} {(item.unitPrice ?? 0).toLocaleString()}</Text>
+                          <Text type="secondary">Discount: {item.discount ?? 0}%</Text>
+                          <Text type="secondary">Tax: {item.taxRate ?? 0}%</Text>
+                        </Space>
+                      </div>
+                    ))}
+                  </Space>
+                ) : (
+                  <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
+                    No line items
+                  </Text>
+                )}
+              </div>
+            </Space>
+          )}
         </Space>
       </Card>
     );
@@ -310,7 +438,7 @@ export const WorkspaceEntityCard = ({
             </Space>
           </div>
 
-          <Space split="|" size="small" wrap>
+          <Space separator="|" size="small" wrap>
             <Space size={4}>
               <UserOutlined />
               <Text type="secondary">{pricingRequest.assignedToName || "Unassigned"}</Text>
@@ -420,7 +548,7 @@ export const WorkspaceEntityCard = ({
             </Text>
           )}
 
-          <Space split="|" size="small" wrap>
+          <Space separator="|" size="small" wrap>
             {contract.contractValue !== undefined && (
               <Space size={4}>
                 <DollarOutlined />
@@ -555,6 +683,9 @@ interface WorkspaceEntityListProps {
   onEntityEdit?: (entity: any) => void;
   onEntityAssign?: (entity: any) => void;
   onEntityComplete?: (entity: any) => void;
+  onEntitySubmit?: (entity: any) => void;
+  onEntityApprove?: (entity: any) => void;
+  onEntityReject?: (entity: any) => void;
   onEntityDelete?: (entity: any) => void;
 }
 
@@ -567,6 +698,9 @@ export const WorkspaceEntityList = ({
   onEntityEdit,
   onEntityAssign,
   onEntityComplete,
+  onEntitySubmit,
+  onEntityApprove,
+  onEntityReject,
   onEntityDelete,
 }: WorkspaceEntityListProps) => {
   if (loading) {
@@ -592,6 +726,9 @@ export const WorkspaceEntityList = ({
           onEdit={onEntityEdit}
           onAssign={onEntityAssign}
           onComplete={onEntityComplete}
+          onSubmit={onEntitySubmit}
+          onApprove={onEntityApprove}
+          onReject={onEntityReject}
           onDelete={onEntityDelete}
         />
       ))}
