@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, Tag, Space, Typography, Empty, Button, Popconfirm } from "antd";
 import {
   CalendarOutlined,
@@ -8,6 +9,10 @@ import {
   DollarOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
+  CheckOutlined,
+  UserAddOutlined,
+  DownOutlined,
+  UpOutlined,
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
@@ -17,6 +22,7 @@ import type { IPricingRequest } from "@/providers/pricing-requests/context";
 import type { IContract } from "@/providers/contracts/context";
 import type { IDocument } from "@/providers/documents/context";
 import type { INote } from "@/providers/notes/context";
+import { useRbac } from "@/hooks/useRbac";
 
 const { Text } = Typography;
 
@@ -77,32 +83,66 @@ interface WorkspaceEntityCardProps {
   type: "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
   onClick?: (entity: any) => void;
   onEdit?: (entity: any) => void;
+  onAssign?: (entity: any) => void;
+  onComplete?: (entity: any) => void;
   onDelete?: (entity: any) => void;
 }
 
-export const WorkspaceEntityCard = ({ entity, type, onClick, onEdit, onDelete }: WorkspaceEntityCardProps) => {
+export const WorkspaceEntityCard = ({
+  entity,
+  type,
+  onClick,
+  onEdit,
+  onAssign,
+  onComplete,
+  onDelete,
+}: WorkspaceEntityCardProps) => {
+  const { can } = useRbac();
+  const [expanded, setExpanded] = useState(false);
+
   const renderActions = () => {
-    if (!onEdit && !onDelete) return null;
+    const editPermissionMap: Record<WorkspaceEntityCardProps["type"], string | null> = {
+      activity: "update:activity",
+      proposal: "update:proposal",
+      pricingRequest: "update:pricing-request",
+      contract: "update:contract",
+      document: null,
+      note: "update:note",
+    };
+
+    const deletePermissionMap: Record<WorkspaceEntityCardProps["type"], string | null> = {
+      activity: "delete:activity",
+      proposal: "delete:proposal",
+      pricingRequest: null,
+      contract: "delete:contract",
+      document: "delete:document",
+      note: "delete:note",
+    };
+
+    const canEdit = Boolean(onEdit && editPermissionMap[type] && can(editPermissionMap[type]!));
+    const canDelete = Boolean(onDelete && deletePermissionMap[type] && can(deletePermissionMap[type]!));
+
+    if (!canEdit && !canDelete) return null;
 
     return (
       <Space size="small">
-        {onEdit && (
+        {canEdit && (
           <Button
             size="small"
             type="text"
             icon={<EditOutlined />}
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(entity);
+              onEdit?.(entity);
             }}
           />
         )}
-        {onDelete && (
+        {canDelete && (
           <Popconfirm
             title="Are you sure you want to delete this item?"
             onConfirm={(e) => {
               e?.stopPropagation();
-              onDelete(entity);
+              onDelete?.(entity);
             }}
             okText="Yes"
             cancelText="No"
@@ -240,6 +280,11 @@ export const WorkspaceEntityCard = ({ entity, type, onClick, onEdit, onDelete }:
   const renderPricingRequestCard = (pricingRequest: IPricingRequest) => {
     const statusNames: Record<number, string> = { 1: "Pending", 2: "In Progress", 3: "Completed" };
     const priorityNames: Record<number, string> = { 1: "Low", 2: "Medium", 3: "High", 4: "Urgent" };
+    const isCompleted = pricingRequest.status === 3;
+    const canEditPricing = Boolean(onEdit && can("update:pricing-request") && !isCompleted);
+    const canAssignPricing = Boolean(onAssign && can("assign:pricing-request") && !isCompleted);
+    const canCompletePricing = Boolean(onComplete && can("complete:pricing-request") && !isCompleted);
+    const canDeletePricing = false;
 
     return (
       <Card
@@ -250,7 +295,7 @@ export const WorkspaceEntityCard = ({ entity, type, onClick, onEdit, onDelete }:
       >
         <Space direction="vertical" style={{ width: "100%" }} size="small">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Text strong>{pricingRequest.opportunityTitle || "Pricing Request"}</Text>
+            <Text strong>{pricingRequest.opportunityTitle || "—"}</Text>
             <Space size="small">
               {pricingRequest.status && (
                 <Tag color={PRICING_STATUS_COLORS[pricingRequest.status]}>
@@ -265,34 +310,81 @@ export const WorkspaceEntityCard = ({ entity, type, onClick, onEdit, onDelete }:
             </Space>
           </div>
 
-          {pricingRequest.description && (
-            <Text type="secondary" ellipsis>
-              {pricingRequest.description}
-            </Text>
+          <Space split="|" size="small" wrap>
+            <Space size={4}>
+              <UserOutlined />
+              <Text type="secondary">{pricingRequest.assignedToName || "Unassigned"}</Text>
+            </Space>
+            <Space size={4}>
+              <CalendarOutlined />
+              <Text type="secondary">
+                {pricingRequest.requiredByDate
+                  ? new Date(pricingRequest.requiredByDate).toLocaleDateString()
+                  : "—"}
+              </Text>
+            </Space>
+          </Space>
+
+          {(canEditPricing || canAssignPricing || canCompletePricing || canDeletePricing || pricingRequest.description) && (
+            <Space size="small" wrap>
+              {canEditPricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(pricingRequest);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+              {canAssignPricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<UserAddOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAssign?.(pricingRequest);
+                  }}
+                >
+                  Assign
+                </Button>
+              )}
+              {canCompletePricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<CheckOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onComplete?.(pricingRequest);
+                  }}
+                >
+                  Complete
+                </Button>
+              )}
+              {pricingRequest.description && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={expanded ? <UpOutlined /> : <DownOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpanded((prev) => !prev);
+                  }}
+                >
+                  {expanded ? "Collapse" : "Expand"}
+                </Button>
+              )}
+            </Space>
           )}
 
-          <Space split="|" size="small" wrap>
-            {pricingRequest.assignedToName && (
-              <Space size={4}>
-                <UserOutlined />
-                <Text type="secondary">{pricingRequest.assignedToName}</Text>
-              </Space>
-            )}
-            {pricingRequest.requiredByDate && (
-              <Space size={4}>
-                <CalendarOutlined />
-                <Text type="secondary">Due: {new Date(pricingRequest.requiredByDate).toLocaleDateString()}</Text>
-              </Space>
-            )}
-            {pricingRequest.estimatedValue && (
-              <Space size={4}>
-                <DollarOutlined />
-                <Text type="secondary">
-                  {pricingRequest.currency || "R"} {pricingRequest.estimatedValue.toLocaleString()}
-                </Text>
-              </Space>
-            )}
-          </Space>
+          {expanded && pricingRequest.description && (
+            <Text type="secondary">{pricingRequest.description}</Text>
+          )}
         </Space>
       </Card>
     );
@@ -461,6 +553,8 @@ interface WorkspaceEntityListProps {
   emptyText?: string;
   onEntityClick?: (entity: any) => void;
   onEntityEdit?: (entity: any) => void;
+  onEntityAssign?: (entity: any) => void;
+  onEntityComplete?: (entity: any) => void;
   onEntityDelete?: (entity: any) => void;
 }
 
@@ -471,6 +565,8 @@ export const WorkspaceEntityList = ({
   emptyText = "No items found",
   onEntityClick,
   onEntityEdit,
+  onEntityAssign,
+  onEntityComplete,
   onEntityDelete,
 }: WorkspaceEntityListProps) => {
   if (loading) {
@@ -494,6 +590,8 @@ export const WorkspaceEntityList = ({
           type={type}
           onClick={onEntityClick}
           onEdit={onEntityEdit}
+          onAssign={onEntityAssign}
+          onComplete={onEntityComplete}
           onDelete={onEntityDelete}
         />
       ))}

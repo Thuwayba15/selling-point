@@ -3,16 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { App, Form, Modal } from "antd";
 import { useParams } from "next/navigation";
+import dayjs from "dayjs";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { useRbac } from "@/hooks/useRbac";
 import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
-import { useActivitiesActions } from "@/providers/activities";
-import { useProposalsActions } from "@/providers/proposals";
-import { usePricingRequestsActions } from "@/providers/pricing-requests";
-import { useContractsActions } from "@/providers/contracts";
-import { useDocumentsActions } from "@/providers/documents";
-import { useNotesActions } from "@/providers/notes";
+import { useUsersActions, useUsersState } from "@/providers/users";
 import {
   CreateOpportunityModal,
   EditOpportunityModal,
@@ -22,11 +19,13 @@ import {
   OpportunityWorkspaceContent,
   useOpportunityWorkspaceData,
   useOpportunityFilters,
+  useEntityModals,
+  useEntityActions,
+  EntityModalsRenderer,
+  type EntityType,
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
-
-type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
 
 const OpportunityWorkspacePage = () => {
   const { styles } = useStyles();
@@ -36,7 +35,7 @@ const OpportunityWorkspacePage = () => {
 
   const opportunityId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
-  // State management
+  // State & hooks
   const {
     isPending,
     isLoadingDetails,
@@ -63,37 +62,21 @@ const OpportunityWorkspacePage = () => {
 
   const clientsState = useClientsState();
   const clientsActions = useClientsActions();
-
-  // Entity action providers for CRUD operations
-  const activitiesActions = useActivitiesActions();
-  const proposalsActions = useProposalsActions();
-  const pricingRequestsActions = usePricingRequestsActions();
-  const contractsActions = useContractsActions();
-  const documentsActions = useDocumentsActions();
-  const notesActions = useNotesActions();
+  const usersState = useUsersState();
+  const usersActions = useUsersActions();
 
   // Custom hooks
   const filters = useOpportunityFilters(opportunityId);
-  const {
-    workspaceData,
-    workspaceLoading,
-    assignableUsers,
-    loadWorkspaceData,
-    loadUsers,
-    loadContacts,
-  } = useOpportunityWorkspaceData();
+  const { workspaceData, workspaceLoading, assignableUsers, loadWorkspaceData, loadUsers, loadContacts } = useOpportunityWorkspaceData();
+  const entityModals = useEntityModals();
 
   // Local state
   const [selectedOpportunity, setSelectedOpportunity] = useState<IOpportunity | null>(null);
   const [workspaceTab, setWorkspaceTab] = useState("overview");
-
-  // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isStageModalOpen, setIsStageModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-
-  // Contact state for modals
   const [createModalClientId, setCreateModalClientId] = useState<string | undefined>(undefined);
   const [editModalClientId, setEditModalClientId] = useState<string | undefined>(undefined);
   const [createModalContacts, setCreateModalContacts] = useState<
@@ -103,7 +86,7 @@ const OpportunityWorkspacePage = () => {
     Array<{ id: string; firstName: string; lastName: string; email: string }>
   >([]);
 
-  // Form references
+  // Forms
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [stageForm] = Form.useForm();
@@ -112,67 +95,132 @@ const OpportunityWorkspacePage = () => {
   const initializedRef = useRef(false);
   const isSalesRep = Boolean(user?.roles?.includes("SalesRep"));
 
+  // Entity actions
+  const refreshWorkspace = async () => {
+    if (selectedOpportunity) {
+      await loadWorkspaceData(selectedOpportunity);
+    }
+  };
+
+  const {
+    handleActivityCreate,
+    handleActivityEdit,
+    handleProposalCreate,
+    handleProposalEdit,
+    handlePricingRequestCreate,
+    handlePricingRequestEdit,
+    handlePricingRequestAssign,
+    handlePricingRequestComplete,
+    handleContractCreate,
+    handleContractEdit,
+    handleDocumentCreate,
+    handleNoteCreate,
+    handleNoteEdit,
+    handleDeleteEntity,
+  } = useEntityActions({
+    selectedOpportunity,
+    selectedEntity: entityModals.selectedEntity,
+    onRefresh: refreshWorkspace,
+    usersList: usersState.users || [],
+    clientsList: (clientsState.clients || []).map((c) => ({ id: c.id, name: c.name })),
+    opportunitiesList: selectedOpportunity?.id
+      ? [{ id: selectedOpportunity.id, title: selectedOpportunity.title || "Opportunity" }]
+      : [],
+    proposalsList: (workspaceData?.proposals || [])
+      .map((p) => ({ id: p.id, title: p.title || "Proposal" }))
+      .filter((p): p is { id: string; title: string } => Boolean(p.id)),
+    contractsList: (workspaceData?.contracts || [])
+      .map((c) => ({ id: c.id, title: c.title || c.contractNumber || "Contract" }))
+      .filter((c): c is { id: string; title: string } => Boolean(c.id)),
+  });
+
+  // Memoized lists
   const clientsList = useMemo(
-    () =>
-      (clientsState.clients || []).map((client) => ({
-        id: client.id,
-        name: client.name,
-      })),
+    () => (clientsState.clients || []).map((client) => ({ id: client.id, name: client.name })),
     [clientsState.clients],
   );
 
-  // Fetch opportunities with current filters
+  const usersList = useMemo(
+    () =>
+      (usersState.users || []).map((item) => ({
+        id: item.id,
+        firstName: item.firstName,
+        lastName: item.lastName,
+      })),
+    [usersState.users],
+  );
+
+  const opportunitiesList = useMemo(
+    () =>
+      selectedOpportunity?.id
+        ? [{ id: selectedOpportunity.id, title: selectedOpportunity.title || "Opportunity" }]
+        : [],
+    [selectedOpportunity?.id, selectedOpportunity?.title],
+  );
+
+  const proposalsList = useMemo(
+    () =>
+      (workspaceData?.proposals || [])
+        .map((proposal) => ({ id: proposal.id, title: proposal.title || "Proposal" }))
+        .filter((item): item is { id: string; title: string } => Boolean(item.id)),
+    [workspaceData?.proposals],
+  );
+
+  const contractsList = useMemo(
+    () =>
+      (workspaceData?.contracts || [])
+        .map((contract) => ({
+          id: contract.id,
+          title: contract.title || contract.contractNumber || "Contract",
+        }))
+        .filter((item): item is { id: string; title: string } => Boolean(item.id)),
+    [workspaceData?.contracts],
+  );
+
+  // Fetch opportunities
   const fetchOpportunities = async () => {
     const useMy = filters.showMyOpportunities;
-
     if (useMy) {
       await getMyOpportunities({
         stage: filters.stage,
         pageNumber: filters.currentPage,
         pageSize: filters.pageSize,
       });
-      return;
+    } else {
+      await getOpportunities({
+        searchTerm: filters.searchTerm,
+        clientId: filters.clientId,
+        stage: filters.stage,
+        ownerId: filters.ownerId,
+        pageNumber: filters.currentPage,
+        pageSize: filters.pageSize,
+        isActive: true,
+      });
     }
-
-    await getOpportunities({
-      searchTerm: filters.searchTerm,
-      clientId: filters.clientId,
-      stage: filters.stage,
-      ownerId: filters.ownerId,
-      pageNumber: filters.currentPage,
-      pageSize: filters.pageSize,
-      isActive: true,
-    });
   };
 
   // Initialize page
   useEffect(() => {
     if (!initializedRef.current) {
       initializedRef.current = true;
-
-      clientsActions.getClients({
-        isActive: true,
-        pageNumber: 1,
-        pageSize: 1000,
-      });
-
+      clientsActions.getClients({ isActive: true, pageNumber: 1, pageSize: 1000 });
       fetchOpportunities();
       loadUsers();
+      usersActions.getUsers({ isActive: true, pageNumber: 1, pageSize: 1000 });
       getOpportunityPipeline({
         ownerId: filters.initialShowMine ? user?.id : filters.initialOwnerId,
       });
     }
   }, []);
 
-  // Load opportunity details when opportunityId changes
+  // Load opportunity details
   useEffect(() => {
     if (!opportunityId) return;
-
     getOpportunity(opportunityId);
     getOpportunityStageHistory(opportunityId);
   }, [opportunityId]);
 
-  // Update selected opportunity when opportunity details load
+  // Update selected opportunity
   useEffect(() => {
     if (opportunity?.id && opportunity.id === opportunityId) {
       setSelectedOpportunity(opportunity);
@@ -182,33 +230,24 @@ const OpportunityWorkspacePage = () => {
   // Load workspace data
   useEffect(() => {
     loadWorkspaceData(selectedOpportunity);
-  }, [selectedOpportunity?.id, selectedOpportunity?.clientId, loadWorkspaceData]);
+  }, [selectedOpportunity?.id, selectedOpportunity?.clientId]);
 
-  // Load contacts for create modal
+  // Load contacts
   useEffect(() => {
     if (!createModalClientId) {
       setCreateModalContacts([]);
       return;
     }
-    const fetch = async () => {
-      const contacts = await loadContacts(createModalClientId);
-      setCreateModalContacts(contacts);
-    };
-    fetch();
-  }, [createModalClientId, loadContacts]);
+    loadContacts(createModalClientId).then(setCreateModalContacts);
+  }, [createModalClientId]);
 
-  // Load contacts for edit modal
   useEffect(() => {
     if (!editModalClientId) {
       setEditModalContacts([]);
       return;
     }
-    const fetch = async () => {
-      const contacts = await loadContacts(editModalClientId);
-      setEditModalContacts(contacts);
-    };
-    fetch();
-  }, [editModalClientId, loadContacts]);
+    loadContacts(editModalClientId).then(setEditModalContacts);
+  }, [editModalClientId]);
 
   // Handle errors
   useEffect(() => {
@@ -218,7 +257,7 @@ const OpportunityWorkspacePage = () => {
     }
   }, [isError, errorMessage]);
 
-  // Modal handlers
+  // Opportunity modal handlers
   const handleCreateClick = () => {
     createForm.resetFields();
     setCreateModalClientId(undefined);
@@ -253,7 +292,6 @@ const OpportunityWorkspacePage = () => {
 
   const handleEditSubmit = async (values: Partial<IOpportunity>) => {
     if (!selectedOpportunity) return;
-
     const success = await updateOpportunity(selectedOpportunity.id, values);
     if (success) {
       message.success("Opportunity updated successfully");
@@ -314,7 +352,6 @@ const OpportunityWorkspacePage = () => {
 
   const handleAssignSubmit = async (values: { userId: string }) => {
     if (!selectedOpportunity) return;
-
     const success = await assignOpportunity(selectedOpportunity.id, values.userId);
     if (success) {
       message.success("Opportunity assigned successfully");
@@ -332,7 +369,6 @@ const OpportunityWorkspacePage = () => {
 
   const handleDelete = async () => {
     if (!selectedOpportunity) return;
-
     const success = await deleteOpportunity(selectedOpportunity.id);
     if (success) {
       message.success("Opportunity deleted successfully");
@@ -342,56 +378,41 @@ const OpportunityWorkspacePage = () => {
     }
   };
 
-  // Entity CRUD handlers
+  // Entity handlers
   const handleCreateEntity = (type: EntityType) => {
-    message.info(`Create ${type} modal will be implemented`);
-    // TODO: Implement modals for each entity type
+    if (!selectedOpportunity) return;
+    const { canCreate, defaultValues } = { canCreate: true, defaultValues: {} };
+    if (!canCreate) return;
+    entityModals.forms[type].create.setFieldsValue(defaultValues);
+    entityModals.openCreateModal(type);
   };
 
   const handleEditEntity = (type: EntityType, entity: any) => {
-    message.info(`Edit ${type} modal will be implemented`);
-    // TODO: Implement edit modals for each entity type
+    entityModals.openEditModal(type, entity);
+    if (type === "activity") {
+      entityModals.forms.activity.edit.setFieldsValue({
+        ...entity,
+        dueDate: entity?.dueDate ? dayjs(entity.dueDate) : undefined,
+      });
+    } else if (type === "contract") {
+      entityModals.forms.contract.edit.setFieldsValue({
+        ...entity,
+        startDate: entity?.startDate ? dayjs(entity.startDate) : undefined,
+        endDate: entity?.endDate ? dayjs(entity.endDate) : undefined,
+      });
+    }
   };
 
-  const handleDeleteEntity = async (type: EntityType, entity: any) => {
-    Modal.confirm({
-      title: `Delete ${type}?`,
-      content: "This action cannot be undone.",
-      okText: "Delete",
-      okType: "danger",
-      onOk: async () => {
-        try {
-          switch (type) {
-            case "activity":
-              await activitiesActions.deleteActivity(entity.id);
-              break;
-            case "proposal":
-              await proposalsActions.deleteProposal(entity.id);
-              break;
-            case "pricingRequest":
-              message.warning("Pricing requests cannot be deleted");
-              return;
-            case "contract":
-              await contractsActions.deleteContract(entity.id);
-              break;
-            case "document":
-              await documentsActions.deleteDocument(entity.id);
-              break;
-            case "note":
-              await notesActions.deleteNote(entity.id);
-              break;
-          }
+  const handleAssignEntity = (type: EntityType, entity: any) => {
+    if (type === "pricingRequest") {
+      entityModals.openAssignModal(type, entity);
+    }
+  };
 
-          message.success(`${type} deleted successfully`);
-          // Reload workspace data
-          if (selectedOpportunity) {
-            await loadWorkspaceData(selectedOpportunity);
-          }
-        } catch (error) {
-          message.error(`Failed to delete ${type}`);
-        }
-      },
-    });
+  const handleCompleteEntity = async (type: EntityType, entity: any) => {
+    if (type === "pricingRequest") {
+      await handlePricingRequestComplete(entity);
+    }
   };
 
   const handleApplyFilters = async (filterValues: {
@@ -450,6 +471,8 @@ const OpportunityWorkspacePage = () => {
           onAssign={handleAssign}
           onCreateEntity={handleCreateEntity}
           onEditEntity={handleEditEntity}
+          onAssignEntity={handleAssignEntity}
+          onCompleteEntity={handleCompleteEntity}
           onDeleteEntity={handleDeleteEntity}
         />
 
@@ -491,6 +514,35 @@ const OpportunityWorkspacePage = () => {
           users={assignableUsers}
           onCancel={handleAssignCancel}
           onSubmit={handleAssignSubmit}
+        />
+
+        <EntityModalsRenderer
+          modals={entityModals.modals}
+          forms={entityModals.forms}
+          selectedEntity={entityModals.selectedEntity}
+          isPending={isPending}
+          onActivityCreate={handleActivityCreate}
+          onActivityEdit={handleActivityEdit}
+          onProposalCreate={handleProposalCreate}
+          onProposalEdit={handleProposalEdit}
+          onPricingRequestCreate={handlePricingRequestCreate}
+          onPricingRequestEdit={handlePricingRequestEdit}
+          onPricingRequestAssign={handlePricingRequestAssign}
+          onContractCreate={handleContractCreate}
+          onContractEdit={handleContractEdit}
+          onDocumentCreate={handleDocumentCreate}
+          onNoteCreate={() => handleNoteCreate(entityModals.forms.note.create)}
+          onNoteEdit={() => handleNoteEdit(entityModals.forms.note.edit)}
+          closeCreateModal={entityModals.closeCreateModal}
+          closeEditModal={entityModals.closeEditModal}
+          closeAssignModal={entityModals.closeAssignModal}
+          activityUsers={usersList}
+          activityClients={clientsList}
+          opportunities={opportunitiesList}
+          proposals={proposalsList}
+          contracts={contractsList}
+          clients={clientsList}
+          assignableUsers={assignableUsers}
         />
       </div>
     </div>

@@ -20,4 +20,8 @@ export {
   useOpportunityWorkspaceData,
   useOpportunityFilters,
   useWorkspaceEntityModals,
+  useEntityModals,
+  useEntityActions,
+  type EntityType,
 } from "./hooks";
+export { EntityModalsRenderer } from "./components";

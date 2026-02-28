@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 import { getAxiosInstance } from "@/lib/api";
 import { IOpportunity } from "@/providers/opportunities/context";
 import type { IUser } from "@/providers/users/context";
-import type { IActivity } from "@/providers/activities/context";
 import type { IProposal } from "@/providers/proposals/context";
 import type { IPricingRequest } from "@/providers/pricing-requests/context";
 import type { IContract } from "@/providers/contracts/context";
@@ -12,7 +11,6 @@ import type { IDocument } from "@/providers/documents/context";
 import type { INote } from "@/providers/notes/context";
 
 interface WorkspaceData {
-  activities: IActivity[];
   pricingRequests: IPricingRequest[];
   proposals: IProposal[];
   contracts: IContract[];
@@ -22,7 +20,6 @@ interface WorkspaceData {
 
 export const useOpportunityWorkspaceData = () => {
   const [workspaceData, setWorkspaceData] = useState<WorkspaceData>({
-    activities: [],
     pricingRequests: [],
     proposals: [],
     contracts: [],
@@ -36,7 +33,6 @@ export const useOpportunityWorkspaceData = () => {
     async (selectedOpportunity: IOpportunity | null) => {
       if (!selectedOpportunity?.id) {
         setWorkspaceData({
-          activities: [],
           pricingRequests: [],
           proposals: [],
           contracts: [],
@@ -49,19 +45,8 @@ export const useOpportunityWorkspaceData = () => {
       setWorkspaceLoading(true);
       try {
         const api = getAxiosInstance();
-        const [activitiesRes, pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
+        const [pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
           await Promise.all([
-            // Activities related to this opportunity (relatedToType=2 for Opportunity)
-            api
-              .get("/api/activities", {
-                params: {
-                  relatedToType: 2,
-                  relatedToId: selectedOpportunity.id,
-                  pageNumber: 1,
-                  pageSize: 100,
-                },
-              })
-              .catch(() => ({ data: { items: [] } })),
             // Pricing requests - fetch all and filter by opportunityId
             api
               .get("/api/pricingrequests", {
@@ -105,7 +90,6 @@ export const useOpportunityWorkspaceData = () => {
           ]);
 
         setWorkspaceData({
-          activities: (activitiesRes.data?.items || activitiesRes.data || []) as IActivity[],
           pricingRequests: (pricingRequestsRes.data?.items || pricingRequestsRes.data || []).filter(
             (item: IPricingRequest) => item.opportunityId === selectedOpportunity.id
           ) as IPricingRequest[],

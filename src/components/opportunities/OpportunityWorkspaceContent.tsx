@@ -10,7 +10,6 @@ import { WorkspaceEntityList } from "./WorkspaceEntityCard";
 import { WorkspaceTabActions } from "./WorkspaceTabActions";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
-import type { IActivity } from "@/providers/activities/context";
 import type { IProposal } from "@/providers/proposals/context";
 import type { IPricingRequest } from "@/providers/pricing-requests/context";
 import type { IContract } from "@/providers/contracts/context";
@@ -18,7 +17,6 @@ import type { IDocument } from "@/providers/documents/context";
 import type { INote } from "@/providers/notes/context";
 
 interface WorkspaceData {
-  activities: IActivity[];
   pricingRequests: IPricingRequest[];
   proposals: IProposal[];
   contracts: IContract[];
@@ -43,6 +41,8 @@ interface OpportunityWorkspaceContentProps {
   onAssign: () => void;
   onCreateEntity: (type: EntityType) => void;
   onEditEntity: (type: EntityType, entity: any) => void;
+  onAssignEntity: (type: EntityType, entity: any) => void;
+  onCompleteEntity: (type: EntityType, entity: any) => void;
   onDeleteEntity: (type: EntityType, entity: any) => void;
 }
 
@@ -61,6 +61,8 @@ export const OpportunityWorkspaceContent = ({
   onAssign,
   onCreateEntity,
   onEditEntity,
+  onAssignEntity,
+  onCompleteEntity,
   onDeleteEntity,
 }: OpportunityWorkspaceContentProps) => {
   const { styles } = useStyles();
@@ -96,26 +98,6 @@ export const OpportunityWorkspaceContent = ({
       ),
     },
     {
-      key: "activities",
-      label: "Activities",
-      content: (
-        <>
-          <WorkspaceTabActions
-            entityType="activity"
-            onCreateClick={onCreateEntity}
-          />
-          <WorkspaceEntityList
-            entities={workspaceData.activities}
-            type="activity"
-            loading={isLoading}
-            emptyText="No activities for this opportunity"
-            onEntityEdit={(entity) => onEditEntity("activity", entity)}
-            onEntityDelete={(entity) => onDeleteEntity("activity", entity)}
-          />
-        </>
-      ),
-    },
-    {
       key: "pricing",
       label: "Pricing Requests",
       content: (
@@ -130,6 +112,8 @@ export const OpportunityWorkspaceContent = ({
             loading={isLoading}
             emptyText="No pricing requests for this opportunity"
             onEntityEdit={(entity) => onEditEntity("pricingRequest", entity)}
+            onEntityAssign={(entity) => onAssignEntity("pricingRequest", entity)}
+            onEntityComplete={(entity) => onCompleteEntity("pricingRequest", entity)}
             onEntityDelete={(entity) => onDeleteEntity("pricingRequest", entity)}
           />
         </>
@@ -208,6 +192,7 @@ export const OpportunityWorkspaceContent = ({
             type="note"
             loading={isLoading}
             emptyText="No notes for this opportunity"
+            onEntityEdit={(entity) => onEditEntity("note", entity)}
             onEntityDelete={(entity) => onDeleteEntity("note", entity)}
           />
         </>
