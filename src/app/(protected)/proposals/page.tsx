@@ -19,7 +19,6 @@ import {
 import { useStyles } from "@/components/proposals/style";
 import { IProposal } from "@/providers/proposals/context";
 import { useRbac } from "@/hooks/useRbac";
-import { calculateProposalTotals } from "@/utils/proposal";
 import type { CreateProposalPayload } from "@/components/proposals/CreateProposalForm";
 import type { UpdateProposalPayload } from "@/components/proposals/EditProposalForm";
 
@@ -170,15 +169,9 @@ const ProposalsPage = () => {
 
     const { lineItems, ...proposalData } = payload;
 
-    // Calculate totals from form line items before any API calls
-    const totals = lineItems && lineItems.length > 0 
-      ? calculateProposalTotals(lineItems) 
-      : { subtotal: 0, tax: 0, totalAmount: 0 };
-
-    // Single update call with all data including totals
+    // Update proposal basic fields
     const success = await updateProposal(selectedProposal.id, {
       ...proposalData,
-      ...totals,
       currency: "R",
     });
 
@@ -188,6 +181,7 @@ const ProposalsPage = () => {
         const existingLineItems = proposal?.lineItems || [];
         const existingIds = new Set(existingLineItems.map(item => item.id));
 
+        // Add new line items
         const newItems = lineItems.filter(item => !item.id || !existingIds.has(item.id));
         for (const item of newItems) {
           await addLineItem(selectedProposal.id, {
@@ -200,6 +194,7 @@ const ProposalsPage = () => {
           });
         }
 
+        // Delete removed line items
         const newItemIds = new Set(lineItems.filter(item => item.id).map(item => item.id));
         const deletedItems = existingLineItems.filter(item => item.id && !newItemIds.has(item.id));
         for (const item of deletedItems) {
@@ -210,6 +205,7 @@ const ProposalsPage = () => {
       message.success("Proposal updated successfully");
       setIsEditModalOpen(false);
 
+      // Fetch fresh data from server (totals will be calculated server-side)
       await fetchProposals({ status, clientId, opportunityId, pageNumber: currentPage, pageSize });
       await getProposal(selectedProposal.id);
     }
