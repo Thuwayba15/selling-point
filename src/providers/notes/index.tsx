@@ -61,7 +61,6 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching notes:", error);
       dispatch(getNotesError(getErrorMessage(error, "Failed to fetch notes")));
     }
   };
@@ -76,7 +75,6 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await api.get(`/api/notes/${id}`);
       dispatch(getNoteSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching note:", error);
       dispatch(getNoteError(getErrorMessage(error, "Failed to fetch note")));
     }
   };
@@ -91,7 +89,6 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await api.post("/api/notes", note);
       dispatch(createNoteSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error creating note:", error);
       dispatch(createNoteError(getErrorMessage(error, "Failed to create note")));
     }
   };
@@ -106,7 +103,6 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await api.put(`/api/notes/${id}`, note);
       dispatch(updateNoteSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error updating note:", error);
       dispatch(updateNoteError(getErrorMessage(error, "Failed to update note")));
     }
   };
@@ -121,7 +117,6 @@ export const NotesProvider = ({ children }: { children: React.ReactNode }) => {
       await api.delete(`/api/notes/${id}`);
       dispatch(deleteNoteSuccess());
     } catch (error: unknown) {
-      console.error("Error deleting note:", error);
       dispatch(deleteNoteError(getErrorMessage(error, "Failed to delete note")));
     }
   };

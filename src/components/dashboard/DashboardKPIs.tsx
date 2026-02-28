@@ -12,9 +12,6 @@ interface DashboardKPIsProps {
 export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
   const { styles } = useStyles();
 
-  // Debug: Log the overview data
-  console.log("DashboardKPIs - overview:", overview);
-
   if (isLoading) {
     return (
       <div className={styles.kpiGrid}>

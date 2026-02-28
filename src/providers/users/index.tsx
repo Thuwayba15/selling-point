@@ -47,7 +47,6 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching users:", error);
       dispatch(getUsersError(getErrorMessage(error, "Failed to fetch users")));
     }
   };
@@ -62,7 +61,6 @@ export const UsersProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await api.get(`/api/users/${id}`);
       dispatch(getUserSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching user:", error);
       dispatch(getUserError(getErrorMessage(error, "Failed to fetch user")));
     }
   };

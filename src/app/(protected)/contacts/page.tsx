@@ -60,7 +60,6 @@ const ContactsPage = () => {
         });
         setClients(data.items || []);
       } catch (error) {
-        console.error("Failed to fetch clients:", error);
       }
     };
 

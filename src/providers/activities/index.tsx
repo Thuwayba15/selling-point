@@ -84,7 +84,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching activities:", error);
       dispatch(getActivitiesError(getErrorMessage(error, "Failed to fetch activities")));
     }
   };
@@ -114,7 +113,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching my activities:", error);
       dispatch(getMyActivitiesError(getErrorMessage(error, "Failed to fetch my activities")));
     }
   };
@@ -144,7 +142,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching upcoming activities:", error);
       dispatch(
         getUpcomingActivitiesError(getErrorMessage(error, "Failed to fetch upcoming activities")),
       );
@@ -175,7 +172,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
         }),
       );
     } catch (error: unknown) {
-      console.error("Error fetching overdue activities:", error);
       dispatch(
         getOverdueActivitiesError(getErrorMessage(error, "Failed to fetch overdue activities")),
       );
@@ -192,7 +188,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.get(`/api/activities/${id}`);
       dispatch(getActivitySuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching activity:", error);
       dispatch(getActivityError(getErrorMessage(error, "Failed to fetch activity")));
     }
   };
@@ -207,7 +202,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.get(`/api/activities/${activityId}/participants`);
       dispatch(getActivityParticipantsSuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error fetching activity participants:", error);
       dispatch(
         getActivityParticipantsError(
           getErrorMessage(error, "Failed to fetch activity participants"),
@@ -226,7 +220,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.post("/api/activities", activity);
       dispatch(createActivitySuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error creating activity:", error);
       dispatch(createActivityError(getErrorMessage(error, "Failed to create activity")));
     }
   };
@@ -241,7 +234,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.put(`/api/activities/${id}`, activity);
       dispatch(updateActivitySuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error updating activity:", error);
       dispatch(updateActivityError(getErrorMessage(error, "Failed to update activity")));
     }
   };
@@ -256,7 +248,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       await api.delete(`/api/activities/${id}`);
       dispatch(deleteActivitySuccess());
     } catch (error: unknown) {
-      console.error("Error deleting activity:", error);
       dispatch(deleteActivityError(getErrorMessage(error, "Failed to delete activity")));
     }
   };
@@ -271,7 +262,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.put(`/api/activities/${id}/complete`, { outcome });
       dispatch(completeActivitySuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error completing activity:", error);
       dispatch(completeActivityError(getErrorMessage(error, "Failed to complete activity")));
     }
   };
@@ -286,7 +276,6 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
       const response = await api.put(`/api/activities/${id}/cancel`);
       dispatch(cancelActivitySuccess(response.data));
     } catch (error: unknown) {
-      console.error("Error cancelling activity:", error);
       dispatch(cancelActivityError(getErrorMessage(error, "Failed to cancel activity")));
     }
   };

@@ -59,7 +59,6 @@ const InvitationsPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("API error:", errorData);
         throw new Error(errorData.error || "Failed to send email");
       }
 
@@ -81,7 +80,6 @@ const InvitationsPage = () => {
       form.resetFields();
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Error:", error);
       message.error(
         "Failed to send invitation email. Check console for details or share the link manually.",
       );

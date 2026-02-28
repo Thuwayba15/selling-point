@@ -34,7 +34,6 @@ export async function generateInvitationToken(
 
     return token;
   } catch (error) {
-    console.error("[invitation-token] Error generating token:", error);
     throw new Error("Failed to generate invitation token");
   }
 }
@@ -54,7 +53,6 @@ export async function verifyInvitationToken(
       typeof payload.role !== "string" ||
       typeof payload.email !== "string"
     ) {
-      console.error("[invitation-token] Invalid token payload structure");
       return null;
     }
 
@@ -64,7 +62,6 @@ export async function verifyInvitationToken(
       email: payload.email,
     };
   } catch (error) {
-    console.error("[invitation-token] Error verifying token:", error);
     return null;
   }
 }
