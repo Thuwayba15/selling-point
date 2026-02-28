@@ -61,18 +61,22 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
           const stageValue = (stage as any).totalValue || stage.value || 0;
           const barHeight = maxValue > 0 ? (stageValue / maxValue) * 100 : 10;
 
-          return (
-            <div key={stage.stage} className={styles.barWrapper}>
-              <div className={styles.barContainer}>
-                <div className={styles.bar} style={{ height: `${barHeight}%` }} />
-                <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
-              </div>
-              <div className={styles.barLabel}>
-                {STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}
-              </div>
-              <div className={styles.barCount}>{stage.count ?? 0} opps</div>
-            </div>
-          );
+          // In your component, replace the barContainer/bar divs with this structure:
+return (
+  <div key={stage.stage} className={styles.barWrapper}>
+    <div className={styles.barContainer}>
+      <div 
+        className={styles.bar}
+        style={{ height: `${barHeight}%` }}
+      />
+      <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
+    </div>
+    <div className={styles.barLabel}>
+      {STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}
+    </div>
+    <div className={styles.barCount}>{stage.count ?? 0} opps</div>
+  </div>
+);
         })}
       </div>
       <div className={styles.pipelineSummary}>

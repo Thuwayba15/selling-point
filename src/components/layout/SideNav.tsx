@@ -10,16 +10,19 @@ import {
   TeamOutlined,
   CalendarOutlined,
   FolderOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";
 import { useAuthState } from "@/providers/auth";
+import { useRbac } from "@/hooks/useRbac";
 
 import { useStyles } from "./style";
 
 export const SideNav = () => {
   const pathname = usePathname();
   const { user } = useAuthState();
+  const { can } = useRbac();
   const { styles } = useStyles();
 
   const baseItems = [
@@ -73,6 +76,15 @@ export const SideNav = () => {
       icon: <FolderOutlined />,
       label: <Link href={ROUTES.documents}>Documents</Link>,
     },
+    ...(can("view:reports")
+      ? [
+          {
+            key: ROUTES.reports,
+            icon: <BarChartOutlined />,
+            label: <Link href={ROUTES.reports}>Reports</Link>,
+          },
+        ]
+      : []),
   ];
 
   return (
