@@ -94,26 +94,25 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       dispatch(getProposalPending());
 
       try {
-        console.log("[getProposal] Fetching proposal:", id);
         const api = getAxiosInstance();
         const { data } = await api.get(`/api/proposals/${id}`);
 
-        console.log("[getProposal] Response data:", JSON.stringify(data, null, 2));
-        console.log("[getProposal] Line items:", JSON.stringify(data.lineItems, null, 2));
-        
-        // If proposal has line items but no totals (or zero totals), calculate them
-        if (data.lineItems && data.lineItems.length > 0 && (!data.totalAmount || data.totalAmount === 0)) {
-          console.log("[getProposal] Calculating totals from line items");
+        // Always recalculate totals from line items if they exist
+        // This ensures we always have accurate totals even if the server returns stale values
+        if (data.lineItems && data.lineItems.length > 0) {
           const calculatedTotals = calculateProposalTotals(data.lineItems);
           data.subtotal = calculatedTotals.subtotal;
           data.tax = calculatedTotals.tax;
           data.totalAmount = calculatedTotals.totalAmount;
-          console.log("[getProposal] Calculated totals:", calculatedTotals);
+        } else {
+          // No line items = zero totals
+          data.subtotal = 0;
+          data.tax = 0;
+          data.totalAmount = 0;
         }
         
         dispatch(getProposalSuccess(data));
       } catch (error: unknown) {
-        console.error("[getProposal] Error:", error);
         const message = getErrorMessage(error, "Failed to fetch proposal");
         dispatch(getProposalError(message));
       }
@@ -138,12 +137,9 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       dispatch(updateProposalPending());
 
       try {
-        console.log("[updateProposal] Proposal ID:", id);
-        console.log("[updateProposal] Sending proposal data:", JSON.stringify(proposal, null, 2));
         const api = getAxiosInstance();
         const { data } = await api.put(`/api/proposals/${id}`, proposal);
 
-        console.log("[updateProposal] Success response:", JSON.stringify(data, null, 2));
         dispatch(updateProposalSuccess(data));
         return true;
       } catch (error: unknown) {
@@ -160,29 +156,14 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       dispatch(addLineItemPending());
 
       try {
-        console.log("[addLineItem] Proposal ID:", proposalId);
-        console.log("[addLineItem] Line item data:", JSON.stringify(lineItem, null, 2));
-        
         const api = getAxiosInstance();
-        const { data } = await api.post(`/api/proposals/${proposalId}/line-items`, lineItem);
+        await api.post(`/api/proposals/${proposalId}/line-items`, lineItem);
 
-        console.log("[addLineItem] Success response:", JSON.stringify(data, null, 2));
-        // Don't pass the line item response as proposal data - it corrupts the proposal ID
-        // Just dispatch success without changing proposal state
-        dispatch(
-          addLineItemSuccess({
-            isPending: false,
-            isLoadingDetails: false,
-            isSuccess: true,
-            isError: false,
-          } as any)
-        );
+        // Line item added successfully, but don't update proposal state here
+        // The page handler will fetch fresh data
+        dispatch(addLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
-        console.error("[addLineItem] Error:", error);
-        if (error instanceof Error) {
-          console.error("[addLineItem] Error message:", error.message);
-        }
         const message = getErrorMessage(error, "Failed to add line item");
         dispatch(addLineItemError(message));
         return false;
@@ -198,20 +179,12 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.put(
+        await api.put(
           `/api/proposals/${proposalId}/line-items/${lineItemId}`,
           lineItem,
         );
 
-        // Don't pass the line item response as proposal data - it corrupts the proposal ID
-        dispatch(
-          updateLineItemSuccess({
-            isPending: false,
-            isLoadingDetails: false,
-            isSuccess: true,
-            isError: false,
-          } as any)
-        );
+        dispatch(updateLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to update line item");
@@ -227,15 +200,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         await api.delete(`/api/proposals/${proposalId}/line-items/${lineItemId}`);
 
-        // Don't modify proposal state - just mark success
-        dispatch(
-          deleteLineItemSuccess({
-            isPending: false,
-            isLoadingDetails: false,
-            isSuccess: true,
-            isError: false,
-          } as any)
-        );
+        dispatch(deleteLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to delete line item");
