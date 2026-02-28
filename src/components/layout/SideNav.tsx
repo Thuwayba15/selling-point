@@ -11,6 +11,7 @@ import {
   CalendarOutlined,
   FolderOutlined,
   BarChartOutlined,
+  UnlockOutlined,
 } from "@ant-design/icons";
 
 import { ROUTES } from "@/lib/routes";
@@ -82,6 +83,15 @@ export const SideNav = () => {
             key: ROUTES.reports,
             icon: <BarChartOutlined />,
             label: <Link href={ROUTES.reports}>Reports</Link>,
+          },
+        ]
+      : []),
+    ...(user?.roles.includes("Admin")
+      ? [
+          {
+            key: ROUTES.invitations,
+            icon: <UnlockOutlined />,
+            label: <Link href={ROUTES.invitations}>Invitations</Link>,
           },
         ]
       : []),
