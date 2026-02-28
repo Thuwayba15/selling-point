@@ -82,15 +82,6 @@ export const ActivityActions: React.FC<ActivityActionsProps> = ({
           </Button>
         )}
 
-        <Button
-          icon={<TeamOutlined />}
-          onClick={onViewParticipants}
-          loading={loading}
-          className={styles.actionButton}
-        >
-          View Participants
-        </Button>
-
         {canDelete && !isCompleted && (
           <Button
             danger

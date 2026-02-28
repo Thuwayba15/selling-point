@@ -85,19 +85,54 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
   };
 
   const handleFinish = (values: ActivityFormValues) => {
-    const activityData: Partial<IActivity> = {
-      type: values.type,
+    // Convert Dayjs to ISO string if needed
+    const dueDate = values.dueDate
+      ? typeof values.dueDate === "string"
+        ? values.dueDate
+        : dayjs(values.dueDate).toISOString()
+      : undefined;
+
+    const baseData: Partial<IActivity> = {
+      type: typeof values.type === "string" ? parseInt(values.type, 10) : values.type,
       subject: values.subject,
-      description: values.description,
-      priority: values.priority,
-      dueDate: values.dueDate ? dayjs(values.dueDate).toISOString() : undefined,
-      assignedToId: values.assignedToId,
-      relatedToType: values.relatedToType,
-      relatedToId: values.relatedToType ? values.relatedToId : undefined,
-      duration: values.duration,
-      location: values.location,
-      participants: [], // Empty array as per API spec - participants are optional
+      priority: typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
+      dueDate,
     };
+
+    // Add optional fields only if they have values
+    const optionalData: Partial<IActivity> = {};
+    
+    if (values.description) {
+      optionalData.description = values.description;
+    }
+    if (values.assignedToId) {
+      optionalData.assignedToId = values.assignedToId;
+    }
+    if (values.duration !== null && values.duration !== undefined) {
+      optionalData.duration = parseInt(String(values.duration), 10);
+    }
+    if (values.location) {
+      optionalData.location = values.location;
+    }
+    if (values.relatedToType) {
+      optionalData.relatedToType = typeof values.relatedToType === "string" 
+        ? parseInt(values.relatedToType, 10) 
+        : values.relatedToType;
+      if (values.relatedToId) {
+        optionalData.relatedToId = values.relatedToId;
+      }
+    }
+
+    // For create operations, include participants
+    if (!initialValues?.id) {
+      optionalData.participants = [];
+    }
+
+    const activityData: Partial<IActivity> = {
+      ...baseData,
+      ...optionalData,
+    };
+
     onSubmit(activityData);
   };
 
@@ -173,7 +208,12 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
       <Form.Item
         label="Assigned To"
         name="assignedToId"
-        rules={[{ required: true, message: "Assigned to is required" }]}
+        rules={[
+          {
+            required: !initialValues?.id,
+            message: "Assigned to is required",
+          },
+        ]}
       >
         <Select
           placeholder="Select user"
