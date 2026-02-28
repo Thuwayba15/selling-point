@@ -14,4 +14,10 @@ export {
 } from "./modals";
 export { OpportunitiesFiltersSection } from "./OpportunitiesFiltersSection";
 export { OpportunityWorkspaceContent } from "./OpportunityWorkspaceContent";
-export { useOpportunityWorkspaceData, useOpportunityFilters } from "./hooks";
+export { WorkspaceEntityCard, WorkspaceEntityList } from "./WorkspaceEntityCard";
+export { WorkspaceTabActions } from "./WorkspaceTabActions";
+export {
+  useOpportunityWorkspaceData,
+  useOpportunityFilters,
+  useWorkspaceEntityModals,
+} from "./hooks";

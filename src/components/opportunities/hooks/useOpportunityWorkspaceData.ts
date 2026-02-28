@@ -2,17 +2,22 @@
 
 import { useCallback, useState } from "react";
 import { getAxiosInstance } from "@/lib/api";
-import { useOpportunitiesActions } from "@/providers/opportunities";
 import { IOpportunity } from "@/providers/opportunities/context";
 import type { IUser } from "@/providers/users/context";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
 
 interface WorkspaceData {
-  activities: Array<{ id: string; title: string; subtitle?: string }>;
-  pricingRequests: Array<{ id: string; title: string; subtitle?: string }>;
-  proposals: Array<{ id: string; title: string; subtitle?: string }>;
-  contracts: Array<{ id: string; title: string; subtitle?: string }>;
-  documents: Array<{ id: string; title: string; subtitle?: string }>;
-  notes: Array<{ id: string; title: string; subtitle?: string }>;
+  activities: IActivity[];
+  pricingRequests: IPricingRequest[];
+  proposals: IProposal[];
+  contracts: IContract[];
+  documents: IDocument[];
+  notes: INote[];
 }
 
 export const useOpportunityWorkspaceData = () => {
@@ -46,96 +51,68 @@ export const useOpportunityWorkspaceData = () => {
         const api = getAxiosInstance();
         const [activitiesRes, pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
           await Promise.all([
+            // Activities related to this opportunity (relatedToType=2 for Opportunity)
             api
               .get("/api/activities", {
                 params: {
                   relatedToType: 2,
                   relatedToId: selectedOpportunity.id,
                   pageNumber: 1,
-                  pageSize: 10,
+                  pageSize: 100,
                 },
               })
               .catch(() => ({ data: { items: [] } })),
+            // Pricing requests - fetch all and filter by opportunityId
             api
               .get("/api/pricingrequests", {
                 params: { pageNumber: 1, pageSize: 100 },
               })
               .catch(() => ({ data: { items: [] } })),
+            // Proposals for this opportunity
             api
               .get("/api/proposals", {
-                params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 10 },
+                params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 100 },
               })
               .catch(() => ({ data: { items: [] } })),
+            // Contracts for this opportunity's client
             api
               .get("/api/contracts", {
-                params: { clientId: selectedOpportunity.clientId, pageNumber: 1, pageSize: 10 },
+                params: { clientId: selectedOpportunity.clientId, pageNumber: 1, pageSize: 100 },
               })
               .catch(() => ({ data: { items: [] } })),
+            // Documents related to this opportunity (relatedToType=2 for Opportunity)
             api
               .get("/api/documents", {
                 params: {
                   relatedToType: 2,
                   relatedToId: selectedOpportunity.id,
                   pageNumber: 1,
-                  pageSize: 10,
+                  pageSize: 100,
                 },
               })
               .catch(() => ({ data: { items: [] } })),
+            // Notes related to this opportunity (relatedToType=2 for Opportunity)
             api
               .get("/api/notes", {
                 params: {
                   relatedToType: 2,
                   relatedToId: selectedOpportunity.id,
                   pageNumber: 1,
-                  pageSize: 10,
+                  pageSize: 100,
                 },
               })
               .catch(() => ({ data: { items: [] } })),
           ]);
 
         setWorkspaceData({
-          activities: (activitiesRes.data?.items || activitiesRes.data || []).map(
-            (item: { id: string; title?: string; typeName?: string; statusName?: string }) => ({
-              id: item.id,
-              title: item.title || item.typeName || "Activity",
-              subtitle: item.statusName,
-            }),
-          ),
-          pricingRequests: (pricingRequestsRes.data?.items || pricingRequestsRes.data || [])
-            .filter((item: { opportunityId?: string }) => item.opportunityId === selectedOpportunity.id)
-            .map((item: { id: string; title?: string; statusName?: string }) => ({
-              id: item.id,
-              title: item.title || "Pricing Request",
-              subtitle: item.statusName,
-            })),
-          proposals: (proposalsRes.data?.items || proposalsRes.data || []).map(
-            (item: { id: string; title?: string; statusName?: string }) => ({
-              id: item.id,
-              title: item.title || "Proposal",
-              subtitle: item.statusName,
-            }),
-          ),
-          contracts: (contractsRes.data?.items || contractsRes.data || []).map(
-            (item: { id: string; contractNumber?: string; statusName?: string }) => ({
-              id: item.id,
-              title: item.contractNumber || "Contract",
-              subtitle: item.statusName,
-            }),
-          ),
-          documents: (documentsRes.data?.items || documentsRes.data || []).map(
-            (item: { id: string; fileName?: string; categoryName?: string }) => ({
-              id: item.id,
-              title: item.fileName || "Document",
-              subtitle: item.categoryName,
-            }),
-          ),
-          notes: (notesRes.data?.items || notesRes.data || []).map(
-            (item: { id: string; content?: string; createdByName?: string }) => ({
-              id: item.id,
-              title: item.content || "Note",
-              subtitle: item.createdByName,
-            }),
-          ),
+          activities: (activitiesRes.data?.items || activitiesRes.data || []) as IActivity[],
+          pricingRequests: (pricingRequestsRes.data?.items || pricingRequestsRes.data || []).filter(
+            (item: IPricingRequest) => item.opportunityId === selectedOpportunity.id
+          ) as IPricingRequest[],
+          proposals: (proposalsRes.data?.items || proposalsRes.data || []) as IProposal[],
+          contracts: (contractsRes.data?.items || contractsRes.data || []) as IContract[],
+          documents: (documentsRes.data?.items || documentsRes.data || []) as IDocument[],
+          notes: (notesRes.data?.items || notesRes.data || []) as INote[],
         });
       } finally {
         setWorkspaceLoading(false);

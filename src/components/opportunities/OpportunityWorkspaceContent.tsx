@@ -1,22 +1,32 @@
 "use client";
 
-import { EntityWorkspaceTabs, type WorkspaceTabItem, WorkspaceEntityList } from "@/components/common";
+import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import {
   OpportunityDetails,
   OpportunityActions,
   OpportunityStageHistory,
 } from "@/components/opportunities";
+import { WorkspaceEntityList } from "./WorkspaceEntityCard";
+import { WorkspaceTabActions } from "./WorkspaceTabActions";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
 
 interface WorkspaceData {
-  activities: Array<{ id: string; title: string; subtitle?: string }>;
-  pricingRequests: Array<{ id: string; title: string; subtitle?: string }>;
-  proposals: Array<{ id: string; title: string; subtitle?: string }>;
-  contracts: Array<{ id: string; title: string; subtitle?: string }>;
-  documents: Array<{ id: string; title: string; subtitle?: string }>;
-  notes: Array<{ id: string; title: string; subtitle?: string }>;
+  activities: IActivity[];
+  pricingRequests: IPricingRequest[];
+  proposals: IProposal[];
+  contracts: IContract[];
+  documents: IDocument[];
+  notes: INote[];
 }
+
+type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
 
 interface OpportunityWorkspaceContentProps {
   opportunity: IOpportunity | null;
@@ -31,6 +41,9 @@ interface OpportunityWorkspaceContentProps {
   onDelete: () => Promise<void>;
   onUpdateStage: () => void;
   onAssign: () => void;
+  onCreateEntity: (type: EntityType) => void;
+  onEditEntity: (type: EntityType, entity: any) => void;
+  onDeleteEntity: (type: EntityType, entity: any) => void;
 }
 
 export const OpportunityWorkspaceContent = ({
@@ -46,6 +59,9 @@ export const OpportunityWorkspaceContent = ({
   onDelete,
   onUpdateStage,
   onAssign,
+  onCreateEntity,
+  onEditEntity,
+  onDeleteEntity,
 }: OpportunityWorkspaceContentProps) => {
   const { styles } = useStyles();
 
@@ -83,60 +99,118 @@ export const OpportunityWorkspaceContent = ({
       key: "activities",
       label: "Activities",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.activities}
-          emptyText={isLoading ? "Loading activities..." : "No activities for this opportunity"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="activity"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.activities}
+            type="activity"
+            loading={isLoading}
+            emptyText="No activities for this opportunity"
+            onEntityEdit={(entity) => onEditEntity("activity", entity)}
+            onEntityDelete={(entity) => onDeleteEntity("activity", entity)}
+          />
+        </>
       ),
     },
     {
       key: "pricing",
       label: "Pricing Requests",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.pricingRequests}
-          emptyText={isLoading ? "Loading pricing requests..." : "No pricing requests for this opportunity"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="pricingRequest"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.pricingRequests}
+            type="pricingRequest"
+            loading={isLoading}
+            emptyText="No pricing requests for this opportunity"
+            onEntityEdit={(entity) => onEditEntity("pricingRequest", entity)}
+            onEntityDelete={(entity) => onDeleteEntity("pricingRequest", entity)}
+          />
+        </>
       ),
     },
     {
       key: "proposals",
       label: "Proposals",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.proposals}
-          emptyText={isLoading ? "Loading proposals..." : "No proposals for this opportunity"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="proposal"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.proposals}
+            type="proposal"
+            loading={isLoading}
+            emptyText="No proposals for this opportunity"
+            onEntityEdit={(entity) => onEditEntity("proposal", entity)}
+            onEntityDelete={(entity) => onDeleteEntity("proposal", entity)}
+          />
+        </>
       ),
     },
     {
       key: "contracts",
       label: "Contracts",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.contracts}
-          emptyText={isLoading ? "Loading contracts..." : "No contracts linked to this opportunity's client"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="contract"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.contracts}
+            type="contract"
+            loading={isLoading}
+            emptyText="No contracts linked to this opportunity's client"
+            onEntityEdit={(entity) => onEditEntity("contract", entity)}
+            onEntityDelete={(entity) => onDeleteEntity("contract", entity)}
+          />
+        </>
       ),
     },
     {
       key: "documents",
       label: "Documents",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.documents}
-          emptyText={isLoading ? "Loading documents..." : "No documents for this opportunity"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="document"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.documents}
+            type="document"
+            loading={isLoading}
+            emptyText="No documents for this opportunity"
+            onEntityDelete={(entity) => onDeleteEntity("document", entity)}
+          />
+        </>
       ),
     },
     {
       key: "notes",
       label: "Notes",
       content: (
-        <WorkspaceEntityList
-          items={workspaceData.notes}
-          emptyText={isLoading ? "Loading notes..." : "No notes for this opportunity"}
-        />
+        <>
+          <WorkspaceTabActions
+            entityType="note"
+            onCreateClick={onCreateEntity}
+          />
+          <WorkspaceEntityList
+            entities={workspaceData.notes}
+            type="note"
+            loading={isLoading}
+            emptyText="No notes for this opportunity"
+            onEntityDelete={(entity) => onDeleteEntity("note", entity)}
+          />
+        </>
       ),
     },
   ];

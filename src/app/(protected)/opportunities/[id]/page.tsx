@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { App, Form } from "antd";
+import { App, Form, Modal } from "antd";
 import { useParams } from "next/navigation";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
+import { useActivitiesActions } from "@/providers/activities";
+import { useProposalsActions } from "@/providers/proposals";
+import { usePricingRequestsActions } from "@/providers/pricing-requests";
+import { useContractsActions } from "@/providers/contracts";
+import { useDocumentsActions } from "@/providers/documents";
+import { useNotesActions } from "@/providers/notes";
 import {
   CreateOpportunityModal,
   EditOpportunityModal,
@@ -19,6 +25,8 @@ import {
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
+
+type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
 
 const OpportunityWorkspacePage = () => {
   const { styles } = useStyles();
@@ -55,6 +63,14 @@ const OpportunityWorkspacePage = () => {
 
   const clientsState = useClientsState();
   const clientsActions = useClientsActions();
+
+  // Entity action providers for CRUD operations
+  const activitiesActions = useActivitiesActions();
+  const proposalsActions = useProposalsActions();
+  const pricingRequestsActions = usePricingRequestsActions();
+  const contractsActions = useContractsActions();
+  const documentsActions = useDocumentsActions();
+  const notesActions = useNotesActions();
 
   // Custom hooks
   const filters = useOpportunityFilters(opportunityId);
@@ -326,6 +342,58 @@ const OpportunityWorkspacePage = () => {
     }
   };
 
+  // Entity CRUD handlers
+  const handleCreateEntity = (type: EntityType) => {
+    message.info(`Create ${type} modal will be implemented`);
+    // TODO: Implement modals for each entity type
+  };
+
+  const handleEditEntity = (type: EntityType, entity: any) => {
+    message.info(`Edit ${type} modal will be implemented`);
+    // TODO: Implement edit modals for each entity type
+  };
+
+  const handleDeleteEntity = async (type: EntityType, entity: any) => {
+    Modal.confirm({
+      title: `Delete ${type}?`,
+      content: "This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          switch (type) {
+            case "activity":
+              await activitiesActions.deleteActivity(entity.id);
+              break;
+            case "proposal":
+              await proposalsActions.deleteProposal(entity.id);
+              break;
+            case "pricingRequest":
+              message.warning("Pricing requests cannot be deleted");
+              return;
+            case "contract":
+              await contractsActions.deleteContract(entity.id);
+              break;
+            case "document":
+              await documentsActions.deleteDocument(entity.id);
+              break;
+            case "note":
+              await notesActions.deleteNote(entity.id);
+              break;
+          }
+
+          message.success(`${type} deleted successfully`);
+          // Reload workspace data
+          if (selectedOpportunity) {
+            await loadWorkspaceData(selectedOpportunity);
+          }
+        } catch (error) {
+          message.error(`Failed to delete ${type}`);
+        }
+      },
+    });
+  };
+
   const handleApplyFilters = async (filterValues: {
     searchTerm?: string;
     clientId?: string;
@@ -380,6 +448,9 @@ const OpportunityWorkspacePage = () => {
           onDelete={handleDelete}
           onUpdateStage={handleUpdateStage}
           onAssign={handleAssign}
+          onCreateEntity={handleCreateEntity}
+          onEditEntity={handleEditEntity}
+          onDeleteEntity={handleDeleteEntity}
         />
 
         <CreateOpportunityModal
