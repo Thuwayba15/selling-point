@@ -5,17 +5,18 @@ import { Tabs, Form, App as AntdApp } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useReportsState, useReportsActions } from "@/providers/reports";
 import { useUsersState, useUsersActions } from "@/providers/users";
+import { useStyles } from "@/components/reports/style";
 import {
   ReportsHeader,
   ReportsFilters,
   OpportunitiesReportTable,
   SalesByPeriodReport,
 } from "@/components/reports";
-import { reportsContainerStyle, tabsStyle } from "@/components/reports/style";
 import type { OpportunityStage, GroupBy } from "@/providers/reports/context";
 import dayjs from "dayjs";
 
 const ReportsPage = () => {
+  const { styles } = useStyles();
   const { message } = AntdApp.useApp();
   const reportsState = useReportsState();
   const reportsActions = useReportsActions();
@@ -146,17 +147,16 @@ const ReportsPage = () => {
   ];
 
   return (
-    <div style={reportsContainerStyle}>
-      <ReportsHeader
-        title="Reports"
-        subtitle="Generate and view sales performance reports"
-      />
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={tabItems}
-        style={tabsStyle}
-      />
+    <div className={styles.pageContainer}>
+      <div className={styles.mainContent}>
+        <div className={styles.tabsContainer}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={tabItems}
+          />
+        </div>
+      </div>
     </div>
   );
 };

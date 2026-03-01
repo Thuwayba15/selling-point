@@ -4,7 +4,7 @@ import React from "react";
 import { Card, Table, Tag, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { IOpportunityReportItem, OpportunityStage } from "@/providers/reports/context";
-import { reportCardStyle, emptyStateStyle } from "./style";
+import { useStyles } from "./style";
 import dayjs from "dayjs";
 
 const getStageColor = (stage: OpportunityStage): string => {
@@ -40,11 +40,13 @@ export const OpportunitiesReportTable: React.FC<OpportunitiesReportTableProps> =
   data,
   loading = false,
 }) => {
+  const { styles } = useStyles();
+
   const columns: ColumnsType<IOpportunityReportItem> = [
     {
       title: "Opportunity",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "title",
+      key: "title",
       width: 250,
     },
     {
@@ -102,8 +104,8 @@ export const OpportunitiesReportTable: React.FC<OpportunitiesReportTableProps> =
 
   if (!data || data.length === 0) {
     return (
-      <Card title="Opportunities Report" style={reportCardStyle}>
-        <div style={emptyStateStyle}>
+      <Card title="Opportunities Report" className={styles.reportCard}>
+        <div className={styles.emptyState}>
           <Empty description="No opportunities found. Adjust filters and generate report." />
         </div>
       </Card>
@@ -113,7 +115,7 @@ export const OpportunitiesReportTable: React.FC<OpportunitiesReportTableProps> =
   return (
     <Card
       title="Opportunities Report"
-      style={reportCardStyle}
+      className={styles.reportCard}
       extra={<span>Total: {data.length}</span>}
     >
       <Table
