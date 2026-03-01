@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Modal, Form, App, Tabs, Input } from "antd";
+import { Modal, Form, App, Tabs, Input, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { useRbac } from "@/hooks/useRbac";
 import { useStyles } from "@/components/activities/style";
 import {
-  ActivitiesHeader,
   ActivitiesFilters,
   ActivitiesTable,
   ActivityDetails,
-  ActivityActions,
   ActivityForm,
   type Activity,
 } from "@/components/activities";
@@ -26,6 +26,7 @@ import type { IActivity, ActivityStatus } from "@/providers/activities/context";
 const ActivitiesPage = () => {
   const { styles } = useStyles();
   const { message, modal } = App.useApp();
+  const { can } = useRbac();
 
   // Provider state and actions
   const activitiesState = useActivitiesState();
@@ -281,23 +282,30 @@ const ActivitiesPage = () => {
   };
 
   // Edit handlers
-  const handleEdit = () => {
-    if (!selectedActivity || !activitiesState.activity) return;
+  const handleEdit = async (activity?: Activity) => {
+    const activityToEdit = activity || selectedActivity;
+    if (!activityToEdit?.id) return;
     
-    const activity = activitiesState.activity;
+    // Load full activity details if not already loaded
+    await activitiesActions.getActivity(activityToEdit.id);
+    const fullActivity = activitiesState.activity;
+    
+    if (!fullActivity) return;
+    
     const formValues: Record<string, unknown> = {
-      subject: activity.subject || "",
-      type: activity.type || ActivityType.Task,
-      priority: activity.priority || Priority.Medium,
-      dueDate: activity.dueDate ? dayjs(activity.dueDate) : undefined,
-      assignedToId: activity.assignedToId || "",
-      description: activity.description || "",
-      location: activity.location || "",
-      duration: activity.duration || undefined,
-      relatedToType: activity.relatedToType || undefined,
-      relatedToId: activity.relatedToType ? activity.relatedToId : undefined,
+      subject: fullActivity.subject || "",
+      type: fullActivity.type || ActivityType.Task,
+      priority: fullActivity.priority || Priority.Medium,
+      dueDate: fullActivity.dueDate ? dayjs(fullActivity.dueDate) : undefined,
+      assignedToId: fullActivity.assignedToId || "",
+      description: fullActivity.description || "",
+      location: fullActivity.location || "",
+      duration: fullActivity.duration || undefined,
+      relatedToType: fullActivity.relatedToType || undefined,
+      relatedToId: fullActivity.relatedToType ? fullActivity.relatedToId : undefined,
     };
     editForm.setFieldsValue(formValues);
+    setSelectedActivity(activityToEdit);
     setIsEditModalOpen(true);
   };
 
@@ -324,7 +332,11 @@ const ActivitiesPage = () => {
   };
 
   // Complete handler
-  const handleCompleteClick = () => {
+  const handleCompleteClick = (activity?: Activity) => {
+    const activityToComplete = activity || selectedActivity;
+    if (!activityToComplete?.id) return;
+    
+    setSelectedActivity(activityToComplete);
     completeForm.resetFields();
     setIsCompleteModalOpen(true);
   };
@@ -353,18 +365,18 @@ const ActivitiesPage = () => {
   };
 
   // Cancel handler
-  const handleCancelActivity = async () => {
-    if (!selectedActivity?.id) return;
+  const handleCancelActivity = async (activity?: Activity) => {
+    const activityToCancel = activity || selectedActivity;
+    if (!activityToCancel?.id) return;
 
     modal.confirm({
       title: "Cancel Activity",
       content: "Are you sure you want to cancel this activity?",
       onOk: async () => {
         try {
-          await activitiesActions.cancelActivity(selectedActivity.id);
+          await activitiesActions.cancelActivity(activityToCancel.id);
           message.success("Activity cancelled");
-          // Refresh the selected activity's details
-          await activitiesActions.getActivity(selectedActivity.id);
+          setSelectedActivity(null);
           // Refresh list
           handleTabChange(activeTab);
         } catch (error) {
@@ -382,8 +394,9 @@ const ActivitiesPage = () => {
   };
 
   // Delete handler
-  const handleDelete = async () => {
-    if (!selectedActivity?.id) return;
+  const handleDelete = async (activity?: Activity) => {
+    const activityToDelete = activity || selectedActivity;
+    if (!activityToDelete?.id) return;
 
     modal.confirm({
       title: "Delete Activity",
@@ -392,7 +405,7 @@ const ActivitiesPage = () => {
       okType: "danger",
       onOk: async () => {
         try {
-          await activitiesActions.deleteActivity(selectedActivity.id);
+          await activitiesActions.deleteActivity(activityToDelete.id);
           message.success("Activity deleted successfully");
           setSelectedActivity(null);
           // Refresh the list
@@ -485,55 +498,43 @@ const ActivitiesPage = () => {
   }));
 
   const renderTabContent = () => (
-    <div className={styles.layoutGrid}>
-      <div className={styles.leftColumn}>
-        <ActivitiesTable
-          activities={activities}
-          loading={activitiesState.isPending}
-          selectedId={selectedActivity?.id}
-          onSelect={handleSelectActivity}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: activitiesState.pagination?.totalCount || activities.length,
-            onChange: handlePaginationChange,
-          }}
-        />
-      </div>
+    <>
+      <ActivitiesTable
+        activities={activities}
+        loading={activitiesState.isPending}
+        selectedId={selectedActivity?.id}
+        onSelect={handleSelectActivity}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onComplete={handleCompleteClick}
+        onCancel={handleCancelActivity}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: activitiesState.pagination?.totalCount || activities.length,
+          onChange: handlePaginationChange,
+        }}
+        headerExtra={
+          can("create:activity") ? (
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateClick}>
+              New Activity
+            </Button>
+          ) : null
+        }
+      />
 
-      <div className={styles.rightColumn}>
+      {selectedActivity && (
         <ActivityDetails
           activity={activitiesState.activity}
           loading={activitiesState.isLoadingDetails}
         />
-
-        {selectedActivity && (
-          <ActivityActions
-            activity={activitiesState.activity}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onComplete={handleCompleteClick}
-            onCancel={handleCancelActivity}
-            onViewParticipants={handleViewParticipants}
-            loading={activitiesState.isPending}
-          />
-        )}
-      </div>
-    </div>
+      )}
+    </>
   );
-
-  const tabItems = [
-    { key: "all", label: "All Activities", children: renderTabContent() },
-    { key: "my", label: "My Activities", children: renderTabContent() },
-    { key: "upcoming", label: "Upcoming", children: renderTabContent() },
-    { key: "overdue", label: "Overdue", children: renderTabContent() },
-  ];
 
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        <ActivitiesHeader onCreateClick={handleCreateClick} />
-
         <ActivitiesFilters
           onApply={handleApplyFilters}
           onClear={handleClearFilters}
@@ -545,10 +546,8 @@ const ActivitiesPage = () => {
           contracts={contracts}
         />
 
-        <div className={styles.tabsContainer}>
-          <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabItems} />
-        </div>
-      </div>
+      {renderTabContent()}
+    </div>
 
       {/* Create Modal */}
       <Modal

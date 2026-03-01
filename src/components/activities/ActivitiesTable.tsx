@@ -1,8 +1,16 @@
 import React from "react";
-import { Table, Card, Tag } from "antd";
+import type { ReactNode } from "react";
+import { Table, Card, Tag, Button, Space, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { ActivityType, ActivityStatus, Priority } from "@/providers/activities/context";
+import { useRbac } from "@/hooks/useRbac";
 import { useStyles } from "./style";
 
 export interface Activity {
@@ -28,12 +36,17 @@ interface ActivitiesTableProps {
   loading: boolean;
   selectedId?: string;
   onSelect: (activity: Activity) => void;
+  onEdit: (activity: Activity) => void;
+  onDelete: (activity: Activity) => void;
+  onComplete: (activity: Activity) => void;
+  onCancel: (activity: Activity) => void;
   pagination?: {
     current: number;
     pageSize: number;
     total: number;
     onChange: (page: number, pageSize: number) => void;
   };
+  headerExtra?: ReactNode;
 }
 
 const ACTIVITY_TYPE_MAP: Record<ActivityType, { label: string; color: string }> = {
@@ -63,9 +76,18 @@ export const ActivitiesTable: React.FC<ActivitiesTableProps> = ({
   loading,
   selectedId,
   onSelect,
+  onEdit,
+  onDelete,
+  onComplete,
+  onCancel,
   pagination,
+  headerExtra,
 }) => {
   const { styles } = useStyles();
+  const { can } = useRbac();
+
+  const canUpdate = can("update:activity");
+  const canDelete = can("delete:activity");
 
   const columns: ColumnsType<Activity> = [
     {
@@ -120,18 +142,83 @@ export const ActivitiesTable: React.FC<ActivitiesTableProps> = ({
       ellipsis: true,
     },
     {
-      title: "Related To",
-      dataIndex: "relatedToName",
-      key: "relatedToName",
-      width: "15%",
-      ellipsis: true,
-      render: (name: string, record: Activity) =>
-        name ? `${record.relatedToTypeName}: ${name}` : "-",
+      title: "Actions",
+      key: "actions",
+      width: "11%",
+      render: (_, record) => {
+        const isScheduled = record.status === ActivityStatus.Scheduled;
+        const isCompleted = record.status === ActivityStatus.Completed;
+
+        return (
+          <Space size="small">
+            {canUpdate && isScheduled && (
+              <Tooltip title="Edit">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(record);
+                  }}
+                />
+              </Tooltip>
+            )}
+            {canUpdate && isScheduled && (
+              <Tooltip title="Mark Complete">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CheckOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onComplete(record);
+                  }}
+                  style={{ color: "#52c41a" }}
+                />
+              </Tooltip>
+            )}
+            {canUpdate && isScheduled && (
+              <Tooltip title="Cancel">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCancel(record);
+                  }}
+                  danger
+                />
+              </Tooltip>
+            )}
+            {canDelete && !isCompleted && (
+              <Tooltip title="Delete">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(record);
+                  }}
+                  danger
+                />
+              </Tooltip>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
   return (
-    <Card className={styles.tableCard} loading={loading}>
+    <Card
+      className={styles.tableCard}
+      title="Select an item for more details"
+      loading={loading}
+      extra={headerExtra}
+    >
       <Table<Activity>
         columns={columns}
         dataSource={activities}

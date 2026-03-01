@@ -88,7 +88,7 @@ export const OpportunitiesTable = ({
     <div className={styles.opportunitiesListContainer}>
       <Card
         className={styles.tableCard}
-        title="Opportunities List"
+        title="Select an item for more details"
         extra={headerExtra}
       >
         <Table
