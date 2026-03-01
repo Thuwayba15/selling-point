@@ -43,11 +43,7 @@ const ClientWorkspacePage = () => {
   const usersState = useUsersState();
   const usersActions = useUsersActions();
 
-  // Custom hooks
-  const { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh } = useClientWorkspaceData();
-  const entityModals = useClientEntityModals();
-
-  // Local state
+  // Local state - declare before callbacks that use them
   const [selectedClient, setSelectedClient] = useState<IClient | null>(null);
   const [workspaceTab, setWorkspaceTab] = useState("contacts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -57,6 +53,17 @@ const ClientWorkspacePage = () => {
   const [editClientForm] = Form.useForm();
 
   const initializedRef = useRef(false);
+
+  // Custom hooks
+  const { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh } = useClientWorkspaceData();
+  
+  const refreshWorkspace = useCallback(async () => {
+    if (selectedClient) {
+      await fetchWorkspaceData(selectedClient, true);
+    }
+  }, [selectedClient, fetchWorkspaceData]);
+  
+  const entityModals = useClientEntityModals(refreshWorkspace);
 
   // Initialize page - load client data
   useEffect(() => {
@@ -151,12 +158,6 @@ const ClientWorkspacePage = () => {
       });
     });
   }, [selectedClient?.id, selectedClient?.name, deleteClient, message, handleBackToClients]);
-
-  const refreshWorkspace = useCallback(async () => {
-    if (selectedClient) {
-      await fetchWorkspaceData(selectedClient, true);
-    }
-  }, [selectedClient, fetchWorkspaceData]);
 
   const handleEditClient = useCallback(() => {
     if (!selectedClient) return;

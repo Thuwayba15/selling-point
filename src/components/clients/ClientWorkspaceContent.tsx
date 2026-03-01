@@ -115,8 +115,10 @@ export const ClientWorkspaceContent = ({
         <ContractsTab
           contracts={workspaceData.contracts}
           loading={isLoading}
+          onCreateEntity={() => onCreateEntity("contract")}
           onEdit={(contract) => onEditEntity("contract", contract)}
           onDelete={(contract) => onDeleteEntity("contract", contract)}
+          toolbarClassName={styles.toolbarContainer}
         />
       ),
     },

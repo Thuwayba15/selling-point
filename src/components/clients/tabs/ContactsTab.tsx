@@ -37,34 +37,30 @@ export const ContactsTab = ({
   const { styles } = useStyles();
   const [searchTerm, setSearchTerm] = useState("");
   const [settingPrimaryLoading, setSettingPrimaryLoading] = useState<string | null>(null);
-  const [filters, setFilters] = useState<{ searchTerm?: string; clientId?: string }>({});
 
-  // Filter contacts by search and client
+  // Filter contacts by search term
   const filteredContacts = useMemo(() => {
-    return contacts.filter((contact) => {
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        const matchesSearch =
-          (contact.firstName?.toLowerCase().includes(term) ?? false) ||
-          (contact.lastName?.toLowerCase().includes(term) ?? false) ||
-          (contact.email?.toLowerCase().includes(term) ?? false) ||
-          (contact.phoneNumber?.toLowerCase().includes(term) ?? false);
-        if (!matchesSearch) return false;
-      }
-      return true;
-    });
-  }, [contacts, filters]);
+    if (!searchTerm) return contacts;
+    const term = searchTerm.toLowerCase();
+    return contacts.filter(
+      (contact) =>
+        (contact.firstName?.toLowerCase().includes(term) ?? false) ||
+        (contact.lastName?.toLowerCase().includes(term) ?? false) ||
+        (contact.email?.toLowerCase().includes(term) ?? false) ||
+        (contact.phoneNumber?.toLowerCase().includes(term) ?? false),
+    );
+  }, [contacts, searchTerm]);
 
   const { currentPage, pageSize, total, paginatedItems, setCurrentPage } =
     useWorkspacePagination(filteredContacts);
 
-  const handleApplyFilters = (newFilters: { searchTerm?: string; clientId?: string }) => {
-    setFilters(newFilters);
+  const handleApplyFilters = (filters: { searchTerm?: string }) => {
+    setSearchTerm(filters.searchTerm || "");
     setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
-    setFilters({});
+    setSearchTerm("");
     setCurrentPage(1);
   };
 
@@ -216,13 +212,14 @@ export const ContactsTab = ({
 
           {/* Pagination */}
           {total > 0 && (
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={total}
-              onChange={setCurrentPage}
-              className={paginationClassName}
-            />
+            <div style={{ marginTop: "16px", textAlign: "right" }}>
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={total}
+                onChange={setCurrentPage}
+              />
+            </div>
           )}
         </>
       )}

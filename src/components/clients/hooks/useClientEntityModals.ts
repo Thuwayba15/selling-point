@@ -26,7 +26,7 @@ interface ModalState {
   mode: "create" | "edit";
 }
 
-export const useClientEntityModals = () => {
+export const useClientEntityModals = (onRefresh?: () => Promise<void>) => {
   const { message } = App.useApp();
   const router = useRouter();
   const { can } = useRbac();
@@ -124,6 +124,10 @@ export const useClientEntityModals = () => {
                   }
                   break;
               }
+              // Refresh workspace data after deletion
+              if (onRefresh) {
+                await onRefresh();
+              }
               resolve();
             } catch (error) {
               message.error(`Failed to delete ${type}`);
@@ -133,7 +137,7 @@ export const useClientEntityModals = () => {
         });
       });
     },
-    [can, message, contactsActions, opportunitiesActions, contractsActions, documentsActions, notesActions],
+    [can, message, contactsActions, opportunitiesActions, contractsActions, documentsActions, notesActions, onRefresh],
   );
 
   return {

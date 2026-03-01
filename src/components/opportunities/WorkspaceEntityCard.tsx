@@ -623,8 +623,7 @@ export const WorkspaceEntityCard = ({
             </Space>
           </Space>
 
-          {(canEditContract || canActivateContract || canCancelContract || canDeleteContract) && (
-            <Space size="small" wrap>
+          <Space size="small" wrap>
               {canEditContract && (
                 <Button
                   size="small"
@@ -705,6 +704,27 @@ export const WorkspaceEntityCard = ({
                   Notes
                 </Button>
               )}
+              <Button
+                size="small"
+                type="text"
+                icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((prev) => !prev);
+                }}
+              />
+          </Space>
+
+          {expanded && (
+            <Space direction="vertical" size={4} style={{ width: "100%" }}>
+              <Text type="secondary">
+                <Text strong>Description: </Text>
+                {contract.description || "—"}
+              </Text>
+              <Text type="secondary">
+                <Text strong>Terms & Conditions: </Text>
+                {contract.terms || "—"}
+              </Text>
             </Space>
           )}
 

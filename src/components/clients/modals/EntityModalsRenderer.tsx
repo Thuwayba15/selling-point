@@ -1,17 +1,18 @@
 "use client";
 
-import { Form, App } from "antd";
-import { useState, useCallback } from "react";
+import { Form, App, Modal } from "antd";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 import type { FormInstance } from "antd";
 import { CreateOpportunityModal } from "./CreateOpportunityModal";
 import { CreateContactModal } from "./CreateContactModal";
 import { EditContactModal } from "./EditContactModal";
+import { ContractForm } from "@/components/contracts";
 import { useOpportunitiesActions } from "@/providers/opportunities";
 import { useContactsActions } from "@/providers/contacts";
 import { useContractsActions } from "@/providers/contracts";
-import { useDocumentsActions } from "@/providers/documents";
-import { useNotesActions } from "@/providers/notes";
+import { useAuthState } from "@/providers/auth";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
 import type { IOpportunity } from "@/providers/opportunities/context";
@@ -66,13 +67,39 @@ export const EntityModalsRenderer = ({
 }: EntityModalsRendererProps) => {
   const { message } = App.useApp();
   const router = useRouter();
-  const [opportunityForm] = Form.useForm();
-  const [createContactForm] = Form.useForm();
-  const [editContactForm] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuthState();
 
   const opportunitiesActions = useOpportunitiesActions();
   const contactsActions = useContactsActions();
+  const contractsActions = useContractsActions();
+
+  // Use forms from the entityModals hook
+  const opportunityForm = entityModals.forms.opportunity;
+  const createContactForm = entityModals.forms.contact;
+  const editContactForm = entityModals.forms.contact; // Same form for create/edit
+  const contractForm = entityModals.forms.contract;
+
+  // Pre-fill contract form with clientId when modal opens in create mode
+  useEffect(() => {
+    if (entityModals.modals.contract.isOpen && entityModals.modals.contract.mode === "create" && selectedClient) {
+      contractForm.setFieldsValue({
+        clientId: selectedClient.id,
+        currency: 'R',
+        status: 1,
+        autoRenew: false,
+      });
+    } else if (entityModals.modals.contract.isOpen && entityModals.modals.contract.mode === "edit" && entityModals.modals.contract.entity) {
+      const contract = entityModals.modals.contract.entity as IContract;
+      contractForm.setFieldsValue({
+        ...contract,
+        startDate: contract.startDate ? dayjs(contract.startDate) : undefined,
+        endDate: contract.endDate ? dayjs(contract.endDate) : undefined,
+      });
+    } else if (!entityModals.modals.contract.isOpen) {
+      contractForm.resetFields();
+    }
+  }, [entityModals.modals.contract.isOpen, entityModals.modals.contract.mode, entityModals.modals.contract.entity, selectedClient, contractForm]);
 
   const handleCreateOpportunity = useCallback(
     async (values: any) => {
@@ -81,11 +108,17 @@ export const EntityModalsRenderer = ({
         return;
       }
 
+      if (!user?.id) {
+        message.error("User not authenticated");
+        return;
+      }
+
       setIsSubmitting(true);
       try {
         const payload = {
           ...values,
           clientId: selectedClient.id,
+          ownerId: user.id, // Add the current user's ID as the owner
           estimatedValue: values.estimatedValue ? parseFloat(values.estimatedValue) : 0,
           probability: values.probability ? parseFloat(values.probability) : 0,
           currency: 'R', // Always set to ZAR
@@ -102,7 +135,7 @@ export const EntityModalsRenderer = ({
         setIsSubmitting(false);
       }
     },
-    [selectedClient?.id, opportunitiesActions, message, entityModals, opportunityForm, onRefresh],
+    [selectedClient?.id, user?.id, opportunitiesActions, message, entityModals, opportunityForm, onRefresh],
   );
 
   const handleEditOpportunity = useCallback(
@@ -203,6 +236,77 @@ export const EntityModalsRenderer = ({
     [entityModals, selectedClient?.id, contactsActions, message, editContactForm, onRefresh],
   );
 
+  const handleCreateContract = useCallback(
+    async (values: any) => {
+      if (!selectedClient?.id) {
+        message.error("Client not selected");
+        return;
+      }
+
+      if (!user?.id) {
+        message.error("User not authenticated");
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          ...values,
+          clientId: selectedClient.id,
+          ownerId: user.id, // Add the current user's ID as the owner
+          contractValue: values.contractValue ? parseFloat(values.contractValue) : 0,
+          currency: 'R', // Always set to ZAR
+        };
+
+        console.log('Creating contract with payload:', payload);
+        const result = await contractsActions.createContract(payload);
+        console.log('Contract created successfully:', result);
+        message.success("Contract created successfully");
+        contractForm.resetFields();
+        entityModals.closeModal("contract");
+        console.log('Refreshing workspace data...');
+        await onRefresh();
+        console.log('Workspace refresh complete');
+      } catch (error) {
+        console.error('Failed to create contract:', error);
+        message.error("Failed to create contract");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [selectedClient?.id, user?.id, contractsActions, message, entityModals, contractForm, onRefresh],
+  );
+
+  const handleEditContract = useCallback(
+    async (values: any) => {
+      if (!entityModals.modals.contract.entity || !selectedClient?.id) {
+        message.error("Unable to update contract");
+        return;
+      }
+
+      const contract = entityModals.modals.contract.entity as IContract;
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          ...values,
+          clientId: selectedClient.id,
+          contractValue: values.contractValue ? parseFloat(values.contractValue) : 0,
+        };
+
+        await contractsActions.updateContract(contract.id, payload);
+        message.success("Contract updated successfully");
+        contractForm.resetFields();
+        entityModals.closeModal("contract");
+        await onRefresh();
+      } catch (error) {
+        message.error("Failed to update contract");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [selectedClient?.id, contractsActions, message, entityModals, contractForm, onRefresh],
+  );
+
   return (
     <>
       <CreateContactModal
@@ -242,6 +346,34 @@ export const EntityModalsRenderer = ({
         initialValues={entityModals.modals.opportunity.mode === "edit" ? entityModals.modals.opportunity.entity as IOpportunity : undefined}
         onCancel={() => entityModals.closeModal("opportunity")}
       />
+
+      <Modal
+        title={entityModals.modals.contract.mode === "create" ? "Create Contract" : "Edit Contract"}
+        open={entityModals.modals.contract.isOpen}
+        onCancel={() => {
+          entityModals.closeModal("contract");
+          contractForm.resetFields();
+        }}
+        footer={null}
+        width={700}
+      >
+        <ContractForm
+          form={contractForm}
+          initialValues={entityModals.modals.contract.mode === "edit" ? entityModals.modals.contract.entity as IContract : undefined}
+          loading={isSubmitting}
+          onSubmit={entityModals.modals.contract.mode === "create" ? handleCreateContract : handleEditContract}
+          onCancel={() => {
+            entityModals.closeModal("contract");
+            contractForm.resetFields();
+          }}
+          clients={selectedClient ? [{ id: selectedClient.id, name: selectedClient.name }] : []}
+          opportunities={workspaceData.opportunities.map(opp => ({ 
+            id: opp.id, 
+            title: opp.title 
+          }))}
+          proposals={[]} // Proposals would need to be fetched separately
+        />
+      </Modal>
     </>
   );
 };
