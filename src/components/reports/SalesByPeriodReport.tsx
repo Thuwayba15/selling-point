@@ -4,7 +4,7 @@ import React from "react";
 import { Card, Table, Statistic, Row, Col, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { ISalesByPeriodItem } from "@/providers/reports/context";
-import { reportCardStyle, emptyStateStyle, metricCardStyle } from "./style";
+import { useStyles } from "./style";
 
 interface SalesByPeriodReportProps {
   data: ISalesByPeriodItem[];
@@ -15,6 +15,8 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
   data,
   loading = false,
 }) => {
+  const { styles } = useStyles();
+
   const columns: ColumnsType<ISalesByPeriodItem> = [
     {
       title: "Period",
@@ -78,8 +80,8 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <Card title="Sales by Period Report" style={reportCardStyle}>
-        <div style={emptyStateStyle}>
+      <Card title="Sales by Period Report" className={styles.reportCard}>
+        <div className={styles.emptyState}>
           <Empty description="No sales data found. Adjust filters and generate report." />
         </div>
       </Card>
@@ -87,10 +89,10 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
   }
 
   return (
-    <Card title="Sales by Period Report" style={reportCardStyle}>
+    <Card title="Sales by Period Report" className={styles.reportCard}>
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={6}>
-          <Card style={metricCardStyle}>
+          <Card className={styles.metricCard}>
             <Statistic
               title="Total Value"
               value={totalRevenue}
@@ -100,7 +102,7 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
           </Card>
         </Col>
         <Col span={6}>
-          <Card style={metricCardStyle}>
+          <Card className={styles.metricCard}>
             <Statistic
               title="Total Opportunities"
               value={totalOpportunities}
@@ -109,7 +111,7 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
           </Card>
         </Col>
         <Col span={6}>
-          <Card style={metricCardStyle}>
+          <Card className={styles.metricCard}>
             <Statistic
               title="Won"
               value={totalWon}
@@ -118,7 +120,7 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
           </Card>
         </Col>
         <Col span={6}>
-          <Card style={metricCardStyle}>
+          <Card className={styles.metricCard}>
             <Statistic
               title="Avg Win Rate"
               value={averageWinRate}
@@ -138,6 +140,7 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
           pageSize: 12,
           showTotal: (total) => `Total ${total} periods`,
         }}
+        scroll={{ x: "max-content" }}
       />
     </Card>
   );

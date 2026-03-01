@@ -18,11 +18,9 @@ export const ContactsHeader = ({ onCreateClick }: ContactsHeaderProps) => {
       <div className={styles.headerText}>
         <h1 className={styles.title}>Manage client contact persons and their information</h1>
       </div>
-      {can("create:contact") && (
-        <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick}>
-          Create Contact
-        </Button>
-      )}
+      <Button type="primary" icon={<PlusOutlined />} onClick={onCreateClick}>
+        Create Contact
+      </Button>
     </div>
   );
 };

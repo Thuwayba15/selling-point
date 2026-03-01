@@ -55,9 +55,9 @@ export interface INotesActionContext {
   }) => Promise<void>;
 
   getNote: (id: string) => Promise<void>;
-  createNote: (note: Partial<INote>) => Promise<void>;
-  updateNote: (id: string, note: Partial<INote>) => Promise<void>;
-  deleteNote: (id: string) => Promise<void>;
+  createNote: (note: Partial<INote>) => Promise<boolean>;
+  updateNote: (id: string, note: Partial<INote>) => Promise<boolean>;
+  deleteNote: (id: string) => Promise<boolean>;
 
   clearError: () => void;
   clearNote: () => void;

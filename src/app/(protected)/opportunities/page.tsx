@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { App, Button, Form, Input, Modal, Select } from "antd";
+import { useRouter } from "next/navigation";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { getAxiosInstance } from "@/lib/api";
 import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import {
-  OpportunitiesHeader,
   OpportunitiesFilters,
   OpportunitiesTable,
   OpportunityDetails,
@@ -16,11 +16,13 @@ import {
   OpportunityForm,
   OpportunityStageHistory,
 } from "@/components/opportunities";
+import { EntityWorkspaceTabs, WorkspaceEntityList, type WorkspaceTabItem } from "@/components/common";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
 import type { IUser } from "@/providers/users/context";
 
 const OpportunitiesPage = () => {
+  const router = useRouter();
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { user } = useAuthState();
@@ -32,7 +34,6 @@ const OpportunitiesPage = () => {
     opportunities,
     opportunity,
     pagination,
-    pipeline,
     stageHistory,
   } = useOpportunitiesState();
   const {
@@ -60,6 +61,23 @@ const OpportunitiesPage = () => {
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
   const [showMyOpportunities, setShowMyOpportunities] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<IOpportunity | null>(null);
+  const [workspaceTab, setWorkspaceTab] = useState("overview");
+  const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [workspaceData, setWorkspaceData] = useState<{
+    activities: Array<{ id: string; title: string; subtitle?: string }>;
+    pricingRequests: Array<{ id: string; title: string; subtitle?: string }>;
+    proposals: Array<{ id: string; title: string; subtitle?: string }>;
+    contracts: Array<{ id: string; title: string; subtitle?: string }>;
+    documents: Array<{ id: string; title: string; subtitle?: string }>;
+    notes: Array<{ id: string; title: string; subtitle?: string }>;
+  }>({
+    activities: [],
+    pricingRequests: [],
+    proposals: [],
+    contracts: [],
+    documents: [],
+    notes: [],
+  });
   const [assignableUsers, setAssignableUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -200,6 +218,133 @@ const OpportunitiesPage = () => {
       getOpportunityStageHistory(selectedOpportunity.id);
     }
   }, [selectedOpportunity?.id]);
+
+  useEffect(() => {
+    const loadWorkspaceData = async () => {
+      if (!selectedOpportunity?.id) {
+        setWorkspaceData({
+          activities: [],
+          pricingRequests: [],
+          proposals: [],
+          contracts: [],
+          documents: [],
+          notes: [],
+        });
+        return;
+      }
+
+      setWorkspaceLoading(true);
+      try {
+        const api = getAxiosInstance();
+        const [activitiesRes, pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
+          await Promise.all([
+            api
+              .get("/api/activities", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/pricingrequests", {
+                params: { pageNumber: 1, pageSize: 100 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/proposals", {
+                params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/contracts", {
+                params: {
+                  clientId: selectedOpportunity.clientId,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/documents", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/notes", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+          ]);
+
+        const activities = (activitiesRes.data?.items || activitiesRes.data || []).map(
+          (item: { id: string; title?: string; typeName?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || item.typeName || "Activity",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const pricingRequests = (pricingRequestsRes.data?.items || pricingRequestsRes.data || [])
+          .filter((item: { opportunityId?: string }) => item.opportunityId === selectedOpportunity.id)
+          .map((item: { id: string; title?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || "Pricing Request",
+            subtitle: item.statusName,
+          }));
+
+        const proposals = (proposalsRes.data?.items || proposalsRes.data || []).map(
+          (item: { id: string; title?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || "Proposal",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const contracts = (contractsRes.data?.items || contractsRes.data || []).map(
+          (item: { id: string; contractNumber?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.contractNumber || "Contract",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const documents = (documentsRes.data?.items || documentsRes.data || []).map(
+          (item: { id: string; fileName?: string; categoryName?: string }) => ({
+            id: item.id,
+            title: item.fileName || "Document",
+            subtitle: item.categoryName,
+          }),
+        );
+
+        const notes = (notesRes.data?.items || notesRes.data || []).map(
+          (item: { id: string; content?: string; createdByName?: string }) => ({
+            id: item.id,
+            title: item.content || "Note",
+            subtitle: item.createdByName,
+          }),
+        );
+
+        setWorkspaceData({ activities, pricingRequests, proposals, contracts, documents, notes });
+      } finally {
+        setWorkspaceLoading(false);
+      }
+    };
+
+    loadWorkspaceData();
+  }, [selectedOpportunity?.id, selectedOpportunity?.clientId]);
 
   useEffect(() => {
     if (isError && errorMessage) {
@@ -388,7 +533,18 @@ const OpportunitiesPage = () => {
   };
 
   const handleSelectOpportunity = (item: IOpportunity) => {
-    setSelectedOpportunity(item);
+    const query = new URLSearchParams();
+
+    if (searchTerm) query.set("searchTerm", searchTerm);
+    if (clientId) query.set("clientId", clientId);
+    if (stage) query.set("stage", String(stage));
+    if (ownerId) query.set("ownerId", ownerId);
+    if (showMyOpportunities) query.set("my", "1");
+    query.set("page", String(currentPage));
+    query.set("pageSize", String(pageSize));
+
+    const queryString = query.toString();
+    router.push(`/opportunities/${item.id}${queryString ? `?${queryString}` : ""}`);
   };
 
   const handleApplyFilters = (filters: {
@@ -464,11 +620,101 @@ const OpportunitiesPage = () => {
     );
   };
 
+  const workspaceItems: WorkspaceTabItem[] = [
+    {
+      key: "overview",
+      label: "Overview",
+      content: (
+        <>
+          <div className={styles.selectedRow}>
+            <div className={styles.detailsPanel}>
+              <OpportunityDetails opportunity={opportunity || null} loading={isLoadingDetails} />
+            </div>
+            {selectedOpportunity && (
+              <OpportunityActions
+                opportunity={selectedOpportunity}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onUpdateStage={handleUpdateStage}
+                onAssign={handleAssign}
+              />
+            )}
+          </div>
+          <div className={styles.sectionSpacing}>
+            <OpportunityStageHistory
+              stageHistory={stageHistory}
+              loading={isLoadingDetails}
+              hasSelection={Boolean(selectedOpportunity)}
+            />
+          </div>
+        </>
+      ),
+    },
+    {
+      key: "activities",
+      label: "Activities",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.activities}
+          emptyText={workspaceLoading ? "Loading activities..." : "No activities for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "pricing",
+      label: "Pricing Requests",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.pricingRequests}
+          emptyText={workspaceLoading ? "Loading pricing requests..." : "No pricing requests for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "proposals",
+      label: "Proposals",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.proposals}
+          emptyText={workspaceLoading ? "Loading proposals..." : "No proposals for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "contracts",
+      label: "Contracts",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.contracts}
+          emptyText={workspaceLoading ? "Loading contracts..." : "No contracts linked to this opportunity's client"}
+        />
+      ),
+    },
+    {
+      key: "documents",
+      label: "Documents",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.documents}
+          emptyText={workspaceLoading ? "Loading documents..." : "No documents for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "notes",
+      label: "Notes",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.notes}
+          emptyText={workspaceLoading ? "Loading notes..." : "No notes for this opportunity"}
+        />
+      ),
+    },
+  ];
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        <OpportunitiesHeader onCreateClick={handleCreateClick} />
-
         <OpportunitiesFilters
           onApplyFilters={handleApplyFilters}
           onClear={handleClearFilters}
@@ -485,40 +731,14 @@ const OpportunitiesPage = () => {
           selectedOpportunityId={selectedOpportunity?.id}
           onSelectOpportunity={handleSelectOpportunity}
           onPaginationChange={handlePaginationChange}
+          headerExtra={
+            user ? (
+              <Button type="primary" onClick={handleCreateClick}>
+                Create Opportunity
+              </Button>
+            ) : null
+          }
         />
-
-        {selectedOpportunity && (
-          <div className={styles.selectedRow}>
-            <div className={styles.detailsPanel}>
-              <OpportunityDetails opportunity={opportunity || null} loading={isLoadingDetails} />
-            </div>
-            <OpportunityActions
-              opportunity={selectedOpportunity}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onUpdateStage={handleUpdateStage}
-              onAssign={handleAssign}
-            />
-          </div>
-        )}
-
-        {/* Pipeline Overview shows statistics by stage */}
-        {/* <div className={styles.insightsRow}>
-          <OpportunitiesPipeline pipeline={pipeline} loading={isLoadingDetails} />
-          <OpportunityStageHistory
-            stageHistory={stageHistory}
-            loading={isLoadingDetails}
-            hasSelection={Boolean(selectedOpportunity)}
-          />
-        </div> */}
-
-        <div className={styles.sectionSpacing}>
-          <OpportunityStageHistory
-            stageHistory={stageHistory}
-            loading={isLoadingDetails}
-            hasSelection={Boolean(selectedOpportunity)}
-          />
-        </div>
 
         <Modal
           title="Create Opportunity"

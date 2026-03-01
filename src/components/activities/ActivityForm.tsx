@@ -18,11 +18,11 @@ interface ActivityFormProps {
   loading?: boolean;
   onSubmit: (values: Partial<IActivity>) => void;
   onCancel: () => void;
-  users?: Array<{ id: string; firstName: string; lastName: string }>;
-  clients?: Array<{ id: string; name: string }>;
-  opportunities?: Array<{ id: string; title: string }>;
-  proposals?: Array<{ id: string; title: string }>;
-  contracts?: Array<{ id: string; title: string }>;
+  users?: Array<{ id: string; firstName: string; lastName: string } | { value: string; label: string }>;
+  clients?: Array<{ id: string; name: string } | { value: string; label: string }>;
+  opportunities?: Array<{ id: string; title: string } | { value: string; label: string }>;
+  proposals?: Array<{ id: string; title: string } | { value: string; label: string }>;
+  contracts?: Array<{ id: string; title: string } | { value: string; label: string }>;
 }
 
 const ACTIVITY_TYPE_OPTIONS = [
@@ -140,21 +140,43 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     form.setFieldValue("relatedToId", undefined);
   };
 
-  const userOptions = users.map((user) => ({
-    value: user.id,
-    label: `${user.firstName} ${user.lastName}`,
-  }));
+  const userOptions = (users || []).map((user) => {
+    if ('value' in user) {
+      return { value: user.value, label: user.label };
+    }
+    return { value: user.id, label: `${user.firstName} ${user.lastName}` };
+  });
 
   const getRelatedToOptions = () => {
     switch (resolvedRelatedToType) {
       case RelatedToType.Client:
-        return clients.map((c) => ({ value: c.id, label: c.name }));
+        return (clients || []).map((c) => {
+          if ('value' in c) {
+            return { value: c.value, label: c.label };
+          }
+          return { value: c.id, label: c.name };
+        });
       case RelatedToType.Opportunity:
-        return opportunities.map((o) => ({ value: o.id, label: o.title }));
+        return (opportunities || []).map((o) => {
+          if ('value' in o) {
+            return { value: o.value, label: o.label };
+          }
+          return { value: o.id, label: o.title };
+        });
       case RelatedToType.Proposal:
-        return proposals.map((p) => ({ value: p.id, label: p.title }));
+        return (proposals || []).map((p) => {
+          if ('value' in p) {
+            return { value: p.value, label: p.label };
+          }
+          return { value: p.id, label: p.title };
+        });
       case RelatedToType.Contract:
-        return contracts.map((c) => ({ value: c.id, label: c.title }));
+        return (contracts || []).map((c) => {
+          if ('value' in c) {
+            return { value: c.value, label: c.label };
+          }
+          return { value: c.id, label: c.title };
+        });
       default:
         return [];
     }

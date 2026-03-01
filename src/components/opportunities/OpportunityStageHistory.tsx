@@ -57,7 +57,16 @@ export const OpportunityStageHistory = ({
       title: "Reason",
       dataIndex: "notes",
       key: "notes",
-      render: (reason) => reason || "—",
+      render: (notes, record) => {
+        const parts = [];
+        if (record.toStage === 6 && record.lossReason) {
+          parts.push(`Loss Reason: ${record.lossReason}`);
+        }
+        if (notes) {
+          parts.push(notes);
+        }
+        return parts.length > 0 ? parts.join(" | ") : "—";
+      },
     },
     {
       title: "Changed At",

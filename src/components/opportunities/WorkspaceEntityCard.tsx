@@ -1,0 +1,910 @@
+"use client";
+
+import { useState } from "react";
+import { Card, Tag, Space, Typography, Empty, Button, Popconfirm } from "antd";
+import {
+  CalendarOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  BookOutlined,
+  DollarOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CheckOutlined,
+  UserAddOutlined,
+  SendOutlined,
+  CloseOutlined,
+  DownOutlined,
+  UpOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  MinusOutlined,
+} from "@ant-design/icons";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
+import { useRbac } from "@/hooks/useRbac";
+
+const { Text } = Typography;
+
+// Status mappings
+const ACTIVITY_STATUS_COLORS: Record<number, string> = {
+  1: "processing",
+  2: "success",
+  3: "default",
+};
+
+const ACTIVITY_TYPE_COLORS: Record<number, string> = {
+  1: "blue",
+  2: "green",
+  3: "cyan",
+  4: "orange",
+  5: "purple",
+  6: "default",
+};
+
+const PRIORITY_COLORS: Record<number, string> = {
+  1: "default",
+  2: "blue",
+  3: "orange",
+  4: "red",
+};
+
+const PROPOSAL_STATUS_COLORS: Record<number, string> = {
+  1: "default",
+  2: "processing",
+  3: "error",
+  4: "success",
+};
+
+const PRICING_STATUS_COLORS: Record<number, string> = {
+  1: "warning",
+  2: "processing",
+  3: "success",
+};
+
+const CONTRACT_STATUS_COLORS: Record<number, string> = {
+  1: "default",
+  2: "success",
+  3: "warning",
+  4: "processing",
+  5: "error",
+};
+
+const DOCUMENT_CATEGORY_COLORS: Record<number, string> = {
+  1: "blue",
+  2: "green",
+  3: "orange",
+  4: "purple",
+  5: "default",
+};
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+
+interface WorkspaceEntityCardProps {
+  entity: WorkspaceEntity;
+  type: "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
+  onClick?: (entity: WorkspaceEntity) => void;
+  onEdit?: (entity: WorkspaceEntity) => void;
+  onAssign?: (entity: WorkspaceEntity) => void;
+  onComplete?: (entity: WorkspaceEntity) => void;
+  onActivate?: (entity: WorkspaceEntity) => void;
+  onCancel?: (entity: WorkspaceEntity) => void;
+  onSubmit?: (entity: WorkspaceEntity) => void;
+  onApprove?: (entity: WorkspaceEntity) => void;
+  onReject?: (entity: WorkspaceEntity) => void;
+  onDelete?: (entity: WorkspaceEntity) => void;
+  onViewDocuments?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+  onViewNotes?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+}
+
+export const WorkspaceEntityCard = ({
+  entity,
+  type,
+  onClick,
+  onEdit,
+  onAssign,
+  onComplete,
+  onActivate,
+  onCancel,
+  onSubmit,
+  onApprove,
+  onReject,
+  onDelete,
+  onViewDocuments,
+  onViewNotes,
+}: WorkspaceEntityCardProps) => {
+  const { can } = useRbac();
+  const [expanded, setExpanded] = useState(false);
+
+  const renderActions = () => {
+    const editPermissionMap: Record<WorkspaceEntityCardProps["type"], string | null> = {
+      activity: "update:activity",
+      proposal: "update:proposal",
+      pricingRequest: "update:pricing-request",
+      contract: "update:contract",
+      document: null,
+      note: "update:note",
+    };
+
+    const deletePermissionMap: Record<WorkspaceEntityCardProps["type"], string | null> = {
+      activity: "delete:activity",
+      proposal: "delete:proposal",
+      pricingRequest: null,
+      contract: "delete:contract",
+      document: "delete:document",
+      note: "delete:note",
+    };
+
+    const canEdit = Boolean(onEdit && editPermissionMap[type] && can(editPermissionMap[type]!));
+    const canDelete = Boolean(onDelete && deletePermissionMap[type] && can(deletePermissionMap[type]!));
+
+    if (!canEdit && !canDelete) return null;
+
+    return (
+      <Space size="small">
+        {canEdit && (
+          <Button
+            size="small"
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.(entity);
+            }}
+          />
+        )}
+        {canDelete && (
+          <Popconfirm
+            title="Are you sure you want to delete this item?"
+            onConfirm={(e) => {
+              e?.stopPropagation();
+              onDelete?.(entity);
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              size="small"
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </Popconfirm>
+        )}
+      </Space>
+    );
+  };
+  const renderActivityCard = (activity: IActivity) => (
+    <Card
+      size="small"
+      hoverable={!!onClick}
+      onClick={() => onClick?.(activity)}
+      style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+    >
+      <Space orientation="vertical" style={{ width: "100%" }} size="small">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <Text strong>{activity.subject}</Text>
+              {renderActions()}
+            </div>
+            <Space size="small" wrap>
+              {activity.typeName && (
+                <Tag color={ACTIVITY_TYPE_COLORS[activity.type]}>{activity.typeName}</Tag>
+              )}
+              {activity.statusName && (
+                <Tag color={ACTIVITY_STATUS_COLORS[activity.status]}>{activity.statusName}</Tag>
+              )}
+            </Space>
+          </div>
+        </div>
+
+        {activity.description && (
+          <Text type="secondary" ellipsis>
+            {activity.description}
+          </Text>
+        )}
+
+        <Space separator="|" size="small" wrap>
+          {activity.priorityName && (
+            <Space size={4}>
+              <Tag color={PRIORITY_COLORS[activity.priority]} style={{ margin: 0 }}>
+                {activity.priorityName}
+              </Tag>
+            </Space>
+          )}
+          {activity.assignedToName && (
+            <Space size={4}>
+              <UserOutlined />
+              <Text type="secondary">{activity.assignedToName}</Text>
+            </Space>
+          )}
+          {activity.dueDate && (
+            <Space size={4}>
+              <CalendarOutlined />
+              <Text type="secondary">{new Date(activity.dueDate).toLocaleDateString()}</Text>
+            </Space>
+          )}
+          {activity.duration && (
+            <Space size={4}>
+              <ClockCircleOutlined />
+              <Text type="secondary">{activity.duration} mins</Text>
+            </Space>
+          )}
+        </Space>
+      </Space>
+    </Card>
+  );
+
+  const renderProposalCard = (proposal: IProposal) => {
+    const statusNames: Record<number, string> = {
+      1: "Draft",
+      2: "Submitted",
+      3: "Rejected",
+      4: "Approved",
+    };
+    const proposalStatus = proposal.status ?? 1;
+    const isDraft = proposalStatus === 1;
+    const isSubmitted = proposalStatus === 2;
+    const isRejected = proposalStatus === 3;
+
+    const canEditProposal = Boolean(onEdit && can("update:proposal") && isDraft);
+    const canSubmitProposal = Boolean(onSubmit && can("update:proposal") && isDraft);
+    const canApproveProposal = Boolean(onApprove && can("approve:proposal") && isSubmitted);
+    const canRejectProposal = Boolean(onReject && can("reject:proposal") && isSubmitted);
+    const canDeleteProposal = Boolean(onDelete && can("delete:proposal") && (isDraft || isRejected));
+    const canViewProposalDocs = Boolean(onViewDocuments && proposal.id);
+    const canViewProposalNotes = Boolean(onViewNotes && proposal.id);
+
+    return (
+      <Card
+        size="small"
+        hoverable
+        onClick={() => onClick?.(proposal)}
+        style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+      >
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Text strong>{proposal.title || "—"}</Text>
+            <Tag color={PROPOSAL_STATUS_COLORS[proposalStatus]}>{statusNames[proposalStatus]}</Tag>
+          </div>
+
+          <Space separator="|" size="small" wrap>
+            {proposal.clientName && (
+              <Space size={4}>
+                <UserOutlined />
+                <Text type="secondary">{proposal.clientName}</Text>
+              </Space>
+            )}
+            <Space size={4}>
+              <FileTextOutlined />
+              <Text type="secondary">{proposal.opportunityTitle || "—"}</Text>
+            </Space>
+            {proposal.totalAmount !== undefined && (
+              <Space size={4}>
+                <DollarOutlined />
+                <Text type="secondary">
+                  {proposal.currency || "R"} {proposal.totalAmount.toLocaleString()}
+                </Text>
+              </Space>
+            )}
+            {proposal.createdAt && (
+              <Space size={4}>
+                <CalendarOutlined />
+                <Text type="secondary">{new Date(proposal.createdAt).toLocaleDateString()}</Text>
+              </Space>
+            )}
+          </Space>
+
+          <Space size="small" wrap>
+            {canEditProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.(proposal);
+                }}
+              >
+                Edit
+              </Button>
+            )}
+            {canSubmitProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<SendOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSubmit?.(proposal);
+                }}
+              >
+                Submit
+              </Button>
+            )}
+            {canApproveProposal && (
+              <Button
+                size="small"
+                type="text"
+                icon={<CheckOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onApprove?.(proposal);
+                }}
+              >
+                Approve
+              </Button>
+            )}
+            {canRejectProposal && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<CloseOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject?.(proposal);
+                }}
+              >
+                Reject
+              </Button>
+            )}
+            {canDeleteProposal && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(proposal);
+                }}
+              >
+                Delete
+              </Button>
+            )}
+            {canViewProposalDocs && (
+              <Button
+                size="small"
+                type="text"
+                icon={<BookOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDocuments?.("proposal", proposal);
+                }}
+              >
+                Docs
+              </Button>
+            )}
+            {canViewProposalNotes && (
+              <Button
+                size="small"
+                type="text"
+                icon={<FileTextOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewNotes?.("proposal", proposal);
+                }}
+              >
+                Notes
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="text"
+              icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded((prev) => !prev);
+              }}
+            />
+          </Space>
+
+          {expanded && (
+            <Space orientation="vertical" style={{ width: "100%" }} size="small">
+              {proposal.description && <Text type="secondary">{proposal.description}</Text>}
+              <div>
+                <Text strong>Line Items</Text>
+                {proposal.lineItems && proposal.lineItems.length > 0 ? (
+                  <Space orientation="vertical" style={{ width: "100%", marginTop: 8 }} size={8}>
+                    {proposal.lineItems.map((item) => (
+                      <div key={item.id} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: 8 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                          <Text>{item.productServiceName || item.description || "Item"}</Text>
+                          <Text>
+                            {proposal.currency || "R"} {(item.total ?? item.totalPrice ?? 0).toLocaleString()}
+                          </Text>
+                        </div>
+                        <Space size="small" wrap>
+                          <Text type="secondary">Qty: {item.quantity ?? 0}</Text>
+                          <Text type="secondary">Unit: {proposal.currency || "R"} {(item.unitPrice ?? 0).toLocaleString()}</Text>
+                          <Text type="secondary">Discount: {item.discount ?? 0}%</Text>
+                          <Text type="secondary">Tax: {item.taxRate ?? 0}%</Text>
+                        </Space>
+                      </div>
+                    ))}
+                  </Space>
+                ) : (
+                  <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
+                    No line items
+                  </Text>
+                )}
+              </div>
+            </Space>
+          )}
+        </Space>
+      </Card>
+    );
+  };
+
+  const renderPricingRequestCard = (pricingRequest: IPricingRequest) => {
+    const statusNames: Record<number, string> = { 1: "Pending", 2: "In Progress", 3: "Completed" };
+    const priorityNames: Record<number, string> = { 1: "Low", 2: "Medium", 3: "High", 4: "Urgent" };
+    const isCompleted = pricingRequest.status === 3;
+    const canEditPricing = Boolean(onEdit && can("update:pricing-request") && !isCompleted);
+    const canAssignPricing = Boolean(onAssign && can("assign:pricing-request") && !isCompleted);
+    const canCompletePricing = Boolean(onComplete && can("complete:pricing-request") && !isCompleted);
+    const canDeletePricing = false;
+
+    return (
+      <Card
+        size="small"
+        hoverable
+        onClick={() => onClick?.(pricingRequest)}
+        style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+      >
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Text strong>{pricingRequest.opportunityTitle || "—"}</Text>
+            <Space size="small">
+              {pricingRequest.status && (
+                <Tag color={PRICING_STATUS_COLORS[pricingRequest.status]}>
+                  {statusNames[pricingRequest.status]}
+                </Tag>
+              )}
+              {pricingRequest.priority && (
+                <Tag color={PRIORITY_COLORS[pricingRequest.priority]} style={{ margin: 0 }}>
+                  {priorityNames[pricingRequest.priority]}
+                </Tag>
+              )}
+            </Space>
+          </div>
+
+          <Space separator="|" size="small" wrap>
+            <Space size={4}>
+              <UserOutlined />
+              <Text type="secondary">{pricingRequest.assignedToName || "Unassigned"}</Text>
+            </Space>
+            <Space size={4}>
+              <CalendarOutlined />
+              <Text type="secondary">
+                {pricingRequest.requiredByDate
+                  ? new Date(pricingRequest.requiredByDate).toLocaleDateString()
+                  : "—"}
+              </Text>
+            </Space>
+          </Space>
+
+          {(canEditPricing || canAssignPricing || canCompletePricing || canDeletePricing || pricingRequest.description) && (
+            <Space size="small" wrap>
+              {canEditPricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(pricingRequest);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+              {canAssignPricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<UserAddOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAssign?.(pricingRequest);
+                  }}
+                >
+                  Assign
+                </Button>
+              )}
+              {canCompletePricing && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<CheckOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onComplete?.(pricingRequest);
+                  }}
+                >
+                  Complete
+                </Button>
+              )}
+              {pricingRequest.description && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpanded((prev) => !prev);
+                  }}
+                />
+              )}
+            </Space>
+          )}
+
+          {expanded && pricingRequest.description && (
+            <Text type="secondary">{pricingRequest.description}</Text>
+          )}
+        </Space>
+      </Card>
+    );
+  };
+
+  const renderContractCard = (contract: IContract) => {
+    const statusNames: Record<number, string> = {
+      1: "Draft",
+      2: "Active",
+      3: "Expired",
+      4: "Renewed",
+      5: "Cancelled",
+    };
+
+    const status = contract.status ?? 1;
+    const isDraft = status === 1;
+    const isActive = status === 2;
+    const canEditContract = Boolean(onEdit && can("update:contract") && (isDraft || isActive));
+    const canActivateContract = Boolean(onActivate && can("activate:contract") && isDraft);
+    const canCancelContract = Boolean(onCancel && can("update:contract") && isActive);
+    const canDeleteContract = Boolean(onDelete && can("delete:contract") && isDraft);
+    const canViewContractDocs = Boolean(onViewDocuments && contract.id);
+    const canViewContractNotes = Boolean(onViewNotes && contract.id);
+
+    return (
+      <Card
+        size="small"
+        hoverable
+        onClick={() => onClick?.(contract)}
+        style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+      >
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Text strong>{contract.contractNumber || "—"}</Text>
+            <Tag color={CONTRACT_STATUS_COLORS[status]}>{statusNames[status] || "—"}</Tag>
+          </div>
+
+          <Text>{contract.title || "—"}</Text>
+
+          <Space size={4}>
+            <UserOutlined />
+            <Text type="secondary">{contract.clientName || "—"}</Text>
+          </Space>
+
+          <Space separator="|" size="small" wrap>
+            <Space size={4}>
+              <CalendarOutlined />
+              <Text type="secondary">
+                {contract.startDate ? new Date(contract.startDate).toLocaleDateString() : "—"}
+              </Text>
+            </Space>
+            <Space size={4}>
+              <CalendarOutlined />
+              {contract.isExpiringSoon ? (
+                <Tag color="orange" style={{ margin: 0 }}>
+                  {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "—"}
+                </Tag>
+              ) : (
+                <Text type="secondary">
+                  {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "—"}
+                </Text>
+              )}
+            </Space>
+            <Space size={4}>
+              <DollarOutlined />
+              <Text type="secondary">
+                {contract.contractValue != null
+                  ? `${contract.currency || "R"} ${contract.contractValue.toLocaleString()}`
+                  : "—"}
+              </Text>
+            </Space>
+          </Space>
+
+          <Space size="small" wrap>
+              {canEditContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(contract);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+              {canActivateContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<CheckOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onActivate?.(contract);
+                  }}
+                >
+                  Activate
+                </Button>
+              )}
+              {canCancelContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  danger
+                  icon={<CloseOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCancel?.(contract);
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+              {canDeleteContract && (
+                <Button
+                  size="small"
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(contract);
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
+              {canViewContractDocs && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<BookOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewDocuments?.("contract", contract);
+                  }}
+                >
+                  Docs
+                </Button>
+              )}
+              {canViewContractNotes && (
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<FileTextOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewNotes?.("contract", contract);
+                  }}
+                >
+                  Notes
+                </Button>
+              )}
+              <Button
+                size="small"
+                type="text"
+                icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((prev) => !prev);
+                }}
+              />
+          </Space>
+
+          {expanded && (
+            <Space direction="vertical" size={4} style={{ width: "100%" }}>
+              <Text type="secondary">
+                <Text strong>Description: </Text>
+                {contract.description || "—"}
+              </Text>
+              <Text type="secondary">
+                <Text strong>Terms & Conditions: </Text>
+                {contract.terms || "—"}
+              </Text>
+            </Space>
+          )}
+
+          {contract.isExpiringSoon && (
+            <Tag color="warning" icon={<ClockCircleOutlined />}>
+              Expiring Soon
+            </Tag>
+          )}
+        </Space>
+      </Card>
+    );
+  };
+
+  const renderDocumentCard = (document: IDocument) => {
+    const categoryNames: Record<number, string> = {
+      1: "Proposal",
+      2: "Contract",
+      3: "Presentation",
+      4: "RFP",
+      5: "Other",
+    };
+
+    return (
+      <Card
+        size="small"
+        hoverable
+        onClick={() => onClick?.(document)}
+        style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+      >
+        <Space orientation="vertical" style={{ width: "100%" }} size="small">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Text strong>
+              <FileTextOutlined /> {document.originalFileName || document.fileName}
+            </Text>
+            {document.category && (
+              <Tag color={DOCUMENT_CATEGORY_COLORS[document.category]}>
+                {categoryNames[document.category]}
+              </Tag>
+            )}
+          </div>
+
+          {document.description && (
+            <Text type="secondary" ellipsis>
+              {document.description}
+            </Text>
+          )}
+
+          <Space split="|" size="small" wrap>
+            {document.uploadedByName && (
+              <Space size={4}>
+                <UserOutlined />
+                <Text type="secondary">{document.uploadedByName}</Text>
+              </Space>
+            )}
+            {document.fileSize && (
+              <Text type="secondary">{(document.fileSize / 1024).toFixed(2)} KB</Text>
+            )}
+            {document.uploadedAt && (
+              <Text type="secondary">{new Date(document.uploadedAt).toLocaleDateString()}</Text>
+            )}
+          </Space>
+        </Space>
+      </Card>
+    );
+  };
+
+  const renderNoteCard = (note: INote) => (
+    <Card
+      size="small"
+      hoverable
+      onClick={() => onClick?.(note)}
+      style={{ marginBottom: 8, cursor: onClick ? "pointer" : "default" }}
+    >
+      <Space orientation="vertical" style={{ width: "100%" }} size="small">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Text type="secondary">
+            <UserOutlined /> {note.createdByName || "Unknown"}
+          </Text>
+          {note.isPrivate && <Tag color="red">Private</Tag>}
+        </div>
+
+        <Text>{note.content}</Text>
+
+        {note.createdAt && (
+          <Text type="secondary" style={{ fontSize: "12px" }}>
+            <ClockCircleOutlined /> {new Date(note.createdAt).toLocaleString()}
+          </Text>
+        )}
+      </Space>
+    </Card>
+  );
+
+  switch (type) {
+    case "activity":
+      return renderActivityCard(entity as IActivity);
+    case "proposal":
+      return renderProposalCard(entity as IProposal);
+    case "pricingRequest":
+      return renderPricingRequestCard(entity as IPricingRequest);
+    case "contract":
+      return renderContractCard(entity as IContract);
+    case "document":
+      return renderDocumentCard(entity as IDocument);
+    case "note":
+      return renderNoteCard(entity as INote);
+    default:
+      return null;
+  }
+};
+
+interface WorkspaceEntityListProps {
+  entities: WorkspaceEntity[];
+  type: "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
+  loading?: boolean;
+  emptyText?: string;
+  onEntityClick?: (entity: WorkspaceEntity) => void;
+  onEntityEdit?: (entity: WorkspaceEntity) => void;
+  onEntityAssign?: (entity: WorkspaceEntity) => void;
+  onEntityComplete?: (entity: WorkspaceEntity) => void;
+  onEntityActivate?: (entity: WorkspaceEntity) => void;
+  onEntityCancel?: (entity: WorkspaceEntity) => void;
+  onEntitySubmit?: (entity: WorkspaceEntity) => void;
+  onEntityApprove?: (entity: WorkspaceEntity) => void;
+  onEntityReject?: (entity: WorkspaceEntity) => void;
+  onEntityDelete?: (entity: WorkspaceEntity) => void;
+  onEntityViewDocuments?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+  onEntityViewNotes?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+}
+
+export const WorkspaceEntityList = ({
+  entities,
+  type,
+  loading = false,
+  emptyText = "No items found",
+  onEntityClick,
+  onEntityEdit,
+  onEntityAssign,
+  onEntityComplete,
+  onEntityActivate,
+  onEntityCancel,
+  onEntitySubmit,
+  onEntityApprove,
+  onEntityReject,
+  onEntityDelete,
+  onEntityViewDocuments,
+  onEntityViewNotes,
+}: WorkspaceEntityListProps) => {
+  if (loading) {
+    return <Card loading style={{ marginTop: 16 }} />;
+  }
+
+  if (!entities || entities.length === 0) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <Empty description={emptyText} />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      {entities.map((entity) => (
+        <WorkspaceEntityCard
+          key={entity.id}
+          entity={entity}
+          type={type}
+          onClick={onEntityClick}
+          onEdit={onEntityEdit}
+          onAssign={onEntityAssign}
+          onComplete={onEntityComplete}
+          onActivate={onEntityActivate}
+          onCancel={onEntityCancel}
+          onSubmit={onEntitySubmit}
+          onApprove={onEntityApprove}
+          onReject={onEntityReject}
+          onDelete={onEntityDelete}
+          onViewDocuments={onEntityViewDocuments}
+          onViewNotes={onEntityViewNotes}
+        />
+      ))}
+    </div>
+  );
+};

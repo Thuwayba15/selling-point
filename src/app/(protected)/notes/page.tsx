@@ -67,7 +67,7 @@ const NotesPage = () => {
 
   const [selectedNote, setSelectedNote] = useState<INote | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [filterRelatedToType, setFilterRelatedToType] = useState<RelatedToType | undefined>(
     undefined,
   );
@@ -441,7 +441,7 @@ const NotesPage = () => {
 
       <Card title="Selected Note">
         {selectedNote ? (
-          <Space direction="vertical">
+          <Space orientation="vertical">
             <div>ID: {selectedNote.id}</div>
             <div>
               Related To Type: {relatedTypeLabelMap[selectedNote.relatedToType] ||

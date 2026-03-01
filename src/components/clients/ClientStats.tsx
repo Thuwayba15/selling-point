@@ -17,7 +17,7 @@ export const ClientStatsComponent: React.FC<ClientStatsProps> = ({ stats, loadin
   }
 
   return (
-    <Card title="Statistics" className={styles.statsCard} loading={loading}>
+    <Card title="Statistics" loading={loading}>
       <Row gutter={[16, 16]}>
         <Col xs={24}>
           <Statistic

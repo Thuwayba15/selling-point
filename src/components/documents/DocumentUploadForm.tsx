@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Form, Input, Modal, Select, Upload } from "antd";
+import type { FormInstance, UploadFile } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import type { UploadFile } from "antd";
 import type { DocumentCategory, RelatedToType } from "@/providers/documents/context";
 
 const { Dragger } = Upload;
@@ -23,12 +23,20 @@ const RELATED_TO_OPTIONS = [
   { value: 4, label: "Contract" },
 ];
 
+interface DocumentFormValues {
+  category: DocumentCategory;
+  relatedToType: RelatedToType;
+  relatedToId: string;
+  description?: string;
+}
+
 interface DocumentUploadFormProps {
   open: boolean;
   onCancel: () => void;
-  onSubmit: (values: any, file: File) => Promise<void>;
-  form: any;
+  onSubmit: (values: DocumentFormValues, file: File) => Promise<void>;
+  form: FormInstance<DocumentFormValues>;
   loading?: boolean;
+  zIndex?: number;
   relatedToType?: RelatedToType;
   clientOptions?: Array<{ value: string; label: string }>;
   opportunityOptions?: Array<{ value: string; label: string }>;
@@ -42,6 +50,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
   onSubmit,
   form,
   loading = false,
+  zIndex,
   relatedToType,
   clientOptions = [],
   opportunityOptions = [],
@@ -105,6 +114,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
       onOk={handleSubmit}
       okText="Upload"
       confirmLoading={loading}
+      zIndex={zIndex}
       width={600}
     >
       <Form form={form} layout="vertical">
@@ -146,17 +156,19 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
           <Select placeholder="Select category" options={CATEGORY_OPTIONS} />
         </Form.Item>
 
-        <Form.Item
-          label="Related To Type"
-          name="relatedToType"
-          rules={[{ required: true, message: "Please select related to type" }]}
-        >
-          <Select
-            placeholder="Select type"
-            options={RELATED_TO_OPTIONS}
-            onChange={() => form.setFieldValue("relatedToId", undefined)}
-          />
-        </Form.Item>
+        {!relatedToType && (
+          <Form.Item
+            label="Related To Type"
+            name="relatedToType"
+            rules={[{ required: true, message: "Please select related to type" }]}
+          >
+            <Select
+              placeholder="Select type"
+              options={RELATED_TO_OPTIONS}
+              onChange={() => form.setFieldValue("relatedToId", undefined)}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item
           label="Related To"

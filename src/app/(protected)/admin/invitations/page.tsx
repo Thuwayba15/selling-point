@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Modal, Form, Input, Select, Divider, App, Card, Table, Spin, Space } from "antd";
+import { Button, Modal, Form, Input, Select, Divider, App, Card, Table, Spin } from "antd";
 import { useAuthState } from "@/providers/auth";
 import { useUsersActions, useUsersState } from "@/providers/users";
+import type { IUser } from "@/providers/users/context";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import type { UserRole } from "@/providers/auth";
 import type { IInvitation } from "@/providers/invitations";
@@ -96,9 +97,11 @@ const InvitationsPage = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Space direction="vertical" size="large" className={styles.verticalSpace}>
+      <div className={styles.mainContent}>
+
         {/* Generate Invitations Card */}
         <Card
+          className={styles.cardSection}
           title="Send Organization Invitations"
           extra={
             <Button type="primary" onClick={handleModalOpen}>
@@ -110,6 +113,46 @@ const InvitationsPage = () => {
             Use this section to invite new members to your organization. They will receive an email with a secure registration link.
           </p>
         </Card>
+
+        {/* Organization Members Card */}
+        <Card 
+          className={styles.tableCard}
+          title="Organization Members"
+          loading={isLoadingUsers}
+        >
+          {isLoadingUsers ? (
+            <Spin />
+          ) : users && users.length > 0 ? (
+            <Table
+              columns={[
+                {
+                  title: "Name",
+                  dataIndex: "fullName",
+                  key: "fullName",
+                  render: (_, record: IUser) => `${record.firstName || ""} ${record.lastName || ""}`.trim(),
+                },
+                {
+                  title: "Email",
+                  dataIndex: "email",
+                  key: "email",
+                },
+                {
+                  title: "Role",
+                  dataIndex: "roles",
+                  key: "roles",
+                  render: (roles: string[]) => (roles && roles.length > 0 ? roles.join(", ") : "-"),
+                },
+              ]}
+              dataSource={users}
+              rowKey="id"
+              pagination={{ pageSize: 10 }}
+              scroll={{ x: "max-content" }}
+            />
+          ) : (
+            <p className={styles.noMembers}>No members found in this organization.</p>
+          )}
+        </Card>
+      </div>
 
       {/* Generate Invitation Modal */}
       <Modal
@@ -215,44 +258,6 @@ const InvitationsPage = () => {
           </div>
         </div>
       </Modal>
-
-      {/* Organization Users Card */}
-      <Card 
-        title="Organization Members"
-        loading={isLoadingUsers}
-      >
-        {isLoadingUsers ? (
-          <Spin />
-        ) : users && users.length > 0 ? (
-          <Table
-            columns={[
-              {
-                title: "Name",
-                dataIndex: "fullName",
-                key: "fullName",
-                render: (_, record: any) => `${record.firstName || ""} ${record.lastName || ""}`.trim(),
-              },
-              {
-                title: "Email",
-                dataIndex: "email",
-                key: "email",
-              },
-              {
-                title: "Role",
-                dataIndex: "roles",
-                key: "roles",
-                render: (roles: string[]) => (roles && roles.length > 0 ? roles.join(", ") : "-"),
-              },
-            ]}
-            dataSource={users}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-          />
-        ) : (
-          <p className={styles.noMembers}>No members found in this organization.</p>
-        )}
-      </Card>
-      </Space>
     </div>
   );
 };

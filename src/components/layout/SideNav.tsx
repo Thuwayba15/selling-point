@@ -6,10 +6,8 @@ import { Menu } from "antd";
 import {
   HomeOutlined,
   ProjectOutlined,
-  FileTextOutlined,
   TeamOutlined,
   CalendarOutlined,
-  FolderOutlined,
   BarChartOutlined,
   UnlockOutlined,
 } from "@ant-design/icons";
@@ -38,11 +36,6 @@ export const SideNav = () => {
       label: <Link href={ROUTES.clients}>Clients</Link>,
     },
     {
-      key: ROUTES.contacts,
-      icon: <TeamOutlined />,
-      label: <Link href={ROUTES.contacts}>Contacts</Link>,
-    },
-    {
       key: ROUTES.opportunities,
       icon: <ProjectOutlined />,
       label: <Link href={ROUTES.opportunities}>Opportunities</Link>,
@@ -51,31 +44,6 @@ export const SideNav = () => {
       key: ROUTES.activities,
       icon: <CalendarOutlined />,
       label: <Link href={ROUTES.activities}>Activities</Link>,
-    },
-    {
-      key: ROUTES.pricingRequests,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.pricingRequests}>Pricing Requests</Link>,
-    },
-    {
-      key: ROUTES.proposals,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.proposals}>Proposals</Link>,
-    },
-    {
-      key: ROUTES.contracts,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.contracts}>Contracts</Link>,
-    },
-    {
-      key: ROUTES.notes,
-      icon: <FileTextOutlined />,
-      label: <Link href={ROUTES.notes}>Notes</Link>,
-    },
-    {
-      key: ROUTES.documents,
-      icon: <FolderOutlined />,
-      label: <Link href={ROUTES.documents}>Documents</Link>,
     },
     ...(can("view:reports")
       ? [

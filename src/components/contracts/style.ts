@@ -133,6 +133,35 @@ export const useStyles = createStyles(({ token, css }) => ({
     align-items: flex-end;
   `,
 
+  workspaceFiltersBar: css`
+    margin-left: auto;
+  `,
+
+  workspaceFiltersForm: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+    flex-wrap: wrap;
+  `,
+
+  workspaceFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFilterSelect: css`
+    width: 140px;
+  `,
+
+  workspaceFilterActionsItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFiltersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+  `,
+
   formActions: css`
     width: 100%;
     margin-top: ${token.marginLG}px;

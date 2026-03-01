@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button, Card, Col, Form, Row, Select, Space } from "antd";
+import type { FormInstance } from "antd";
 import type { DocumentCategory, RelatedToType } from "@/providers/documents/context";
 
 const CATEGORY_OPTIONS = [
@@ -20,7 +21,7 @@ const RELATED_TO_OPTIONS = [
 ];
 
 interface DocumentsFiltersProps {
-  form: any;
+  form: FormInstance;
   onApplyFilters: () => void;
   onClearFilters: () => void;
   loading?: boolean;

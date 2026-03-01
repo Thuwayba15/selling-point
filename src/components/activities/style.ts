@@ -1,4 +1,5 @@
 import { createStyles } from "antd-style";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ token, css }) => ({
   pageContainer: css`
@@ -80,9 +81,53 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   tableCard: css`
-    border-radius: ${token.borderRadiusLG}px;
-    box-shadow: ${token.boxShadowTertiary};
-    overflow: hidden;
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.light};
+
+    :global(.ant-card-head) {
+      background-color: ${colors.secondary};
+    }
+
+    :global(.ant-card-body) {
+      background-color: ${colors.bgLayout};
+    }
+
+    :global(.ant-table),
+    :global(.ant-table-container),
+    :global(.ant-table-content),
+    :global(.ant-table-cell),
+    :global(.ant-table-thead > tr > th),
+    :global(.ant-table-tbody > tr > td) {
+      background-color: ${colors.bgLayout};
+    }
+  `,
+
+  inlineFiltersBar: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.light};
+    padding: ${token.padding}px;
+    border-radius: ${token.borderRadius}px;
+  `,
+
+  inlineFiltersForm: css`
+    display: flex;
+    gap: ${token.margin}px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: ${token.marginSM}px;
+    }
+  `,
+
+  inlineFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  inlineFilterActionsItem: css`
+    margin-bottom: 0;
+    margin-left: auto;
   `,
 
   tableRow: css`
@@ -99,8 +144,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   detailsCard: css`
-    border-radius: ${token.borderRadiusLG}px;
-    box-shadow: ${token.boxShadowTertiary};
     margin-bottom: ${token.marginLG}px;
   `,
 
@@ -137,8 +180,6 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   actionsCard: css`
-    border-radius: ${token.borderRadiusLG}px;
-    box-shadow: ${token.boxShadowTertiary};
     margin-bottom: ${token.marginLG}px;
   `,
 
@@ -151,28 +192,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     text-align: center;
     padding: ${token.paddingLG}px;
     color: ${token.colorTextSecondary};
-  `,
-
-  layoutGrid: css`
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: ${token.marginLG}px;
-
-    @media (max-width: 1200px) {
-      grid-template-columns: 1fr;
-    }
-  `,
-
-  leftColumn: css`
-    display: flex;
-    flex-direction: column;
-    gap: ${token.marginLG}px;
-  `,
-
-  rightColumn: css`
-    display: flex;
-    flex-direction: column;
-    gap: ${token.marginLG}px;
   `,
 
   tabsContainer: css`

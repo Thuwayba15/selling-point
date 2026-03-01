@@ -32,6 +32,7 @@ export interface IDocument {
   relatedToId: string;
   relatedToName?: string;
   description?: string;
+  filePath?: string;
   uploadedById?: string;
   uploadedByName?: string;
   uploadedAt?: string;

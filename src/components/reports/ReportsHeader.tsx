@@ -1,10 +1,7 @@
 "use client";
 
 import React from "react";
-import { Typography } from "antd";
-import { reportsHeaderStyle } from "./style";
-
-const { Title } = Typography;
+import { useStyles } from "./style";
 
 interface ReportsHeaderProps {
   title: string;
@@ -12,10 +9,14 @@ interface ReportsHeaderProps {
 }
 
 export const ReportsHeader: React.FC<ReportsHeaderProps> = ({ title, subtitle }) => {
+  const { styles } = useStyles();
+
   return (
-    <div style={reportsHeaderStyle}>
-      <Title level={2}>{title}</Title>
-      {subtitle && <Typography.Text type="secondary">{subtitle}</Typography.Text>}
+    <div className={styles.header}>
+      <div className={styles.headerText}>
+        <h1 className={styles.title}>{title}</h1>
+        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+      </div>
     </div>
   );
 };

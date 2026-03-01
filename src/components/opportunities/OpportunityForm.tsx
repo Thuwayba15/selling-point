@@ -13,8 +13,8 @@ interface OpportunityFormProps {
   loading?: boolean;
   onSubmit: (values: Partial<IOpportunity>) => void;
   onCancel: () => void;
-  clients?: Array<{ id: string; name: string }>;
-  contacts?: Array<{ id: string; firstName: string; lastName: string; email: string }>;
+  clients?: Array<{ id: string; name: string } | { value: string; label: string }>;
+  contacts?: Array<{ id: string; firstName: string; lastName: string; email: string } | { value: string; label: string }>;
   onClientChange?: (clientId: string | undefined) => void;
 }
 
@@ -113,10 +113,12 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={clients.map((client) => ({
-            value: client.id,
-            label: client.name,
-          }))}
+          options={clients?.map((client) => {
+            if ('value' in client) {
+              return { value: client.value, label: client.label };
+            }
+            return { value: client.id, label: client.name };
+          }) || []}
         />
       </Form.Item>
 
@@ -128,10 +130,12 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={contacts.map((contact) => ({
-            value: contact.id,
-            label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ""}`,
-          }))}
+          options={contacts?.map((contact) => {
+            if ('value' in contact) {
+              return { value: contact.value, label: contact.label };
+            }
+            return { value: contact.id, label: `${contact.firstName} ${contact.lastName}${contact.email ? ` (${contact.email})` : ""}` };
+          }) || []}
         />
       </Form.Item>
 

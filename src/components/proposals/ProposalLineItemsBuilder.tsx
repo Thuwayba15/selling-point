@@ -172,8 +172,8 @@ export const ProposalLineItemsBuilder = ({
         </Button>
       ) : (
         <div className={styles.lineItemEditor}>
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Product/Service Name
             </label>
             <Input
@@ -185,8 +185,8 @@ export const ProposalLineItemsBuilder = ({
             />
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Description
             </label>
             <Input.TextArea
@@ -197,8 +197,8 @@ export const ProposalLineItemsBuilder = ({
             />
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Quantity
             </label>
             <InputNumber
@@ -209,8 +209,8 @@ export const ProposalLineItemsBuilder = ({
             />
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Unit Price
             </label>
             <InputNumber
@@ -222,8 +222,8 @@ export const ProposalLineItemsBuilder = ({
             />
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Discount %
             </label>
             <InputNumber
@@ -235,8 +235,8 @@ export const ProposalLineItemsBuilder = ({
             />
           </div>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}>
+          <div className={styles.lineItemFieldGroup}>
+            <label className={styles.lineItemFieldLabel}>
               Tax %
             </label>
             <InputNumber

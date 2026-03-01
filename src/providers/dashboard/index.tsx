@@ -75,7 +75,16 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
         // API returns flat structure: { stage, stageName, count, totalValue, averageProbability, conversionToNext }
         // Map totalValue to value field for component compatibility
-        const transformedStages = (data?.stages || []).map((stage: any) => {
+        interface APIStageMetrics {
+          stage: number;
+          stageName: string;
+          count: number;
+          totalValue: number;
+          averageProbability?: number;
+          conversionToNext?: number;
+        }
+        
+        const transformedStages = (data?.stages || []).map((stage: APIStageMetrics) => {
           const avgDealSize = stage.count > 0 ? stage.totalValue / stage.count : 0;
           return {
             stage: stage.stage,
@@ -117,7 +126,17 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         // Extract and transform the topPerformers array
         const topPerformers = Array.isArray(data) ? data : data?.topPerformers || [];
         
-        const salesPerformanceData = topPerformers.map((performer: any) => ({
+        interface APIPerformer {
+          userId: string;
+          userName: string;
+          opportunitiesCount: number;
+          wonCount: number;
+          lostCount: number;
+          totalRevenue: number;
+          winRate: number;
+        }
+        
+        const salesPerformanceData = topPerformers.map((performer: APIPerformer) => ({
           userId: performer.userId,
           userName: performer.userName || 'Unknown',
           opportunitiesCount: performer.opportunitiesCount || 0,

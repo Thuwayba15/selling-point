@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Select, Button } from "antd";
+import { Form, Select, Button, Space } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 import {
   ActivityType,
@@ -118,7 +118,6 @@ export const ActivitiesFilters: React.FC<ActivitiesFiltersProps> = ({
       case RelatedToType.Contract:
         return contracts.map((contract) => ({ value: contract.id, label: contract.title }));
       case RelatedToType.Activity:
-        // Activities can be related to other activities, but we don't have them loaded yet
         return [];
       default:
         return [];
@@ -134,93 +133,67 @@ export const ActivitiesFilters: React.FC<ActivitiesFiltersProps> = ({
     type || status || priority || assignedToId || relatedToType || relatedToId;
 
   return (
-    <Card title="Filters" className={styles.filtersCard}>
-      <Form form={form} layout="vertical">
-        <div className={styles.filtersRow}>
-          <Form.Item label="Type" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by type"
-              value={type}
-              onChange={setType}
-              options={ACTIVITY_TYPE_OPTIONS}
-              allowClear
-            />
-          </Form.Item>
+    <div className={styles.inlineFiltersBar}>
+      <Form form={form} layout="inline" className={styles.inlineFiltersForm}>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Type"
+            value={type}
+            onChange={setType}
+            options={ACTIVITY_TYPE_OPTIONS}
+            allowClear
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-          <Form.Item label="Status" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by status"
-              value={status}
-              onChange={setStatus}
-              options={ACTIVITY_STATUS_OPTIONS}
-              allowClear
-            />
-          </Form.Item>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Status"
+            value={status}
+            onChange={setStatus}
+            options={ACTIVITY_STATUS_OPTIONS}
+            allowClear
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-          <Form.Item label="Priority" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by priority"
-              value={priority}
-              onChange={setPriority}
-              options={PRIORITY_OPTIONS}
-              allowClear
-            />
-          </Form.Item>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Priority"
+            value={priority}
+            onChange={setPriority}
+            options={PRIORITY_OPTIONS}
+            allowClear
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-          <Form.Item label="Assigned To" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by user"
-              value={assignedToId}
-              onChange={setAssignedToId}
-              options={userOptions}
-              allowClear
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-            />
-          </Form.Item>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Assigned To"
+            value={assignedToId}
+            onChange={setAssignedToId}
+            options={userOptions}
+            allowClear
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-          <Form.Item label="Related To Type" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by related type"
-              value={relatedToType}
-              onChange={handleRelatedToTypeChange}
-              options={RELATED_TO_TYPE_OPTIONS}
-              allowClear
-            />
-          </Form.Item>
-
-          {relatedToType && (
-            <Form.Item label="Related To" className={styles.filterItem}>
-              <Select
-                placeholder="Select entity"
-                value={relatedToId}
-                onChange={setRelatedToId}
-                options={getRelatedToOptions()}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          )}
-
-          <Form.Item label=" " className={styles.filterItem}>
-            <div className={styles.filtersActions}>
-              <Button type="primary" onClick={handleApply} loading={loading}>
-                Apply Filters
-              </Button>
-              {hasActiveFilters && (
-                <Button icon={<ClearOutlined />} onClick={handleClear} danger>
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.inlineFilterActionsItem}>
+          <Space size="small">
+            <Button type="primary" onClick={handleApply}>
+              Apply
+            </Button>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </Space>
+        </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 };
