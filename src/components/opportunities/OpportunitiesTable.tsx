@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Card, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { IOpportunity, IPaginationInfo } from "@/providers/opportunities/context";
@@ -12,6 +13,7 @@ interface OpportunitiesTableProps {
   selectedOpportunityId?: string;
   onSelectOpportunity: (opportunity: IOpportunity) => void;
   onPaginationChange: (page: number, pageSize: number) => void;
+  headerExtra?: ReactNode;
 }
 
 const STAGE_LABELS: Record<number, string> = {
@@ -39,6 +41,7 @@ export const OpportunitiesTable = ({
   selectedOpportunityId,
   onSelectOpportunity,
   onPaginationChange,
+  headerExtra,
 }: OpportunitiesTableProps) => {
   const { styles } = useStyles();
 
@@ -82,32 +85,38 @@ export const OpportunitiesTable = ({
   ];
 
   return (
-    <Card className={styles.tableCard} title="Opportunities List">
-      <Table
-        columns={columns}
-        dataSource={opportunities}
-        loading={loading}
-        rowKey="id"
-        scroll={{ x: "max-content" }}
-        pagination={
-          pagination
-            ? {
-                current: pagination.currentPage,
-                pageSize: pagination.pageSize,
-                total: pagination.totalCount,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} opportunities`,
-                onChange: onPaginationChange,
-              }
-            : false
-        }
-        onRow={(record) => ({
-          onClick: () => onSelectOpportunity(record),
-        })}
-        rowClassName={(record) =>
-          `${styles.tableRow} ${record.id === selectedOpportunityId ? "ant-table-row-selected" : ""}`
-        }
-      />
-    </Card>
+    <div className={styles.opportunitiesListContainer}>
+      <Card
+        className={styles.tableCard}
+        title="Opportunities List"
+        extra={headerExtra}
+      >
+        <Table
+          columns={columns}
+          dataSource={opportunities}
+          loading={loading}
+          rowKey="id"
+          scroll={{ x: "max-content" }}
+          pagination={
+            pagination
+              ? {
+                  current: pagination.currentPage,
+                  pageSize: pagination.pageSize,
+                  total: pagination.totalCount,
+                  showSizeChanger: true,
+                  showTotal: (total) => `Total ${total} opportunities`,
+                  onChange: onPaginationChange,
+                }
+              : false
+          }
+          onRow={(record) => ({
+            onClick: () => onSelectOpportunity(record),
+          })}
+          rowClassName={(record) =>
+            `${styles.tableRow} ${record.id === selectedOpportunityId ? "ant-table-row-selected" : ""}`
+          }
+        />
+      </Card>
+    </div>
   );
 };

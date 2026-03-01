@@ -1,4 +1,5 @@
 import { createStyles } from "antd-style";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ token, css }) => ({
   pageContainer: css`
@@ -99,6 +100,25 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
+
+    background-color: ${colors.light};
+
+    :global(.ant-card-head) {
+      background-color: ${colors.secondary};
+    }
+
+    :global(.ant-card-body) {
+      background-color: ${colors.bgLayout};
+    }
+
+    :global(.ant-table),
+    :global(.ant-table-container),
+    :global(.ant-table-content),
+    :global(.ant-table-cell),
+    :global(.ant-table-thead > tr > th),
+    :global(.ant-table-tbody > tr > td) {
+      background-color: ${colors.bgLayout};
+    }
   `,
 
   tableRow: css`
@@ -174,5 +194,64 @@ export const useStyles = createStyles(({ token, css }) => ({
   workspacePagination: css`
     margin-top: ${token.margin}px;
     float: right;
+  `,
+
+  inlineFiltersBar: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.light};
+    padding: ${token.padding}px;
+    border-radius: ${token.borderRadius}px;
+  `,
+
+  inlineFiltersForm: css`
+    display: flex;
+    gap: ${token.margin}px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: ${token.marginSM}px;
+    }
+  `,
+
+  inlineFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  inlineFilterActionsItem: css`
+    margin-bottom: 0;
+    margin-left: auto;
+  `,
+
+  opportunitiesListContainer: css`
+    background-color: ${colors.bgLayout};
+    border-radius: ${token.borderRadius}px;
+    overflow: hidden;
+  `,
+
+  toolbarContainer: css`
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: ${token.marginLG}px;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      > div:first-child {
+        width: 100%;
+      }
+
+      > button {
+        width: 100%;
+      }
+    }
+  `,
+
+  toolbarFilters: css`
+    flex: 1;
   `,
 }));

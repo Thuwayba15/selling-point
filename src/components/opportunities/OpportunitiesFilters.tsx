@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Input, Button, Select, Switch } from "antd";
+import { Form, Input, Button, Select, Switch, Space } from "antd";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
@@ -71,66 +71,70 @@ export const OpportunitiesFilters = ({
   const hasActiveFilters = searchTerm || clientId || stage || ownerId;
 
   return (
-    <Card className={styles.filtersCard} title="Filters">
-      <Form form={form} layout="vertical">
-        <div className={styles.filtersRow}>
-          <Form.Item label="Search" className={styles.filterItem}>
-            <Input
-              placeholder="Search by title, client, owner..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              prefix={<SearchOutlined />}
-              allowClear
+    <div className={styles.inlineFiltersBar}>
+      <Form form={form} layout="inline" className={styles.inlineFiltersForm}>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Input
+            placeholder="Search by title, client, owner..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            prefix={<SearchOutlined />}
+            allowClear
+          />
+        </Form.Item>
+
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Client"
+            value={clientId}
+            onChange={setClientId}
+            allowClear
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={clients.map((client) => ({
+              value: client.id,
+              label: client.name,
+            }))}
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
+
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Stage"
+            value={stage}
+            onChange={setStage}
+            allowClear
+            options={STAGE_OPTIONS}
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
+
+        {showMyOpportunitiesToggle && (
+          <Form.Item className={styles.inlineFilterItem}>
+            <Switch
+              checked={showMyOpportunities}
+              onChange={onShowMyOpportunitiesChange}
+              checkedChildren="My"
+              unCheckedChildren="All"
             />
           </Form.Item>
+        )}
 
-          <Form.Item label="Client" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by client"
-              value={clientId}
-              onChange={setClientId}
-              allowClear
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              options={clients.map((client) => ({
-                value: client.id,
-                label: client.name,
-              }))}
-            />
-          </Form.Item>
-
-          <Form.Item label="Stage" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by stage"
-              value={stage}
-              onChange={setStage}
-              allowClear
-              options={STAGE_OPTIONS}
-            />
-          </Form.Item>
-
-          {showMyOpportunitiesToggle && (
-            <Form.Item label="My Opportunities" className={styles.filterItem}>
-              <Switch checked={showMyOpportunities} onChange={onShowMyOpportunitiesChange} />
-            </Form.Item>
-          )}
-
-          <Form.Item label=" " className={styles.filterItem}>
-            <div className={styles.filtersActions}>
-              <Button type="primary" onClick={handleApply}>
-                Apply Filters
-              </Button>
-              {hasActiveFilters && (
-                <Button icon={<ClearOutlined />} onClick={handleClear} danger>
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.inlineFilterActionsItem}>
+          <Space size="small">
+            <Button type="primary" onClick={handleApply}>
+              Apply
+            </Button>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </Space>
+        </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 };
+

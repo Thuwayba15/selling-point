@@ -717,8 +717,6 @@ const OpportunitiesPage = () => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        <OpportunitiesHeader onCreateClick={handleCreateClick} />
-
         <OpportunitiesFilters
           onApplyFilters={handleApplyFilters}
           onClear={handleClearFilters}
@@ -735,6 +733,13 @@ const OpportunitiesPage = () => {
           selectedOpportunityId={selectedOpportunity?.id}
           onSelectOpportunity={handleSelectOpportunity}
           onPaginationChange={handlePaginationChange}
+          headerExtra={
+            user ? (
+              <Button type="primary" onClick={handleCreateClick}>
+                Create Opportunity
+              </Button>
+            ) : null
+          }
         />
 
         <Modal

@@ -3,7 +3,6 @@
 import { Button } from "antd";
 import {
   OpportunitiesFilters,
-  OpportunitiesHeader,
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 
@@ -47,8 +46,6 @@ export const OpportunitiesFiltersSection = ({
 
   return (
     <>
-      <OpportunitiesHeader onCreateClick={onCreateClick} />
-
       <div className={styles.sectionSpacing}>
         <Button onClick={onBackToList}>Back to Opportunities List</Button>
       </div>
