@@ -10,7 +10,10 @@ interface EditOpportunityModalProps {
   form: FormInstance;
   loading: boolean;
   clients: Array<{ id: string; name: string } | { value: string; label: string }>;
-  contacts: Array<{ id: string; firstName: string; lastName: string; email: string } | { value: string; label: string }>;
+  contacts: Array<
+    | { id: string; firstName: string; lastName: string; email: string }
+    | { value: string; label: string }
+  >;
   initialValues?: IOpportunity;
   onClientChange: (clientId: string | undefined) => void;
   onCancel: () => void;
@@ -29,13 +32,7 @@ export const EditOpportunityModal = ({
   onSubmit,
 }: EditOpportunityModalProps) => {
   return (
-    <Modal
-      title="Edit Opportunity"
-      open={isOpen}
-      onCancel={onCancel}
-      footer={null}
-      width={640}
-    >
+    <Modal title="Edit Opportunity" open={isOpen} onCancel={onCancel} footer={null} width={640}>
       <OpportunityForm
         form={form}
         initialValues={initialValues}

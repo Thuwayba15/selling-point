@@ -19,11 +19,7 @@ const STATUS_OPTIONS = [
   { label: "Cancelled", value: 5 },
 ];
 
-export const ContractsFilters = ({
-  clients,
-  onApplyFilters,
-  onClear,
-}: ContractsFiltersProps) => {
+export const ContractsFilters = ({ clients, onApplyFilters, onClear }: ContractsFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
   const [status, setStatus] = useState<number | undefined>(undefined);
@@ -69,9 +65,7 @@ export const ContractsFilters = ({
             <Button type="primary" onClick={handleApply}>
               Apply
             </Button>
-            {hasActiveFilters && (
-              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
-            )}
+            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={handleClear} danger />}
           </div>
         </Form.Item>
       </Form>

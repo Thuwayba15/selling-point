@@ -9,7 +9,7 @@ export interface IClientOption {
 // Fetch active clients for use in dropdowns
 // Only returns clients where isActive=true
 export async function fetchActiveClientsForDropdown(
-  pageSize: number = 1000
+  pageSize: number = 1000,
 ): Promise<IClientOption[]> {
   try {
     const api = getAxiosInstance();
@@ -19,7 +19,7 @@ export async function fetchActiveClientsForDropdown(
         isActive: true,
       },
     });
-    
+
     const items = data.items || data || [];
     return items.map((client: { id: string; name: string }) => ({
       id: client.id,

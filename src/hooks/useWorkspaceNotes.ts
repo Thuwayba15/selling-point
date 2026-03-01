@@ -29,27 +29,30 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
   const [relatedNoteForm] = Form.useForm();
   const [editingRelatedNote, setEditingRelatedNote] = useState<INote | null>(null);
 
-  const loadRelatedNotes = useCallback(async (target: RelatedNotesTarget) => {
-    setIsRelatedNotesLoading(true);
-    try {
-      const api = getAxiosInstance();
-      const { data } = await api.get("/api/notes", {
-        params: {
-          relatedToType: target.relatedToType,
-          relatedToId: target.relatedToId,
-          pageNumber: 1,
-          pageSize: 1000,
-        },
-      });
-      setRelatedNotes((data?.items || data || []) as INote[]);
-    } catch (error) {
-      console.error("Failed to load related notes:", error);
-      setRelatedNotes([]);
-      message.error("Failed to load related notes");
-    } finally {
-      setIsRelatedNotesLoading(false);
-    }
-  }, [message]);
+  const loadRelatedNotes = useCallback(
+    async (target: RelatedNotesTarget) => {
+      setIsRelatedNotesLoading(true);
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/notes", {
+          params: {
+            relatedToType: target.relatedToType,
+            relatedToId: target.relatedToId,
+            pageNumber: 1,
+            pageSize: 1000,
+          },
+        });
+        setRelatedNotes((data?.items || data || []) as INote[]);
+      } catch (error) {
+        console.error("Failed to load related notes:", error);
+        setRelatedNotes([]);
+        message.error("Failed to load related notes");
+      } finally {
+        setIsRelatedNotesLoading(false);
+      }
+    },
+    [message],
+  );
 
   const openRelatedNotes = useCallback(
     async (target: RelatedNotesTarget) => {
@@ -151,7 +154,7 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
         message.success("Note created successfully");
         setIsRelatedNoteFormOpen(false);
         relatedNoteForm.resetFields();
-        
+
         // For contract notes, add to local state immediately if refresh fails
         if (relatedNotesTarget.relatedToType === 4) {
           try {
@@ -171,7 +174,7 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             };
-            setRelatedNotes(prev => [newNote, ...prev]);
+            setRelatedNotes((prev) => [newNote, ...prev]);
           }
         } else {
           await onRefresh();
@@ -179,7 +182,15 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
         }
       }
     },
-    [notesActions, message, onRefresh, relatedNotesTarget, relatedNoteForm, loadRelatedNotes, editingRelatedNote],
+    [
+      notesActions,
+      message,
+      onRefresh,
+      relatedNotesTarget,
+      relatedNoteForm,
+      loadRelatedNotes,
+      editingRelatedNote,
+    ],
   );
 
   const openWorkspaceNoteForm = useCallback(() => {

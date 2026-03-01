@@ -33,7 +33,7 @@ export enum DocumentsActionEnums {
 // Get Documents Actions
 export const getDocumentsPending = createAction<IDocumentsStateContext>(
   DocumentsActionEnums.getDocumentsPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const getDocumentsSuccess = createAction<
@@ -56,13 +56,13 @@ export const getDocumentsError = createAction<IDocumentsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Get Document Actions
 export const getDocumentPending = createAction<IDocumentsStateContext>(
   DocumentsActionEnums.getDocumentPending,
-  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false })
+  () => ({ isPending: false, isLoadingDetails: true, isSuccess: false, isError: false }),
 );
 
 export const getDocumentSuccess = createAction<IDocumentsStateContext, { document: IDocument }>(
@@ -73,7 +73,7 @@ export const getDocumentSuccess = createAction<IDocumentsStateContext, { documen
     isSuccess: true,
     isError: false,
     document,
-  })
+  }),
 );
 
 export const getDocumentError = createAction<IDocumentsStateContext, string>(
@@ -84,13 +84,13 @@ export const getDocumentError = createAction<IDocumentsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Upload Document Actions
 export const uploadDocumentPending = createAction<IDocumentsStateContext>(
   DocumentsActionEnums.uploadDocumentPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const uploadDocumentSuccess = createAction<IDocumentsStateContext>(
@@ -100,7 +100,7 @@ export const uploadDocumentSuccess = createAction<IDocumentsStateContext>(
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const uploadDocumentError = createAction<IDocumentsStateContext, string>(
@@ -111,13 +111,13 @@ export const uploadDocumentError = createAction<IDocumentsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Delete Document Actions
 export const deleteDocumentPending = createAction<IDocumentsStateContext>(
   DocumentsActionEnums.deleteDocumentPending,
-  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false })
+  () => ({ isPending: true, isLoadingDetails: false, isSuccess: false, isError: false }),
 );
 
 export const deleteDocumentSuccess = createAction<IDocumentsStateContext>(
@@ -127,7 +127,7 @@ export const deleteDocumentSuccess = createAction<IDocumentsStateContext>(
     isLoadingDetails: false,
     isSuccess: true,
     isError: false,
-  })
+  }),
 );
 
 export const deleteDocumentError = createAction<IDocumentsStateContext, string>(
@@ -138,7 +138,7 @@ export const deleteDocumentError = createAction<IDocumentsStateContext, string>(
     isSuccess: false,
     isError: true,
     errorMessage,
-  })
+  }),
 );
 
 // Utility Actions
@@ -150,7 +150,7 @@ export const clearError = createAction<IDocumentsStateContext>(
     isSuccess: false,
     isError: false,
     errorMessage: undefined,
-  })
+  }),
 );
 
 export const clearDocument = createAction<IDocumentsStateContext>(
@@ -161,5 +161,5 @@ export const clearDocument = createAction<IDocumentsStateContext>(
     isSuccess: false,
     isError: false,
     document: undefined,
-  })
+  }),
 );

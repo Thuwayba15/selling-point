@@ -27,9 +27,7 @@ const STATUS_OPTIONS = [
   { label: "Cancelled", value: 5 },
 ];
 
-const CURRENCY_OPTIONS = [
-  { label: "ZAR (R)", value: "R" },
-];
+const CURRENCY_OPTIONS = [{ label: "ZAR (R)", value: "R" }];
 
 export const ContractForm: React.FC<ContractFormProps> = ({
   form,
@@ -43,26 +41,26 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 }) => {
   const { styles } = useStyles();
   const clientOptions = (clients || []).map((client) => {
-    if ('value' in client && client.value && client.label) {
+    if ("value" in client && client.value && client.label) {
       return { value: client.value, label: client.label } as const;
     }
-    const old = client as {id: string; name: string};
+    const old = client as { id: string; name: string };
     return { label: old.name, value: old.id } as const;
   });
 
   const opportunityOptions = (opportunities || []).map((opp) => {
-    if ('value' in opp && opp.value && opp.label) {
+    if ("value" in opp && opp.value && opp.label) {
       return { value: opp.value, label: opp.label } as const;
     }
-    const old = opp as {id: string; title: string};
+    const old = opp as { id: string; title: string };
     return { label: old.title, value: old.id } as const;
   });
 
   const proposalOptions = (proposals || []).map((proposal) => {
-    if ('value' in proposal && proposal.value && proposal.label) {
+    if ("value" in proposal && proposal.value && proposal.label) {
       return { value: proposal.value, label: proposal.label } as const;
     }
-    const old = proposal as {id: string; title: string};
+    const old = proposal as { id: string; title: string };
     return { label: old.title, value: old.id } as const;
   });
 

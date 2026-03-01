@@ -77,7 +77,7 @@ export interface IDocumentsActionContext {
       relatedToType: RelatedToType;
       relatedToId: string;
       description?: string;
-    }
+    },
   ) => Promise<boolean>;
   downloadDocument: (id: string, fileName: string) => Promise<void>;
   deleteDocument: (id: string) => Promise<boolean>;

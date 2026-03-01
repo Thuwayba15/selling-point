@@ -100,24 +100,24 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.primary};
 
-    background-color: ${colors.light};
-
-    :global(.ant-card-head) {
-      background-color: ${colors.secondary};
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
     }
 
-    :global(.ant-card-body) {
-      background-color: ${colors.bgLayout};
+    & .ant-card-body {
+      background-color: ${colors.white};
     }
 
-    :global(.ant-table),
-    :global(.ant-table-container),
-    :global(.ant-table-content),
-    :global(.ant-table-cell),
-    :global(.ant-table-thead > tr > th),
-    :global(.ant-table-tbody > tr > td) {
-      background-color: ${colors.bgLayout};
+    & .ant-table,
+    & .ant-table-container,
+    & .ant-table-content,
+    & .ant-table-cell,
+    & .ant-table-thead > tr > th,
+    & .ant-table-tbody > tr > td {
+      background-color: ${colors.white} !important;
     }
   `,
 
@@ -141,6 +141,34 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   detailsCard: css`
     height: 100%;
+  `,
+
+  clientDetailsCard: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.primary};
+
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
+    }
+
+    & .ant-card-body {
+      background-color: ${colors.white};
+    }
+  `,
+
+  workspaceTabsCard: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.primary};
+
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
+    }
+
+    & .ant-card-body {
+      background-color: ${colors.white};
+    }
   `,
 
   actionsCard: css`

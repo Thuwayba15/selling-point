@@ -10,7 +10,15 @@ interface WorkspaceTabActionsProps {
   compact?: boolean;
 }
 
-type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note" | "contact" | "opportunity";
+type EntityType =
+  | "activity"
+  | "proposal"
+  | "pricingRequest"
+  | "contract"
+  | "document"
+  | "note"
+  | "contact"
+  | "opportunity";
 
 const ENTITY_LABELS: Record<EntityType, string> = {
   activity: "Activity",
@@ -47,11 +55,7 @@ export const WorkspaceTabActions = ({
 
   return (
     <Space style={compact ? undefined : { marginBottom: 16 }}>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => onCreateClick(entityType)}
-      >
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => onCreateClick(entityType)}>
         Add {ENTITY_LABELS[entityType]}
       </Button>
     </Space>

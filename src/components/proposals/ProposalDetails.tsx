@@ -88,7 +88,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       key: "total",
       render: (total, record) => {
         const lineTotal = total !== undefined ? total : record.totalPrice;
-        return (lineTotal ? `${proposal.currency || "R"} ${lineTotal.toLocaleString()}` : "—");
+        return lineTotal ? `${proposal.currency || "R"} ${lineTotal.toLocaleString()}` : "—";
       },
     },
   ];

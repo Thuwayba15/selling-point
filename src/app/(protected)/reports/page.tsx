@@ -137,10 +137,7 @@ const ReportsPage = () => {
             loading={reportsState.isPending}
             showSalesFilters
           />
-          <SalesByPeriodReport
-            data={reportsState.salesByPeriod}
-            loading={reportsState.isPending}
-          />
+          <SalesByPeriodReport data={reportsState.salesByPeriod} loading={reportsState.isPending} />
         </div>
       ),
     },
@@ -150,11 +147,7 @@ const ReportsPage = () => {
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
         <div className={styles.tabsContainer}>
-          <Tabs
-            activeKey={activeTab}
-            onChange={setActiveTab}
-            items={tabItems}
-          />
+          <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
         </div>
       </div>
     </div>

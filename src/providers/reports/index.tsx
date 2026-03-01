@@ -40,7 +40,7 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
         dispatch(
           getOpportunitiesReportSuccess({
             report: data || [],
-          })
+          }),
         );
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch opportunities report");
@@ -62,7 +62,7 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
         dispatch(
           getSalesByPeriodSuccess({
             report: data || [],
-          })
+          }),
         );
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch sales by period report");
@@ -83,9 +83,7 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
 
   return (
     <ReportsStateContext.Provider value={state}>
-      <ReportsActionsContext.Provider value={actions}>
-        {children}
-      </ReportsActionsContext.Provider>
+      <ReportsActionsContext.Provider value={actions}>{children}</ReportsActionsContext.Provider>
     </ReportsStateContext.Provider>
   );
 };

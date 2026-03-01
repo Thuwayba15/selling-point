@@ -67,7 +67,7 @@ export const ClientActions: React.FC<ClientActionsProps> = ({
           </Button>
         )}
         {!canEdit && !canDelete && (
-          <div style={{ color: '#999', fontStyle: 'italic', fontSize: '12px' }}>
+          <div style={{ color: "#999", fontStyle: "italic", fontSize: "12px" }}>
             No actions available for your role
           </div>
         )}

@@ -62,9 +62,7 @@ export const useOpportunityFilters = (opportunityId: string | undefined) => {
   const navigateWithFilters = useCallback(
     (query?: string) => {
       if (!opportunityId) return;
-      router.replace(
-        `/opportunities/${opportunityId}${query ? `?${query}` : ""}`,
-      );
+      router.replace(`/opportunities/${opportunityId}${query ? `?${query}` : ""}`);
     },
     [opportunityId, router],
   );
@@ -77,12 +75,7 @@ export const useOpportunityFilters = (opportunityId: string | undefined) => {
   );
 
   const applyFilters = useCallback(
-    (filters: {
-      searchTerm?: string;
-      clientId?: string;
-      stage?: number;
-      ownerId?: string;
-    }) => {
+    (filters: { searchTerm?: string; clientId?: string; stage?: number; ownerId?: string }) => {
       setSearchTerm(filters.searchTerm);
       setClientId(filters.clientId);
       setStage(filters.stage);

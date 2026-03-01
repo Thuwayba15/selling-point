@@ -13,6 +13,7 @@ interface EntityWorkspaceTabsProps {
   items: WorkspaceTabItem[];
   activeKey: string;
   onChange: (key: string) => void;
+  className?: string;
 }
 
 export const EntityWorkspaceTabs = ({
@@ -20,9 +21,10 @@ export const EntityWorkspaceTabs = ({
   items,
   activeKey,
   onChange,
+  className,
 }: EntityWorkspaceTabsProps) => {
   return (
-    <Card title={title}>
+    <Card title={title} className={className}>
       <Tabs
         activeKey={activeKey}
         onChange={onChange}

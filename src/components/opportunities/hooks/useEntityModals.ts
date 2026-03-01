@@ -8,7 +8,13 @@ import type { IContract } from "@/providers/contracts/context";
 import type { IDocument } from "@/providers/documents/context";
 import type { INote } from "@/providers/notes/context";
 
-export type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
+export type EntityType =
+  | "activity"
+  | "proposal"
+  | "pricingRequest"
+  | "contract"
+  | "document"
+  | "note";
 
 type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
 
@@ -32,10 +38,10 @@ interface UseEntityModalsReturn {
   // States
   modals: EntityModalsState;
   selectedEntity: WorkspaceEntity | null;
-  
+
   // Forms
   forms: Record<EntityType, Record<"create" | "edit" | "assign", FormInstance>>;
-  
+
   // Modal open/close handlers
   openCreateModal: (type: EntityType) => void;
   openEditModal: (type: EntityType, entity: WorkspaceEntity) => void;
@@ -43,7 +49,7 @@ interface UseEntityModalsReturn {
   closeCreateModal: (type: EntityType) => void;
   closeEditModal: (type: EntityType) => void;
   closeAssignModal: (type: EntityType) => void;
-  
+
   // Utilities
   resetForm: (type: EntityType, mode: "create" | "edit" | "assign") => void;
   isTyping: (type: EntityType, mode: "create" | "edit" | "assign") => boolean;
@@ -53,7 +59,12 @@ export const useEntityModals = (): UseEntityModalsReturn => {
   const [modals, setModals] = useState<EntityModalsState>({
     activity: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
     proposal: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
-    pricingRequest: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
+    pricingRequest: {
+      isCreateOpen: false,
+      isEditOpen: false,
+      isAssignOpen: false,
+      selectedEntity: null,
+    },
     contract: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
     document: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
     note: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
@@ -149,9 +160,12 @@ export const useEntityModals = (): UseEntityModalsReturn => {
     resetForm(type, "assign");
   }, []);
 
-  const resetForm = useCallback((type: EntityType, mode: "create" | "edit" | "assign") => {
-    forms[type][mode].resetFields();
-  }, [forms]);
+  const resetForm = useCallback(
+    (type: EntityType, mode: "create" | "edit" | "assign") => {
+      forms[type][mode].resetFields();
+    },
+    [forms],
+  );
 
   const isTyping = useCallback(
     (type: EntityType, mode: "create" | "edit" | "assign") => {

@@ -68,34 +68,25 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   tableCard: css`
-    background-color: ${colors.light};
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.primary};
 
-    :global(.ant-card-head) {
-      background-color: ${colors.secondary};
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
     }
 
-    :global(.ant-card-body) {
-      background-color: ${colors.bgLayout};
+    & .ant-card-body {
+      background-color: ${colors.white};
     }
 
-    :global(.ant-table) {
-      background-color: transparent;
-    }
-
-    :global(.ant-table-container) {
-      border: none;
-    }
-
-    :global(.ant-table-thead > tr > th) {
-      background-color: transparent;
-    }
-
-    :global(.ant-table-tbody > tr > td) {
-      background-color: transparent;
-    }
-
-    :global(.ant-table-tbody > tr:hover > td) {
-      background-color: ${token.colorBgElevated};
+    & .ant-table,
+    & .ant-table-container,
+    & .ant-table-content,
+    & .ant-table-cell,
+    & .ant-table-thead > tr > th,
+    & .ant-table-tbody > tr > td {
+      background-color: ${colors.white} !important;
     }
   `,
 

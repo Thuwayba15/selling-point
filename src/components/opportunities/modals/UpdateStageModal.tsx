@@ -28,13 +28,7 @@ export const UpdateStageModal = ({
   onSubmit,
 }: UpdateStageModalProps) => {
   return (
-    <Modal
-      title="Update Stage"
-      open={isOpen}
-      onCancel={onCancel}
-      footer={null}
-      width={480}
-    >
+    <Modal title="Update Stage" open={isOpen} onCancel={onCancel} footer={null} width={480}>
       <Form form={form} layout="vertical" onFinish={onSubmit}>
         <Form.Item
           name="stage"

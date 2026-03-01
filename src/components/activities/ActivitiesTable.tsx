@@ -3,12 +3,7 @@ import type { ReactNode } from "react";
 import { Table, Card, Tag, Button, Space, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { ActivityType, ActivityStatus, Priority } from "@/providers/activities/context";
 import { useRbac } from "@/hooks/useRbac";
 import { useStyles } from "./style";

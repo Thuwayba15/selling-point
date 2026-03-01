@@ -39,7 +39,11 @@ export const ProposalLineItemsBuilder = ({
   const totals = useMemo(() => calculateProposalTotals(lineItems), [lineItems]);
 
   const handleAddLineItem = () => {
-    if (!formValues.productServiceName || formValues.unitPrice === undefined || formValues.unitPrice <= 0) {
+    if (
+      !formValues.productServiceName ||
+      formValues.unitPrice === undefined ||
+      formValues.unitPrice <= 0
+    ) {
       return;
     }
 
@@ -173,22 +177,16 @@ export const ProposalLineItemsBuilder = ({
       ) : (
         <div className={styles.lineItemEditor}>
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Product/Service Name
-            </label>
+            <label className={styles.lineItemFieldLabel}>Product/Service Name</label>
             <Input
               placeholder="e.g., Implementation, Support, Training"
               value={formValues.productServiceName || ""}
-              onChange={(e) =>
-                setFormValues({ ...formValues, productServiceName: e.target.value })
-              }
+              onChange={(e) => setFormValues({ ...formValues, productServiceName: e.target.value })}
             />
           </div>
 
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Description
-            </label>
+            <label className={styles.lineItemFieldLabel}>Description</label>
             <Input.TextArea
               rows={2}
               placeholder="Additional description"
@@ -198,9 +196,7 @@ export const ProposalLineItemsBuilder = ({
           </div>
 
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Quantity
-            </label>
+            <label className={styles.lineItemFieldLabel}>Quantity</label>
             <InputNumber
               min={1}
               className={styles.fullWidthControl}
@@ -210,9 +206,7 @@ export const ProposalLineItemsBuilder = ({
           </div>
 
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Unit Price
-            </label>
+            <label className={styles.lineItemFieldLabel}>Unit Price</label>
             <InputNumber
               min={0}
               step={0.01}
@@ -223,9 +217,7 @@ export const ProposalLineItemsBuilder = ({
           </div>
 
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Discount %
-            </label>
+            <label className={styles.lineItemFieldLabel}>Discount %</label>
             <InputNumber
               min={0}
               max={100}
@@ -236,9 +228,7 @@ export const ProposalLineItemsBuilder = ({
           </div>
 
           <div className={styles.lineItemFieldGroup}>
-            <label className={styles.lineItemFieldLabel}>
-              Tax %
-            </label>
+            <label className={styles.lineItemFieldLabel}>Tax %</label>
             <InputNumber
               min={0}
               max={100}

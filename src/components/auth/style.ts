@@ -62,6 +62,11 @@ export const useStyles = createStyles({
     margin: 0 0 16px 0;
     color: ${colors.white};
     letter-spacing: -0.02em;
+    text-shadow:
+      -1px -1px 0 ${colors.primary},
+      1px -1px 0 ${colors.primary},
+      -1px 1px 0 ${colors.primary},
+      1px 1px 0 ${colors.primary};
 
     .dot {
       display: inline-block;

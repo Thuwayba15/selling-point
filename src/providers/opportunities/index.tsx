@@ -219,7 +219,7 @@ export const OpportunitiesProvider = ({ children }: { children: ReactNode }) => 
         const payload = {
           stage,
           notes,
-          lossReason: stage === 6 ? lossReason ?? null : null,
+          lossReason: stage === 6 ? (lossReason ?? null) : null,
         };
         const { data } = await api.put(`/api/opportunities/${id}/stage`, payload);
 

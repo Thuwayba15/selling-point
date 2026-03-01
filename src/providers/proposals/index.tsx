@@ -110,7 +110,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
           data.tax = 0;
           data.totalAmount = 0;
         }
-        
+
         dispatch(getProposalSuccess(data));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch proposal");
@@ -133,7 +133,10 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    const updateProposal = async (id: string, proposal: IUpdateProposalPayload): Promise<boolean> => {
+    const updateProposal = async (
+      id: string,
+      proposal: IUpdateProposalPayload,
+    ): Promise<boolean> => {
       dispatch(updateProposalPending());
 
       try {
@@ -179,10 +182,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        await api.put(
-          `/api/proposals/${proposalId}/line-items/${lineItemId}`,
-          lineItem,
-        );
+        await api.put(`/api/proposals/${proposalId}/line-items/${lineItemId}`, lineItem);
 
         dispatch(updateLineItemSuccess({} as IProposal));
         return true;

@@ -78,10 +78,10 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
         <div className={styles.barChartContainer}>{pipelineMetrics.stages.map(renderStageBar)}</div>
       </div>
       <div className={styles.pipelineSummary}>
+        <div>Weighted Pipeline Value: {formatCurrency(pipelineMetrics.weightedValue)}</div>
         <div>
-          Weighted Pipeline Value: {formatCurrency(pipelineMetrics.weightedValue)}
+          Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}
         </div>
-        <div>Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}</div>
       </div>
     </div>
   );

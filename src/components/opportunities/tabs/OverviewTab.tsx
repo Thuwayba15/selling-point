@@ -29,10 +29,7 @@ export const OverviewTab = ({
   return (
     <>
       <div className={className}>
-        <OpportunityDetails
-          opportunity={opportunity}
-          loading={isLoadingDetails}
-        />
+        <OpportunityDetails opportunity={opportunity} loading={isLoadingDetails} />
         {opportunity && (
           <OpportunityActions
             opportunity={opportunity}

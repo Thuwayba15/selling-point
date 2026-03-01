@@ -49,7 +49,7 @@ const DocumentsPage = () => {
   const [pageSize, setPageSize] = useState(5);
   const [filterCategory, setFilterCategory] = useState<DocumentCategory | undefined>(undefined);
   const [filterRelatedToType, setFilterRelatedToType] = useState<RelatedToType | undefined>(
-    undefined
+    undefined,
   );
   const [filterRelatedToId, setFilterRelatedToId] = useState<string | undefined>(undefined);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -91,7 +91,7 @@ const DocumentsPage = () => {
         pageSize: size,
       });
     },
-    [filterCategory, filterRelatedToType, filterRelatedToId, pageSize, documentsActions]
+    [filterCategory, filterRelatedToType, filterRelatedToId, pageSize, documentsActions],
   );
 
   // Initialize data on mount
@@ -160,7 +160,7 @@ const DocumentsPage = () => {
 
   const handleUploadSubmit = async (
     values: { category: number; relatedToType: number; relatedToId: string; description?: string },
-    file: File
+    file: File,
   ) => {
     try {
       const success = await documentsActions.uploadDocument(file, {
@@ -174,11 +174,9 @@ const DocumentsPage = () => {
         message.success("Document uploaded successfully");
         setIsUploadModalOpen(false);
         await fetchDocuments(currentPage, pageSize);
-      } 
+      }
     } catch (error) {
-      message.error(
-        error instanceof Error ? error.message : "Failed to upload document"
-      );
+      message.error(error instanceof Error ? error.message : "Failed to upload document");
     }
   };
 
@@ -187,7 +185,7 @@ const DocumentsPage = () => {
     try {
       await documentsActions.downloadDocument(
         selectedDocument.id,
-        selectedDocument.originalFileName || selectedDocument.fileName
+        selectedDocument.originalFileName || selectedDocument.fileName,
       );
       message.success("Document download started");
     } catch (error) {

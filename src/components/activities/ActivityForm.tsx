@@ -4,12 +4,7 @@ import React from "react";
 import { Form, Input, Select, DatePicker, Button, Space, InputNumber } from "antd";
 import type { FormInstance } from "antd";
 import dayjs from "dayjs";
-import {
-  IActivity,
-  ActivityType,
-  Priority,
-  RelatedToType,
-} from "@/providers/activities/context";
+import { IActivity, ActivityType, Priority, RelatedToType } from "@/providers/activities/context";
 import type { ActivityFormValues } from "@/types/forms";
 
 interface ActivityFormProps {
@@ -18,7 +13,9 @@ interface ActivityFormProps {
   loading?: boolean;
   onSubmit: (values: Partial<IActivity>) => void;
   onCancel: () => void;
-  users?: Array<{ id: string; firstName: string; lastName: string } | { value: string; label: string }>;
+  users?: Array<
+    { id: string; firstName: string; lastName: string } | { value: string; label: string }
+  >;
   clients?: Array<{ id: string; name: string } | { value: string; label: string }>;
   opportunities?: Array<{ id: string; title: string } | { value: string; label: string }>;
   proposals?: Array<{ id: string; title: string } | { value: string; label: string }>;
@@ -95,13 +92,14 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     const baseData: Partial<IActivity> = {
       type: typeof values.type === "string" ? parseInt(values.type, 10) : values.type,
       subject: values.subject,
-      priority: typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
+      priority:
+        typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
       dueDate,
     };
 
     // Add optional fields only if they have values
     const optionalData: Partial<IActivity> = {};
-    
+
     if (values.description) {
       optionalData.description = values.description;
     }
@@ -115,9 +113,10 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
       optionalData.location = values.location;
     }
     if (values.relatedToType) {
-      optionalData.relatedToType = typeof values.relatedToType === "string" 
-        ? parseInt(values.relatedToType, 10) 
-        : values.relatedToType;
+      optionalData.relatedToType =
+        typeof values.relatedToType === "string"
+          ? parseInt(values.relatedToType, 10)
+          : values.relatedToType;
       if (values.relatedToId) {
         optionalData.relatedToId = values.relatedToId;
       }
@@ -141,7 +140,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
   };
 
   const userOptions = (users || []).map((user) => {
-    if ('value' in user) {
+    if ("value" in user) {
       return { value: user.value, label: user.label };
     }
     return { value: user.id, label: `${user.firstName} ${user.lastName}` };
@@ -151,28 +150,28 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     switch (resolvedRelatedToType) {
       case RelatedToType.Client:
         return (clients || []).map((c) => {
-          if ('value' in c) {
+          if ("value" in c) {
             return { value: c.value, label: c.label };
           }
           return { value: c.id, label: c.name };
         });
       case RelatedToType.Opportunity:
         return (opportunities || []).map((o) => {
-          if ('value' in o) {
+          if ("value" in o) {
             return { value: o.value, label: o.label };
           }
           return { value: o.id, label: o.title };
         });
       case RelatedToType.Proposal:
         return (proposals || []).map((p) => {
-          if ('value' in p) {
+          if ("value" in p) {
             return { value: p.value, label: p.label };
           }
           return { value: p.id, label: p.title };
         });
       case RelatedToType.Contract:
         return (contracts || []).map((c) => {
-          if ('value' in c) {
+          if ("value" in c) {
             return { value: c.value, label: c.label };
           }
           return { value: c.id, label: c.title };
@@ -198,11 +197,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
         <Input placeholder="Enter activity subject" />
       </Form.Item>
 
-      <Form.Item
-        label="Type"
-        name="type"
-        rules={[{ required: true, message: "Type is required" }]}
-      >
+      <Form.Item label="Type" name="type" rules={[{ required: true, message: "Type is required" }]}>
         <Select options={ACTIVITY_TYPE_OPTIONS} placeholder="Select activity type" />
       </Form.Item>
 

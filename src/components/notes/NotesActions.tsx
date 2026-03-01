@@ -31,22 +31,12 @@ export const NotesActions = ({
           </Button>
         )}
         {note && can("update:note") && (
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={onEdit}
-            loading={loading}
-          >
+          <Button type="default" icon={<EditOutlined />} onClick={onEdit} loading={loading}>
             Edit
           </Button>
         )}
         {note && can("delete:note") && (
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={onDelete}
-            loading={loading}
-          >
+          <Button danger icon={<DeleteOutlined />} onClick={onDelete} loading={loading}>
             Delete
           </Button>
         )}

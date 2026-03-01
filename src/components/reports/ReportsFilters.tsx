@@ -88,12 +88,7 @@ export const ReportsFilters: React.FC<ReportsFiltersProps> = ({
 
         <Form.Item>
           <Space>
-            <Button
-              type="primary"
-              icon={<SearchOutlined />}
-              onClick={onSearch}
-              loading={loading}
-            >
+            <Button type="primary" icon={<SearchOutlined />} onClick={onSearch} loading={loading}>
               Generate Report
             </Button>
             <Button icon={<ClearOutlined />} onClick={onClear}>

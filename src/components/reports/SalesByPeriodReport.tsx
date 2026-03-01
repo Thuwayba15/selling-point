@@ -76,7 +76,8 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
   const totalWon = data.reduce((sum, item) => sum + (item.wonCount || 0), 0);
   const totalLost = data.reduce((sum, item) => sum + (item.lostCount || 0), 0);
   const totalWonValue = data.reduce((sum, item) => sum + (item.wonValue || 0), 0);
-  const averageWinRate = data.length > 0 ? data.reduce((sum, item) => sum + (item.winRate || 0), 0) / data.length : 0;
+  const averageWinRate =
+    data.length > 0 ? data.reduce((sum, item) => sum + (item.winRate || 0), 0) / data.length : 0;
 
   if (!data || data.length === 0) {
     return (
@@ -93,40 +94,22 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={6}>
           <Card className={styles.metricCard}>
-            <Statistic
-              title="Total Value"
-              value={totalRevenue}
-              prefix="R"
-              precision={0}
-            />
+            <Statistic title="Total Value" value={totalRevenue} prefix="R" precision={0} />
           </Card>
         </Col>
         <Col span={6}>
           <Card className={styles.metricCard}>
-            <Statistic
-              title="Total Opportunities"
-              value={totalOpportunities}
-              precision={0}
-            />
+            <Statistic title="Total Opportunities" value={totalOpportunities} precision={0} />
           </Card>
         </Col>
         <Col span={6}>
           <Card className={styles.metricCard}>
-            <Statistic
-              title="Won"
-              value={totalWon}
-              precision={0}
-            />
+            <Statistic title="Won" value={totalWon} precision={0} />
           </Card>
         </Col>
         <Col span={6}>
           <Card className={styles.metricCard}>
-            <Statistic
-              title="Avg Win Rate"
-              value={averageWinRate}
-              suffix="%"
-              precision={1}
-            />
+            <Statistic title="Avg Win Rate" value={averageWinRate} suffix="%" precision={1} />
           </Card>
         </Col>
       </Row>
