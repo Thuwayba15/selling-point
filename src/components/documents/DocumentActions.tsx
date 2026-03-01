@@ -3,9 +3,10 @@
 import React from "react";
 import { Button, Card, Space } from "antd";
 import { DownloadOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import type { IDocument } from "@/providers/documents/context";
 
 interface DocumentActionsProps {
-  selectedDocument: any | null;
+  selectedDocument: IDocument | null;
   onUpload: () => void;
   onDownload: () => void;
   onDelete: () => void;

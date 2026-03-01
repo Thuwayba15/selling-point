@@ -25,6 +25,9 @@ import { IProposal } from "@/providers/proposals/context";
 import { IContract } from "@/providers/contracts/context";
 import { IDocument, RelatedToType as DocRelatedToType } from "@/providers/documents/context";
 import { INote, RelatedToType } from "@/providers/notes/context";
+import { IActivity } from "@/providers/activities/context";
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
 
 interface WorkspaceData {
   pricingRequests: IPricingRequest[];
@@ -50,15 +53,15 @@ interface OpportunityWorkspaceContentProps {
   onUpdateStage: () => void;
   onAssign: () => void;
   onCreateEntity: (type: EntityType) => void;
-  onEditEntity: (type: EntityType, entity: any) => void;
-  onAssignEntity: (type: EntityType, entity: any) => void;
-  onCompleteEntity: (type: EntityType, entity: any) => void;
-  onActivateEntity: (type: EntityType, entity: any) => void;
-  onCancelEntity: (type: EntityType, entity: any) => void;
-  onSubmitEntity: (type: EntityType, entity: any) => void;
-  onApproveEntity: (type: EntityType, entity: any) => void;
-  onRejectEntity: (type: EntityType, entity: any) => void;
-  onDeleteEntity: (type: EntityType, entity: any) => void;
+  onEditEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onAssignEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onCompleteEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onActivateEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onCancelEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onSubmitEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onApproveEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onRejectEntity: (type: EntityType, entity: WorkspaceEntity) => void;
+  onDeleteEntity: (type: EntityType, entity: WorkspaceEntity) => void;
   onRefreshWorkspace: () => Promise<void>;
   onBackToOpportunities: () => void;
 }

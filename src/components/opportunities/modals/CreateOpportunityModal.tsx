@@ -1,15 +1,16 @@
 "use client";
 
 import { Form, Modal } from "antd";
+import type { FormInstance } from "antd";
 import { OpportunityForm } from "@/components/opportunities";
 import { IOpportunity } from "@/providers/opportunities/context";
 
 interface CreateOpportunityModalProps {
   isOpen: boolean;
-  form: any;
+  form: FormInstance;
   loading: boolean;
-  clients: Array<{ id: string; name: string }>;
-  contacts: Array<{ id: string; firstName: string; lastName: string; email: string }>;
+  clients: Array<{ id: string; name: string } | { value: string; label: string }>;
+  contacts: Array<{ id: string; firstName: string; lastName: string; email: string } | { value: string; label: string }>;
   onClientChange: (clientId: string | undefined) => void;
   onCancel: () => void;
   onSubmit: (values: Partial<IOpportunity>) => Promise<void>;

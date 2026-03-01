@@ -102,8 +102,8 @@ export const ProposalsTab = ({
         onEntityApprove={onApproveEntity}
         onEntityReject={onRejectEntity}
         onEntityDelete={onDeleteEntity}
-        onEntityViewDocuments={(t: any, e: any) => onViewDocuments(t, e)}
-        onEntityViewNotes={(t: any, e: any) => onViewNotes(t, e)}
+        onEntityViewDocuments={(_, e) => onViewDocuments("proposal", e)}
+        onEntityViewNotes={(_, e) => onViewNotes("proposal", e)}
       />
 
       {total > 0 && (

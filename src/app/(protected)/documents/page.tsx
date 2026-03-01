@@ -158,7 +158,10 @@ const DocumentsPage = () => {
     setIsUploadModalOpen(true);
   };
 
-  const handleUploadSubmit = async (values: any, file: File) => {
+  const handleUploadSubmit = async (
+    values: { category: number; relatedToType: number; relatedToId: string; description?: string },
+    file: File
+  ) => {
     try {
       const success = await documentsActions.uploadDocument(file, {
         category: values.category,

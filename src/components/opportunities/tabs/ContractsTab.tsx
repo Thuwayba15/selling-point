@@ -83,8 +83,8 @@ export const ContractsTab = ({
         onEntityActivate={onActivateEntity}
         onEntityCancel={onCancelEntity}
         onEntityDelete={onDeleteEntity}
-        onEntityViewDocuments={(t: any, e: any) => onViewDocuments(t, e)}
-        onEntityViewNotes={(t: any, e: any) => onViewNotes(t, e)}
+        onEntityViewDocuments={(_, e) => onViewDocuments("contract", e)}
+        onEntityViewNotes={(_, e) => onViewNotes("contract", e)}
       />
 
       {total > 0 && (

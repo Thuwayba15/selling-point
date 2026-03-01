@@ -27,7 +27,7 @@ export const useOpportunityWorkspaceData = () => {
     notes: [],
   });
   const [workspaceLoading, setWorkspaceLoading] = useState(false);
-  const [assignableUsers, setAssignableUsers] = useState<Array<{ id: string; label: string }>>([]);
+  const [assignableUsers, setAssignableUsers] = useState<Array<{ value: string; label: string }>>([]);
 
   const loadWorkspaceData = useCallback(
     async (selectedOpportunity: IOpportunity | null) => {
@@ -146,7 +146,7 @@ export const useOpportunityWorkspaceData = () => {
       const users = (data?.items || data || []) as IUser[];
       setAssignableUsers(
         users.map((item) => ({
-          id: item.id,
+          value: item.id,
           label:
             item.fullName ||
             `${item.firstName || ""} ${item.lastName || ""}`.trim() ||

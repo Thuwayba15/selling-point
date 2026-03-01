@@ -7,6 +7,32 @@ import { DocumentUploadForm } from "@/components/documents";
 import { CreateProposalForm, EditProposalForm } from "@/components/proposals";
 import { useEntityModals, type EntityType } from "../hooks/useEntityModals";
 import type { FormInstance } from "antd";
+import type {
+  ActivityFormValues,
+  ProposalFormValues,
+  PricingRequestFormValues,
+  ContractFormValues,
+} from "@/types/forms";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+
+interface DocumentFormValues {
+  category: number;
+  relatedToType: number;
+  relatedToId: string;
+  description?: string;
+}
+
+interface OptionItem {
+  value: string;
+  label: string;
+}
 
 interface EntityConfig {
   title: string;
@@ -17,7 +43,7 @@ interface EntityConfig {
 interface EntityModalsRendererProps {
   modals: ReturnType<typeof useEntityModals>["modals"];
   forms: ReturnType<typeof useEntityModals>["forms"];
-  selectedEntity: any;
+  selectedEntity?: WorkspaceEntity;
   isPending: boolean;
   onActivityCreate: (values: any) => Promise<void>;
   onActivityEdit: (values: any) => Promise<void>;
@@ -25,22 +51,22 @@ interface EntityModalsRendererProps {
   onProposalEdit: (values: any) => Promise<void>;
   onPricingRequestCreate: (values: any) => Promise<void>;
   onPricingRequestEdit: (values: any) => Promise<void>;
-  onPricingRequestAssign: (values: any) => Promise<void>;
+  onPricingRequestAssign: (values: { userId: string }) => Promise<void>;
   onContractCreate: (values: any) => Promise<boolean>;
   onContractEdit: (values: any) => Promise<boolean>;
-  onDocumentCreate: (values: any, file: File) => Promise<void>;
+  onDocumentCreate: (values: DocumentFormValues, file: File) => Promise<void>;
   onNoteCreate: () => Promise<void>;
   onNoteEdit: () => Promise<void>;
   closeCreateModal: (type: EntityType) => void;
   closeEditModal: (type: EntityType) => void;
   closeAssignModal: (type: EntityType) => void;
-  activityUsers: Array<any>;
-  activityClients: Array<any>;
-  opportunities: Array<any>;
-  proposals: Array<any>;
-  contracts: Array<any>;
-  clients: Array<any>;
-  assignableUsers: Array<any>;
+  activityUsers: OptionItem[];
+  activityClients: OptionItem[];
+  opportunities: OptionItem[];
+  proposals: OptionItem[];
+  contracts: OptionItem[];
+  clients: OptionItem[];
+  assignableUsers: OptionItem[];
 }
 
 export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
@@ -214,7 +240,7 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
               }
-              options={assignableUsers.map((item) => ({ value: item.id, label: item.label }))}
+              options={assignableUsers}
             />
           </Form.Item>
           <Form.Item>
@@ -279,7 +305,7 @@ export const EntityModalsRenderer: React.FC<EntityModalsRendererProps> = ({
         form={forms.document.create}
         loading={isPending}
         relatedToType={2}
-        opportunityOptions={opportunities.map((item) => ({ value: item.id, label: item.title }))}
+        opportunityOptions={opportunities}
         onCancel={() => closeCreateModal("document")}
         onSubmit={onDocumentCreate}
       />

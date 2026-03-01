@@ -1,10 +1,11 @@
 "use client";
 
 import { Button, Form, Input, Modal, Select } from "antd";
+import type { FormInstance } from "antd";
 
 interface UpdateStageModalProps {
   isOpen: boolean;
-  form: any;
+  form: FormInstance;
   loading: boolean;
   onCancel: () => void;
   onSubmit: (values: { stage: number; notes?: string; lossReason?: string }) => Promise<void>;

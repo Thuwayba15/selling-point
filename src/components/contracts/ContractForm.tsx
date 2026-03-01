@@ -14,9 +14,9 @@ interface ContractFormProps {
   loading?: boolean;
   onSubmit: (values: Partial<IContract>) => Promise<void> | void;
   onCancel: () => void;
-  clients?: Array<{ id: string; name: string }>;
-  opportunities?: Array<{ id: string; title: string }>;
-  proposals?: Array<{ id: string; title: string }>;
+  clients?: Array<{ id: string; name: string } | { value: string; label: string }>;
+  opportunities?: Array<{ id: string; title: string } | { value: string; label: string }>;
+  proposals?: Array<{ id: string; title: string } | { value: string; label: string }>;
 }
 
 const STATUS_OPTIONS = [
@@ -42,20 +42,29 @@ export const ContractForm: React.FC<ContractFormProps> = ({
   proposals = [],
 }) => {
   const { styles } = useStyles();
-  const clientOptions = clients.map((client) => ({
-    label: client.name,
-    value: client.id,
-  }));
+  const clientOptions = (clients || []).map((client) => {
+    if ('value' in client && client.value && client.label) {
+      return { value: client.value, label: client.label } as const;
+    }
+    const old = client as {id: string; name: string};
+    return { label: old.name, value: old.id } as const;
+  });
 
-  const opportunityOptions = opportunities.map((opp) => ({
-    label: opp.title,
-    value: opp.id,
-  }));
+  const opportunityOptions = (opportunities || []).map((opp) => {
+    if ('value' in opp && opp.value && opp.label) {
+      return { value: opp.value, label: opp.label } as const;
+    }
+    const old = opp as {id: string; title: string};
+    return { label: old.title, value: old.id } as const;
+  });
 
-  const proposalOptions = proposals.map((proposal) => ({
-    label: proposal.title,
-    value: proposal.id,
-  }));
+  const proposalOptions = (proposals || []).map((proposal) => {
+    if ('value' in proposal && proposal.value && proposal.label) {
+      return { value: proposal.value, label: proposal.label } as const;
+    }
+    const old = proposal as {id: string; title: string};
+    return { label: old.title, value: old.id } as const;
+  });
 
   const handleSubmit = async () => {
     try {

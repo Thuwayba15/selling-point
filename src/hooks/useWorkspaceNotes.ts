@@ -94,7 +94,7 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
   );
 
   const handleCreateWorkspaceNote = useCallback(
-    async (values: any, opportunityId: string) => {
+    async (values: { content: string }, opportunityId: string) => {
       if (editingWorkspaceNote) {
         const success = await notesActions.updateNote(editingWorkspaceNote.id, {
           content: values.content,
@@ -124,7 +124,7 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
   );
 
   const handleCreateRelatedNote = useCallback(
-    async (values: any) => {
+    async (values: { content: string }) => {
       if (!relatedNotesTarget) return;
 
       if (editingRelatedNote) {

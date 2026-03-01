@@ -117,7 +117,7 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
   }, [relatedDocsTarget, relatedUploadForm]);
 
   const handleRelatedUpload = useCallback(
-    async (values: any, file: File) => {
+    async (values: { category: number; description?: string }, file: File) => {
       if (!relatedDocsTarget) return;
 
       const success = await documentsActions.uploadDocument(file, {
@@ -149,7 +149,7 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
   );
 
   const handleWorkspaceUpload = useCallback(
-    async (values: any, file: File, opportunityId: string) => {
+    async (values: { category: number; description?: string }, file: File, opportunityId: string) => {
       const success = await documentsActions.uploadDocument(file, {
         category: values.category,
         relatedToType: RelatedToType.Opportunity,

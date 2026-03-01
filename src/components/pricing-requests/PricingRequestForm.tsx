@@ -12,7 +12,7 @@ interface PricingRequestFormProps {
   loading?: boolean;
   onSubmit: (values: Partial<IPricingRequest>) => void;
   onCancel: () => void;
-  opportunities?: Array<{ id: string; title: string }>;
+  opportunities?: Array<{ id: string; title: string } | { value: string; label: string }>;
 }
 
 const STATUS_OPTIONS = [
@@ -82,10 +82,12 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={opportunities.map((opp) => ({
-            value: opp.id,
-            label: opp.title,
-          }))}
+          options={opportunities?.map((opp) => {
+            if ('value' in opp) {
+              return { value: opp.value, label: opp.label };
+            }
+            return { value: opp.id, label: opp.title };
+          }) || []}
         />
       </Form.Item>
 

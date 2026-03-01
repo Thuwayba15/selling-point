@@ -14,8 +14,8 @@ interface EditProposalFormProps {
   loading?: boolean;
   onSubmit: (payload: UpdateProposalPayload) => Promise<void>;
   onCancel: () => void;
-  opportunities?: Array<{ id: string; title: string }>;
-  clients?: Array<{ id: string; name: string }>;
+  opportunities?: Array<{ id: string; title: string } | { value: string; label: string }>;
+  clients?: Array<{ id: string; name: string } | { value: string; label: string }>;
 }
 
 interface EditProposalFormInputValues extends Omit<ProposalFormValues, "validUntil"> {
@@ -131,7 +131,12 @@ export const EditProposalForm = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={clients.map((client) => ({ value: client.id, label: client.name }))}
+          options={clients?.map((client) => {
+            if ('value' in client) {
+              return { value: client.value, label: client.label };
+            }
+            return { value: client.id, label: client.name };
+          }) || []}
         />
       </Form.Item>
 
@@ -146,7 +151,12 @@ export const EditProposalForm = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={opportunities.map((opp) => ({ value: opp.id, label: opp.title }))}
+          options={opportunities?.map((opp) => {
+            if ('value' in opp) {
+              return { value: opp.value, label: opp.label };
+            }
+            return { value: opp.id, label: opp.title };
+          }) || []}
         />
       </Form.Item>
 

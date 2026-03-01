@@ -83,21 +83,23 @@ const DOCUMENT_CATEGORY_COLORS: Record<number, string> = {
   5: "default",
 };
 
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+
 interface WorkspaceEntityCardProps {
-  entity: IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+  entity: WorkspaceEntity;
   type: "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
-  onClick?: (entity: any) => void;
-  onEdit?: (entity: any) => void;
-  onAssign?: (entity: any) => void;
-  onComplete?: (entity: any) => void;
-  onActivate?: (entity: any) => void;
-  onCancel?: (entity: any) => void;
-  onSubmit?: (entity: any) => void;
-  onApprove?: (entity: any) => void;
-  onReject?: (entity: any) => void;
-  onDelete?: (entity: any) => void;
-  onViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
-  onViewNotes?: (type: "proposal" | "contract", entity: any) => void;
+  onClick?: (entity: WorkspaceEntity) => void;
+  onEdit?: (entity: WorkspaceEntity) => void;
+  onAssign?: (entity: WorkspaceEntity) => void;
+  onComplete?: (entity: WorkspaceEntity) => void;
+  onActivate?: (entity: WorkspaceEntity) => void;
+  onCancel?: (entity: WorkspaceEntity) => void;
+  onSubmit?: (entity: WorkspaceEntity) => void;
+  onApprove?: (entity: WorkspaceEntity) => void;
+  onReject?: (entity: WorkspaceEntity) => void;
+  onDelete?: (entity: WorkspaceEntity) => void;
+  onViewDocuments?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+  onViewNotes?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
 }
 
 export const WorkspaceEntityCard = ({
@@ -814,22 +816,22 @@ export const WorkspaceEntityCard = ({
 };
 
 interface WorkspaceEntityListProps {
-  entities: any[];
+  entities: WorkspaceEntity[];
   type: "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
   loading?: boolean;
   emptyText?: string;
-  onEntityClick?: (entity: any) => void;
-  onEntityEdit?: (entity: any) => void;
-  onEntityAssign?: (entity: any) => void;
-  onEntityComplete?: (entity: any) => void;
-  onEntityActivate?: (entity: any) => void;
-  onEntityCancel?: (entity: any) => void;
-  onEntitySubmit?: (entity: any) => void;
-  onEntityApprove?: (entity: any) => void;
-  onEntityReject?: (entity: any) => void;
-  onEntityDelete?: (entity: any) => void;
-  onEntityViewDocuments?: (type: "proposal" | "contract", entity: any) => void;
-  onEntityViewNotes?: (type: "proposal" | "contract", entity: any) => void;
+  onEntityClick?: (entity: WorkspaceEntity) => void;
+  onEntityEdit?: (entity: WorkspaceEntity) => void;
+  onEntityAssign?: (entity: WorkspaceEntity) => void;
+  onEntityComplete?: (entity: WorkspaceEntity) => void;
+  onEntityActivate?: (entity: WorkspaceEntity) => void;
+  onEntityCancel?: (entity: WorkspaceEntity) => void;
+  onEntitySubmit?: (entity: WorkspaceEntity) => void;
+  onEntityApprove?: (entity: WorkspaceEntity) => void;
+  onEntityReject?: (entity: WorkspaceEntity) => void;
+  onEntityDelete?: (entity: WorkspaceEntity) => void;
+  onEntityViewDocuments?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
+  onEntityViewNotes?: (type: "proposal" | "contract", entity: WorkspaceEntity) => void;
 }
 
 export const WorkspaceEntityList = ({

@@ -11,9 +11,26 @@ import { useNotesActions } from "@/providers/notes";
 import { ActivityType, Priority, RelatedToType } from "@/providers/activities/context";
 import type { EntityType } from "./useEntityModals";
 import type { IActivity } from "@/providers/activities/context";
-import type { IProposal } from "@/providers/proposals/context";
+import type { IProposal, IProposalLineItem } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
+import type { IOpportunity } from "@/providers/opportunities/context";
 import type { CreateProposalPayload } from "@/components/proposals/CreateProposalForm";
 import type { UpdateProposalPayload } from "@/components/proposals/EditProposalForm";
+import type {
+  ActivityFormValues,
+  PricingRequestFormValues,
+  ContractFormValues,
+} from "@/types/forms";
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+
+interface OptionItem {
+  value: string;
+  label: string;
+}
 
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -27,14 +44,14 @@ const normalizeOwnerId = (...candidates: Array<string | undefined>) => {
 };
 
 interface UseEntityActionsProps {
-  selectedOpportunity: any | null;
-  selectedEntity: any | null;
+  selectedOpportunity: IOpportunity | null;
+  selectedEntity: WorkspaceEntity | null;
   onRefresh: () => Promise<void>;
-  usersList: Array<any>;
-  clientsList: Array<any>;
-  opportunitiesList: Array<any>;
-  proposalsList: Array<any>;
-  contractsList: Array<any>;
+  usersList: OptionItem[];
+  clientsList: OptionItem[];
+  opportunitiesList: OptionItem[];
+  proposalsList: OptionItem[];
+  contractsList: OptionItem[];
 }
 
 export const useEntityActions = ({
@@ -182,8 +199,8 @@ export const useEntityActions = ({
         if (!success) return;
 
         if (lineItems) {
-          const existingLineItems = selectedEntity?.lineItems || [];
-          const existingIds = new Set(existingLineItems.map((item: any) => item.id).filter(Boolean));
+          const existingLineItems = ('lineItems' in selectedEntity && selectedEntity.lineItems) ? selectedEntity.lineItems : [];
+          const existingIds = new Set(existingLineItems.map((item: IProposalLineItem) => item.id).filter(Boolean));
 
           const newItems = lineItems.filter((item) => !item.id || !existingIds.has(item.id));
           for (const item of newItems) {
@@ -199,7 +216,7 @@ export const useEntityActions = ({
 
           const newItemIds = new Set(lineItems.map((item) => item.id).filter(Boolean));
           const deletedItems = existingLineItems.filter(
-            (item: any) => item.id && !newItemIds.has(item.id),
+            (item: IProposalLineItem) => item.id && !newItemIds.has(item.id),
           );
           for (const item of deletedItems) {
             await proposalsActions.deleteLineItem(selectedEntity.id, item.id);
@@ -268,13 +285,16 @@ export const useEntityActions = ({
   );
 
   const handlePricingRequestCreate = useCallback(
-    async (values: any) => {
+    async (values: PricingRequestFormValues) => {
       try {
         if (!selectedOpportunity) return;
         const success = await pricingRequestsActions.createPricingRequest({
           ...values,
           opportunityId: selectedOpportunity.id,
-        });
+          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
+          priority: typeof values.priority === 'string' ? parseInt(values.priority, 10) : values.priority,
+          estimatedValue: typeof values.estimatedValue === 'string' ? parseFloat(values.estimatedValue) : values.estimatedValue,
+        } as Partial<IPricingRequest>);
         if (!success) return;
         message.success("Pricing request created successfully");
         await onRefresh();
@@ -286,12 +306,17 @@ export const useEntityActions = ({
   );
 
   const handlePricingRequestEdit = useCallback(
-    async (values: any) => {
+    async (values: PricingRequestFormValues) => {
       try {
         if (!selectedEntity?.id) return;
         const success = await pricingRequestsActions.updatePricingRequest(
           selectedEntity.id,
-          values,
+          {
+            ...values,
+            status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
+            priority: typeof values.priority === 'string' ? parseInt(values.priority, 10) : values.priority,
+            estimatedValue: typeof values.estimatedValue === 'string' ? parseFloat(values.estimatedValue) : values.estimatedValue,
+          } as Partial<IPricingRequest>,
         );
         if (!success) return;
         message.success("Pricing request updated successfully");
@@ -322,7 +347,7 @@ export const useEntityActions = ({
   );
 
   const handlePricingRequestComplete = useCallback(
-    async (entity: any) => {
+    async (entity: IPricingRequest) => {
       if (!can("complete:pricing-request")) return;
 
       Modal.confirm({
@@ -345,16 +370,23 @@ export const useEntityActions = ({
   );
 
   const handleContractCreate = useCallback(
-    async (values: any) => {
+    async (values: ContractFormValues) => {
       try {
         if (!selectedOpportunity) return false;
         const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+        const startDate = typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
+        const endDate = typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
         const contractData = {
           ...values,
           opportunityId: selectedOpportunity.id,
           clientId: selectedOpportunity.clientId,
           ownerId,
-        };
+          startDate,
+          endDate,
+          value: typeof values.value === 'string' ? parseFloat(values.value) : values.value,
+          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
+          renewalNoticeDays: values.renewalNoticeDays ? (typeof values.renewalNoticeDays === 'string' ? parseInt(values.renewalNoticeDays, 10) : values.renewalNoticeDays) : undefined,
+        } as Partial<IContract>;
         const success = await contractsActions.createContract(contractData);
         if (!success) {
           message.error("Failed to create contract");
@@ -372,18 +404,25 @@ export const useEntityActions = ({
   );
 
   const handleContractEdit = useCallback(
-    async (values: any) => {
+    async (values: ContractFormValues) => {
       try {
         if (!selectedEntity?.id) return false;
         const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+        const startDate = typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
+        const endDate = typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
         const contractData = {
           ...values,
           ownerId,
+          startDate,
+          endDate,
+          value: typeof values.value === 'string' ? parseFloat(values.value) : values.value,
+          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
+          renewalNoticeDays: values.renewalNoticeDays ? (typeof values.renewalNoticeDays === 'string' ? parseInt(values.renewalNoticeDays, 10) : values.renewalNoticeDays) : undefined,
         };
         const requestedStatus =
           typeof contractData.status === "number" ? contractData.status : undefined;
         const currentStatus =
-          typeof selectedEntity.status === "number" ? selectedEntity.status : undefined;
+          'status' in selectedEntity && typeof selectedEntity.status === "number" ? selectedEntity.status : undefined;
 
         if (requestedStatus === 3 || requestedStatus === 4) {
           message.info("Expired and Renewed are system-managed statuses and cannot be set manually");
@@ -394,7 +433,7 @@ export const useEntityActions = ({
         const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
 
         const { status: _status, ...updatePayload } = contractData;
-        const updateSuccess = await contractsActions.updateContract(selectedEntity.id, updatePayload);
+        const updateSuccess = await contractsActions.updateContract(selectedEntity.id, updatePayload as Partial<IContract>);
 
         if (!updateSuccess) {
           message.error("Failed to update contract");
@@ -436,7 +475,7 @@ export const useEntityActions = ({
   );
 
   const handleContractActivate = useCallback(
-    async (entity: any) => {
+    async (entity: IContract) => {
       if (!entity?.id || !can("activate:contract")) return;
 
       Modal.confirm({
@@ -459,7 +498,7 @@ export const useEntityActions = ({
   );
 
   const handleContractCancel = useCallback(
-    async (entity: any) => {
+    async (entity: IContract) => {
       if (!entity?.id || !can("update:contract")) return;
 
       Modal.confirm({
@@ -483,7 +522,7 @@ export const useEntityActions = ({
   );
 
   const handleDocumentCreate = useCallback(
-    async (values: any, file: File) => {
+    async (values: { category: number; description?: string }, file: File) => {
       try {
         if (!selectedOpportunity) return;
         const success = await documentsActions.uploadDocument(file, {
@@ -503,7 +542,7 @@ export const useEntityActions = ({
   );
 
   const handleNoteCreate = useCallback(
-    async (form: any) => {
+    async (form: { validateFields: () => Promise<{ content: string; isPrivate?: boolean }> }) => {
       try {
         if (!selectedOpportunity) return;
         const values = await form.validateFields();
@@ -523,7 +562,7 @@ export const useEntityActions = ({
   );
 
   const handleNoteEdit = useCallback(
-    async (form: any) => {
+    async (form: { validateFields: () => Promise<{ content: string; isPrivate?: boolean }> }) => {
       try {
         if (!selectedEntity?.id) return;
         const values = await form.validateFields();
@@ -541,7 +580,7 @@ export const useEntityActions = ({
   );
 
   const handleDeleteEntity = useCallback(
-    async (type: EntityType, entity: any) => {
+    async (type: EntityType, entity: WorkspaceEntity) => {
       const deleteHandlers: Record<EntityType, () => Promise<any>> = {
         activity: () => activitiesActions.deleteActivity(entity.id),
         proposal: () => proposalsActions.deleteProposal(entity.id),

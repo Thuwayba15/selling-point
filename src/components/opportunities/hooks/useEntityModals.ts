@@ -1,14 +1,22 @@
 import { useState, useCallback } from "react";
 import { Form } from "antd";
 import type { FormInstance } from "antd";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
 
 export type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
 
 interface EntityModalState {
   isCreateOpen: boolean;
   isEditOpen: boolean;
   isAssignOpen: boolean;
-  selectedEntity: any | null;
+  selectedEntity: WorkspaceEntity | null;
 }
 
 interface EntityModalsState {
@@ -23,15 +31,15 @@ interface EntityModalsState {
 interface UseEntityModalsReturn {
   // States
   modals: EntityModalsState;
-  selectedEntity: any | null;
+  selectedEntity: WorkspaceEntity | null;
   
   // Forms
   forms: Record<EntityType, Record<"create" | "edit" | "assign", FormInstance>>;
   
   // Modal open/close handlers
   openCreateModal: (type: EntityType) => void;
-  openEditModal: (type: EntityType, entity: any) => void;
-  openAssignModal: (type: EntityType, entity: any) => void;
+  openEditModal: (type: EntityType, entity: WorkspaceEntity) => void;
+  openAssignModal: (type: EntityType, entity: WorkspaceEntity) => void;
   closeCreateModal: (type: EntityType) => void;
   closeEditModal: (type: EntityType) => void;
   closeAssignModal: (type: EntityType) => void;
@@ -51,7 +59,7 @@ export const useEntityModals = (): UseEntityModalsReturn => {
     note: { isCreateOpen: false, isEditOpen: false, isAssignOpen: false, selectedEntity: null },
   });
 
-  const [selectedEntity, setSelectedEntity] = useState<any | null>(null);
+  const [selectedEntity, setSelectedEntity] = useState<WorkspaceEntity | null>(null);
 
   // Create all forms
   const [activityCreateForm] = Form.useForm();
@@ -99,7 +107,7 @@ export const useEntityModals = (): UseEntityModalsReturn => {
     setSelectedEntity(null);
   }, []);
 
-  const openEditModal = useCallback((type: EntityType, entity: any) => {
+  const openEditModal = useCallback((type: EntityType, entity: WorkspaceEntity) => {
     setModals((prev) => ({
       ...prev,
       [type]: { ...prev[type], isEditOpen: true, selectedEntity: entity },
@@ -107,7 +115,7 @@ export const useEntityModals = (): UseEntityModalsReturn => {
     setSelectedEntity(entity);
   }, []);
 
-  const openAssignModal = useCallback((type: EntityType, entity: any) => {
+  const openAssignModal = useCallback((type: EntityType, entity: WorkspaceEntity) => {
     setModals((prev) => ({
       ...prev,
       [type]: { ...prev[type], isAssignOpen: true, selectedEntity: entity },

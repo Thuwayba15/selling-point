@@ -1,13 +1,14 @@
 "use client";
 
 import { Button, Form, Modal, Select } from "antd";
+import type { FormInstance } from "antd";
 import type { IUser } from "@/providers/users/context";
 
 interface AssignOpportunityModalProps {
   isOpen: boolean;
-  form: any;
+  form: FormInstance;
   loading: boolean;
-  users: Array<{ id: string; label: string }>;
+  users: Array<{ id?: string; value?: string; label: string }>;
   onCancel: () => void;
   onSubmit: (values: { userId: string }) => Promise<void>;
 }
@@ -41,7 +42,7 @@ export const AssignOpportunityModal = ({
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
             }
             options={users.map((item) => ({
-              value: item.id,
+              value: item.value || item.id || "",
               label: item.label,
             }))}
           />

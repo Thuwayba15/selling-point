@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Form, Input, Modal, Select, Upload } from "antd";
+import type { FormInstance, UploadFile } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import type { UploadFile } from "antd";
 import type { DocumentCategory, RelatedToType } from "@/providers/documents/context";
 
 const { Dragger } = Upload;
@@ -23,11 +23,18 @@ const RELATED_TO_OPTIONS = [
   { value: 4, label: "Contract" },
 ];
 
+interface DocumentFormValues {
+  category: DocumentCategory;
+  relatedToType: RelatedToType;
+  relatedToId: string;
+  description?: string;
+}
+
 interface DocumentUploadFormProps {
   open: boolean;
   onCancel: () => void;
-  onSubmit: (values: any, file: File) => Promise<void>;
-  form: any;
+  onSubmit: (values: DocumentFormValues, file: File) => Promise<void>;
+  form: FormInstance<DocumentFormValues>;
   loading?: boolean;
   relatedToType?: RelatedToType;
   clientOptions?: Array<{ value: string; label: string }>;

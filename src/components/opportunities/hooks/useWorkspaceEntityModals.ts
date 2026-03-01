@@ -22,6 +22,8 @@ import { useNotesActions } from "@/providers/notes";
 
 type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
 
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
+
 interface WorkspaceEntityModalManagerProps {
   opportunityId: string;
   clientId?: string;
@@ -38,7 +40,7 @@ export const useWorkspaceEntityModals = (
   const [activeModal, setActiveModal] = useState<{
     type: EntityType;
     mode: "create" | "edit" | "view";
-    entity?: any;
+    entity?: WorkspaceEntity;
   } | null>(null);
 
   const activitiesActions = useActivitiesActions();
@@ -56,7 +58,7 @@ export const useWorkspaceEntityModals = (
     setActiveModal({ type, mode: "create" });
   };
 
-  const openEditModal = (type: EntityType, entity: any) => {
+  const openEditModal = (type: EntityType, entity: WorkspaceEntity) => {
     setActiveModal({ type, mode: "edit", entity });
 
     // Pre-fill form with entity data

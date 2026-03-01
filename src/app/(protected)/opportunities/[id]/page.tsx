@@ -22,6 +22,14 @@ import {
 } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
+import type { IActivity } from "@/providers/activities/context";
+import type { IProposal } from "@/providers/proposals/context";
+import type { IPricingRequest } from "@/providers/pricing-requests/context";
+import type { IContract } from "@/providers/contracts/context";
+import type { IDocument } from "@/providers/documents/context";
+import type { INote } from "@/providers/notes/context";
+
+type WorkspaceEntity = IActivity | IProposal | IPricingRequest | IContract | IDocument | INote;
 
 const OpportunityWorkspacePage = () => {
   const { styles } = useStyles();
@@ -110,31 +118,30 @@ const OpportunityWorkspacePage = () => {
     selectedOpportunity,
     selectedEntity: entityModals.selectedEntity,
     onRefresh: refreshWorkspace,
-    usersList: usersState.users || [],
-    clientsList: (clientsState.clients || []).map((c) => ({ id: c.id, name: c.name })),
+    usersList: (usersState.users || []).map(u => ({ value: u.id, label: `${u.firstName} ${u.lastName}` })),
+    clientsList: (clientsState.clients || []).map((c) => ({ value: c.id, label: c.name })),
     opportunitiesList: selectedOpportunity?.id
-      ? [{ id: selectedOpportunity.id, title: selectedOpportunity.title || "Opportunity" }]
+      ? [{ value: selectedOpportunity.id, label: selectedOpportunity.title || "Opportunity" }]
       : [],
     proposalsList: (workspaceData?.proposals || [])
-      .map((p) => ({ id: p.id, title: p.title || "Proposal" }))
-      .filter((p): p is { id: string; title: string } => Boolean(p.id)),
+      .map((p) => ({ value: p.id, label: p.title || "Proposal" }))
+      .filter((p): p is { value: string; label: string } => Boolean(p.value)),
     contractsList: (workspaceData?.contracts || [])
-      .map((c) => ({ id: c.id, title: c.title || c.contractNumber || "Contract" }))
-      .filter((c): c is { id: string; title: string } => Boolean(c.id)),
+      .map((c) => ({ value: c.id, label: c.title || c.contractNumber || "Contract" }))
+      .filter((c): c is { value: string; label: string } => Boolean(c.value)),
   });
 
   // Memoized lists
   const clientsList = useMemo(
-    () => (clientsState.clients || []).map((client) => ({ id: client.id, name: client.name })),
+    () => (clientsState.clients || []).map((client) => ({ value: client.id, label: client.name })),
     [clientsState.clients],
   );
 
   const usersList = useMemo(
     () =>
       (usersState.users || []).map((item) => ({
-        id: item.id,
-        firstName: item.firstName,
-        lastName: item.lastName,
+        value: item.id,
+        label: `${item.firstName} ${item.lastName}`,
       })),
     [usersState.users],
   );
@@ -142,7 +149,7 @@ const OpportunityWorkspacePage = () => {
   const opportunitiesList = useMemo(
     () =>
       selectedOpportunity?.id
-        ? [{ id: selectedOpportunity.id, title: selectedOpportunity.title || "Opportunity" }]
+        ? [{ value: selectedOpportunity.id, label: selectedOpportunity.title || "Opportunity" }]
         : [],
     [selectedOpportunity?.id, selectedOpportunity?.title],
   );
@@ -150,8 +157,8 @@ const OpportunityWorkspacePage = () => {
   const proposalsList = useMemo(
     () =>
       (workspaceData?.proposals || [])
-        .map((proposal) => ({ id: proposal.id, title: proposal.title || "Proposal" }))
-        .filter((item): item is { id: string; title: string } => Boolean(item.id)),
+        .map((proposal) => ({ value: proposal.id, label: proposal.title || "Proposal" }))
+        .filter((item): item is { value: string; label: string } => Boolean(item.value)),
     [workspaceData?.proposals],
   );
 
@@ -159,10 +166,10 @@ const OpportunityWorkspacePage = () => {
     () =>
       (workspaceData?.contracts || [])
         .map((contract) => ({
-          id: contract.id,
-          title: contract.title || contract.contractNumber || "Contract",
+          value: contract.id,
+          label: contract.title || contract.contractNumber || "Contract",
         }))
-        .filter((item): item is { id: string; title: string } => Boolean(item.id)),
+        .filter((item): item is { value: string; label: string } => Boolean(item.value)),
     [workspaceData?.contracts],
   );
 
@@ -324,14 +331,14 @@ const OpportunityWorkspacePage = () => {
     entityModals.openCreateModal(type);
   };
 
-  const handleEditEntity = (type: EntityType, entity: any) => {
+  const handleEditEntity = (type: EntityType, entity: WorkspaceEntity) => {
     entityModals.openEditModal(type, entity);
-    if (type === "activity") {
+    if (type === "activity" && 'dueDate' in entity) {
       entityModals.forms.activity.edit.setFieldsValue({
         ...entity,
         dueDate: entity?.dueDate ? dayjs(entity.dueDate) : undefined,
       });
-    } else if (type === "contract") {
+    } else if (type === "contract" && 'startDate' in entity && 'endDate' in entity) {
       entityModals.forms.contract.edit.setFieldsValue({
         ...entity,
         startDate: entity?.startDate ? dayjs(entity.startDate) : undefined,
@@ -340,43 +347,43 @@ const OpportunityWorkspacePage = () => {
     }
   };
 
-  const handleAssignEntity = (type: EntityType, entity: any) => {
+  const handleAssignEntity = (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "pricingRequest") {
       entityModals.openAssignModal(type, entity);
     }
   };
 
-  const handleCompleteEntity = async (type: EntityType, entity: any) => {
+  const handleCompleteEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "pricingRequest") {
       await handlePricingRequestComplete(entity);
     }
   };
 
-  const handleActivateEntity = async (type: EntityType, entity: any) => {
+  const handleActivateEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "contract") {
       await handleContractActivate(entity);
     }
   };
 
-  const handleCancelEntity = async (type: EntityType, entity: any) => {
+  const handleCancelEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "contract") {
       await handleContractCancel(entity);
     }
   };
 
-  const handleSubmitEntity = async (type: EntityType, entity: any) => {
+  const handleSubmitEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "proposal") {
       await handleProposalSubmit(entity);
     }
   };
 
-  const handleApproveEntity = async (type: EntityType, entity: any) => {
+  const handleApproveEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "proposal") {
       await handleProposalApprove(entity);
     }
   };
 
-  const handleRejectEntity = async (type: EntityType, entity: any) => {
+  const handleRejectEntity = async (type: EntityType, entity: WorkspaceEntity) => {
     if (type === "proposal") {
       await handleProposalReject(entity);
     }
@@ -444,7 +451,7 @@ const OpportunityWorkspacePage = () => {
         <EntityModalsRenderer
           modals={entityModals.modals}
           forms={entityModals.forms}
-          selectedEntity={entityModals.selectedEntity}
+          selectedEntity={entityModals.selectedEntity || undefined}
           isPending={isPending}
           onActivityCreate={handleActivityCreate}
           onActivityEdit={handleActivityEdit}

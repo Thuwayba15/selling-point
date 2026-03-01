@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button, Modal, Form, Input, Select, Divider, App, Card, Table, Spin, Space } from "antd";
 import { useAuthState } from "@/providers/auth";
 import { useUsersActions, useUsersState } from "@/providers/users";
+import type { IUser } from "@/providers/users/context";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import type { UserRole } from "@/providers/auth";
 import type { IInvitation } from "@/providers/invitations";
@@ -230,7 +231,7 @@ const InvitationsPage = () => {
                 title: "Name",
                 dataIndex: "fullName",
                 key: "fullName",
-                render: (_, record: any) => `${record.firstName || ""} ${record.lastName || ""}`.trim(),
+                render: (_, record: IUser) => `${record.firstName || ""} ${record.lastName || ""}`.trim(),
               },
               {
                 title: "Email",

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, Form, DatePicker, Select, Button, Space, Row, Col } from "antd";
+import type { FormInstance } from "antd";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import type { OpportunityStage, GroupBy } from "@/providers/reports/context";
 import { filtersCardStyle } from "./style";
@@ -23,7 +24,7 @@ const GROUP_BY_OPTIONS = [
 ];
 
 interface ReportsFiltersProps {
-  form: any;
+  form: FormInstance;
   onSearch: () => void;
   onClear: () => void;
   loading?: boolean;

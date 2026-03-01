@@ -13,11 +13,18 @@ const RELATED_TO_OPTIONS = [
   { value: 5, label: "Activity" },
 ];
 
+interface NoteFormValues {
+  content: string;
+  relatedToType: RelatedToType;
+  relatedToId: string;
+  isPrivate?: boolean;
+}
+
 interface NoteFormProps {
   open: boolean;
   onCancel: () => void;
-  onSubmit: (values: any) => Promise<void>;
-  form: FormInstance;
+  onSubmit: (values: NoteFormValues) => Promise<void>;
+  form: FormInstance<NoteFormValues>;
   loading?: boolean;
   relatedToType?: RelatedToType;
   note?: INote | null;
