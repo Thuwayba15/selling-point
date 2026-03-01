@@ -273,27 +273,19 @@ export const ClientWorkspaceContent = ({
 
   return (
     <div style={{ padding: "24px" }}>
-      {/* Header */}
-      <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
-        <Col span={24}>
-          <Space>
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined />}
-              onClick={onBackToClients}
-              style={{ fontSize: "16px" }}
-            >
-              Back to Clients
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
       {/* Client Details Card */}
       <Card
         loading={isLoadingDetails}
-        style={{ marginBottom: "24px" }}
-        title={<h2 style={{ margin: 0 }}>{client.name}</h2>}
+        className={styles.clientDetailsCard}
+        title={
+          <Space>
+            <ArrowLeftOutlined
+              onClick={onBackToClients}
+              style={{ fontSize: "20px", cursor: "pointer" }}
+            />
+            <h2 style={{ margin: 0 }}>{client.name}</h2>
+          </Space>
+        }
         extra={
           <Space>
             {can("update:client") && (
@@ -347,6 +339,7 @@ export const ClientWorkspaceContent = ({
         items={tabs}
         activeKey={activeTab}
         onChange={onTabChange}
+        className={styles.workspaceTabsCard}
       />
 
       {/* Document Upload Modal */}

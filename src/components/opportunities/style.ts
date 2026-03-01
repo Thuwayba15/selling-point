@@ -99,27 +99,27 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   tableCard: css`
-    margin-bottom: ${token.marginLG}px;
+  margin-bottom: ${token.marginLG}px;
+  background-color: ${colors.primary};
 
-    background-color: ${colors.light};
+  & .ant-card-head {
+    background-color: ${colors.shell};
+    color: ${token.colorTextLightSolid};
+  }
 
-    :global(.ant-card-head) {
-      background-color: ${colors.secondary};
-    }
+  & .ant-card-body {
+    background-color: ${colors.white};
+  }
 
-    :global(.ant-card-body) {
-      background-color: ${colors.bgLayout};
-    }
-
-    :global(.ant-table),
-    :global(.ant-table-container),
-    :global(.ant-table-content),
-    :global(.ant-table-cell),
-    :global(.ant-table-thead > tr > th),
-    :global(.ant-table-tbody > tr > td) {
-      background-color: ${colors.bgLayout};
-    }
-  `,
+  & .ant-table,
+  & .ant-table-container,
+  & .ant-table-content,
+  & .ant-table-cell,
+  & .ant-table-thead > tr > th,
+  & .ant-table-tbody > tr > td {
+    background-color: ${colors.white} !important;
+  }
+`,
 
   tableRow: css`
     cursor: pointer;
@@ -129,6 +129,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     display: flex;
     gap: ${token.marginLG}px;
     margin-bottom: ${token.marginLG}px;
+    justify-content: center;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -140,20 +141,70 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   detailsCard: css`
-    height: 100%;
-  `,
+  margin-bottom: ${token.marginLG}px;
+  flex: 0.6;
+    min-width: 250px;
+  max-width: 850px;
+  background-color: ${colors.primary};
+  height: 100%;
+
+  & .ant-card-head {
+    background-color: ${colors.shell};
+    color: ${token.colorTextLightSolid};
+  }
+
+  & .ant-card-body {
+    background-color: ${colors.white};
+  }
+
+  & .ant-table,
+  & .ant-table-container,
+  & .ant-table-content,
+  & .ant-table-cell,
+  & .ant-table-thead > tr > th,
+  & .ant-table-tbody > tr > td {
+    background-color: ${colors.white} !important;
+  }
+`,
 
   actionsCard: css`
-    flex: 1;
-    min-width: 300px;
+    flex: 0.6;
+    min-width: 250px;
+    max-width: 850px;
+    background-color: ${colors.white};
+
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
+    }
+
+    & .ant-card-body {
+      background-color: ${colors.white};
+    }
 
     @media (max-width: 768px) {
       min-width: 100%;
+      max-width: 100%;
     }
   `,
 
   actionsStack: css`
     width: 100%;
+    justify-content: flex-end;
+  `,
+
+  opportunityWorkspaceCard: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.primary};
+
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
+    }
+
+    & .ant-card-body {
+      background-color: ${colors.white};
+    }
   `,
 
   fullWidthControl: css`
@@ -171,8 +222,28 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   insightCard: css`
-    flex: 1;
-  `,
+  margin-bottom: ${token.marginLG}px;
+  background-color: ${colors.primary};
+  flex: 1;
+
+  & .ant-card-head {
+    background-color: ${colors.shell};
+    color: ${token.colorTextLightSolid};
+  }
+
+  & .ant-card-body {
+    background-color: ${colors.white};
+  }
+
+  & .ant-table,
+  & .ant-table-container,
+  & .ant-table-content,
+  & .ant-table-cell,
+  & .ant-table-thead > tr > th,
+  & .ant-table-tbody > tr > td {
+    background-color: ${colors.white} !important;
+  }
+`,
 
   emptyState: css`
     color: ${token.colorTextSecondary};

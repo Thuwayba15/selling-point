@@ -276,6 +276,7 @@ export const OpportunityWorkspaceContent = ({
               icon={<ArrowLeftOutlined />}
               onClick={onBackToOpportunities}
               aria-label="Back to all opportunities"
+              style={{ color: "white" }}
             />
             {selectedOpportunity.title}
           </Space>
@@ -283,6 +284,7 @@ export const OpportunityWorkspaceContent = ({
         items={workspaceItems}
         activeKey={activeTab}
         onChange={onTabChange}
+        className={styles.opportunityWorkspaceCard}
       />
 
       {/* Related Documents Modal */}
