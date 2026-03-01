@@ -11,20 +11,28 @@ import { useStyles } from "../style";
 
 interface ContractsTabProps {
   contracts: IContract[];
-  loading?: boolean;
-  onCreateEntity?: () => void;
-  onEdit: (contract: IContract) => void;
-  onDelete: (contract: IContract) => Promise<void>;
+  isLoading: boolean;
+  onCreateEntity: (type: "contract") => void;
+  onEditEntity: (entity: IContract) => void;
+  onActivateEntity: (entity: IContract) => void;
+  onCancelEntity: (entity: IContract) => void;
+  onDeleteEntity: (entity: IContract) => void;
+  onViewDocuments: (type: "contract", entity: IContract) => void;
+  onViewNotes: (type: "contract", entity: IContract) => void;
   toolbarClassName?: string;
   paginationClassName?: string;
 }
 
 export const ContractsTab = ({
   contracts,
-  loading = false,
+  isLoading,
   onCreateEntity,
-  onEdit,
-  onDelete,
+  onEditEntity,
+  onActivateEntity,
+  onCancelEntity,
+  onDeleteEntity,
+  onViewDocuments,
+  onViewNotes,
   toolbarClassName,
   paginationClassName,
 }: ContractsTabProps) => {
@@ -44,10 +52,10 @@ export const ContractsTab = ({
 
   return (
     <>
-      <div className={styles.toolbarContainer}>
+      <div className={toolbarClassName}>
         <WorkspaceTabActions
           entityType="contract"
-          onCreateClick={() => onCreateEntity?.()}
+          onCreateClick={() => onCreateEntity("contract")}
           compact
         />
         <ContractsFilters
@@ -60,18 +68,14 @@ export const ContractsTab = ({
       <WorkspaceEntityList
         entities={paginatedItems}
         type="contract"
-        loading={loading}
+        loading={isLoading}
         emptyText="No contracts found for this client"
-        onEntityEdit={onEdit}
-        onEntityDelete={(entity: IContract) => onDelete(entity)}
-        onEntityViewDocuments={(_, contract: IContract) => {
-          // TODO: Navigate to contract documents
-          console.log("View documents for contract:", contract.id);
-        }}
-        onEntityViewNotes={(_, contract: IContract) => {
-          // TODO: Navigate to contract notes
-          console.log("View notes for contract:", contract.id);
-        }}
+        onEntityEdit={onEditEntity}
+        onEntityActivate={onActivateEntity}
+        onEntityCancel={onCancelEntity}
+        onEntityDelete={onDeleteEntity}
+        onEntityViewDocuments={(_, e) => onViewDocuments("contract", e)}
+        onEntityViewNotes={(_, e) => onViewNotes("contract", e)}
       />
 
       {total > 0 && (

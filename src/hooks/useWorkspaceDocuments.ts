@@ -3,7 +3,7 @@ import { App, Form } from "antd";
 import { useDocumentsActions } from "@/providers/documents";
 import { useRbac } from "@/hooks/useRbac";
 import { IDocument, RelatedToType } from "@/providers/documents/context";
-import { getAxiosInstance } from "@/lib/axios";
+import { getAxiosInstance } from "@/lib/api";
 
 export type RelatedDocsTarget = {
   relatedToType: RelatedToType;
@@ -40,7 +40,8 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
         },
       });
       setRelatedDocuments((data?.items || data || []) as IDocument[]);
-    } catch {
+    } catch (error) {
+      console.error("Failed to load related documents:", error);
       setRelatedDocuments([]);
       message.error("Failed to load related documents");
     } finally {

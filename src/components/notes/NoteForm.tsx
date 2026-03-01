@@ -26,6 +26,7 @@ interface NoteFormProps {
   onSubmit: (values: NoteFormValues) => Promise<void>;
   form: FormInstance<NoteFormValues>;
   loading?: boolean;
+  zIndex?: number;
   relatedToType?: RelatedToType;
   note?: INote | null;
 }
@@ -36,6 +37,7 @@ export const NoteForm = ({
   onSubmit,
   form,
   loading = false,
+  zIndex,
   relatedToType,
   note,
 }: NoteFormProps) => {
@@ -79,6 +81,7 @@ export const NoteForm = ({
       onOk={handleSubmit}
       okText={isEdit ? "Update" : "Create"}
       confirmLoading={loading}
+      zIndex={zIndex}
       width={600}
     >
       <Form form={form} layout="vertical">

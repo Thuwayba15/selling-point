@@ -36,6 +36,7 @@ interface DocumentUploadFormProps {
   onSubmit: (values: DocumentFormValues, file: File) => Promise<void>;
   form: FormInstance<DocumentFormValues>;
   loading?: boolean;
+  zIndex?: number;
   relatedToType?: RelatedToType;
   clientOptions?: Array<{ value: string; label: string }>;
   opportunityOptions?: Array<{ value: string; label: string }>;
@@ -49,6 +50,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
   onSubmit,
   form,
   loading = false,
+  zIndex,
   relatedToType,
   clientOptions = [],
   opportunityOptions = [],
@@ -112,6 +114,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
       onOk={handleSubmit}
       okText="Upload"
       confirmLoading={loading}
+      zIndex={zIndex}
       width={600}
     >
       <Form form={form} layout="vertical">
@@ -153,17 +156,19 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
           <Select placeholder="Select category" options={CATEGORY_OPTIONS} />
         </Form.Item>
 
-        <Form.Item
-          label="Related To Type"
-          name="relatedToType"
-          rules={[{ required: true, message: "Please select related to type" }]}
-        >
-          <Select
-            placeholder="Select type"
-            options={RELATED_TO_OPTIONS}
-            onChange={() => form.setFieldValue("relatedToId", undefined)}
-          />
-        </Form.Item>
+        {!relatedToType && (
+          <Form.Item
+            label="Related To Type"
+            name="relatedToType"
+            rules={[{ required: true, message: "Please select related to type" }]}
+          >
+            <Select
+              placeholder="Select type"
+              options={RELATED_TO_OPTIONS}
+              onChange={() => form.setFieldValue("relatedToId", undefined)}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item
           label="Related To"

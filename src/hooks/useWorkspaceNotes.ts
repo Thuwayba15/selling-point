@@ -3,7 +3,7 @@ import { App, Form } from "antd";
 import { useNotesActions } from "@/providers/notes";
 import { useRbac } from "@/hooks/useRbac";
 import { INote, RelatedToType } from "@/providers/notes/context";
-import { getAxiosInstance } from "@/lib/axios";
+import { getAxiosInstance } from "@/lib/api";
 
 export type RelatedNotesTarget = {
   relatedToType: RelatedToType;
@@ -42,7 +42,8 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
         },
       });
       setRelatedNotes((data?.items || data || []) as INote[]);
-    } catch {
+    } catch (error) {
+      console.error("Failed to load related notes:", error);
       setRelatedNotes([]);
       message.error("Failed to load related notes");
     } finally {
@@ -150,8 +151,32 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
         message.success("Note created successfully");
         setIsRelatedNoteFormOpen(false);
         relatedNoteForm.resetFields();
-        await onRefresh();
-        await loadRelatedNotes(relatedNotesTarget);
+        
+        // For contract notes, add to local state immediately if refresh fails
+        if (relatedNotesTarget.relatedToType === 4) {
+          try {
+            await onRefresh();
+            await loadRelatedNotes(relatedNotesTarget);
+          } catch (error) {
+            console.error("Refresh failed, but note was created:", error);
+            // Add the note to local state as fallback
+            const newNote: INote = {
+              id: `temp-${Date.now()}`, // Temporary ID
+              content: values.content,
+              relatedToType: relatedNotesTarget.relatedToType,
+              relatedToId: relatedNotesTarget.relatedToId,
+              createdById: "current-user", // This would come from auth context
+              createdByName: "Current User",
+              isPrivate: false,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            setRelatedNotes(prev => [newNote, ...prev]);
+          }
+        } else {
+          await onRefresh();
+          await loadRelatedNotes(relatedNotesTarget);
+        }
       }
     },
     [notesActions, message, onRefresh, relatedNotesTarget, relatedNoteForm, loadRelatedNotes, editingRelatedNote],

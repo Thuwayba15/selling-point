@@ -11,13 +11,17 @@ import { NotesTab } from "./tabs/NotesTab";
 import { EntityModalsRenderer } from "./modals/EntityModalsRenderer";
 import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
 import { NoteForm } from "@/components/notes/NoteForm";
+import { RelatedDocumentsModal, RelatedNotesModal } from "@/components/opportunities/modals";
 import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import { useRbac } from "@/hooks/useRbac";
 import { useWorkspaceDocuments } from "@/hooks/useWorkspaceDocuments";
 import { useWorkspaceNotes } from "@/hooks/useWorkspaceNotes";
+import type { RelatedDocsTarget } from "@/hooks/useWorkspaceDocuments";
+import type { RelatedNotesTarget } from "@/hooks/useWorkspaceNotes";
 import { useDocumentsActions } from "@/providers/documents";
 import { useNotesActions } from "@/providers/notes";
-import { RelatedToType } from "@/providers/documents/context";
+import { RelatedToType as DocumentRelatedToType } from "@/providers/documents/context";
+import { RelatedToType as NoteRelatedToType } from "@/providers/notes/context";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
 import type { IOpportunity } from "@/providers/opportunities/context";
@@ -107,7 +111,7 @@ export const ClientWorkspaceContent = ({
       } else {
         const success = await notesActions.createNote({
           content: values.content,
-          relatedToType: RelatedToType.Client,
+          relatedToType: NoteRelatedToType.Client,
           relatedToId: client.id,
         });
         if (!success) return;
@@ -121,12 +125,34 @@ export const ClientWorkspaceContent = ({
     }
   }, [client?.id, notes, notesActions, message, onRefreshWorkspace]);
 
+  // Handle opening contract documents
+  const handleEntityDocuments = useCallback((type: "contract", entity: IContract) => {
+    if (!entity?.id) return;
+    const target: RelatedDocsTarget = {
+      relatedToType: DocumentRelatedToType.Contract,
+      relatedToId: entity.id,
+      title: entity.contractNumber || entity.title || "Contract",
+    };
+    documents.openRelatedDocuments(target);
+  }, [documents]);
+
+  // Handle opening contract notes
+  const handleEntityNotes = useCallback((type: "contract", entity: IContract) => {
+    if (!entity?.id) return;
+    const target: RelatedNotesTarget = {
+      relatedToType: NoteRelatedToType.Contract,
+      relatedToId: entity.id,
+      title: entity.contractNumber || entity.title || "Contract",
+    };
+    notes.openRelatedNotes(target);
+  }, [notes]);
+
   // Client-specific document upload handler
   const handleClientUpload = useCallback(() => {
     if (!client?.id) return;
     // Set the form values for client upload
     documents.workspaceUploadForm.setFieldsValue({
-      relatedToType: RelatedToType.Client,
+      relatedToType: DocumentRelatedToType.Client,
       relatedToId: client.id,
     });
     documents.setIsWorkspaceUploadOpen(true);
@@ -139,7 +165,7 @@ export const ClientWorkspaceContent = ({
     try {
       const success = await documentsActions.uploadDocument(file, {
         category: values.category,
-        relatedToType: RelatedToType.Client,
+        relatedToType: DocumentRelatedToType.Client,
         relatedToId: client.id,
         description: values.description,
       });
@@ -196,10 +222,14 @@ export const ClientWorkspaceContent = ({
       content: (
         <ContractsTab
           contracts={workspaceData.contracts}
-          loading={isLoading}
+          isLoading={isLoading}
           onCreateEntity={() => onCreateEntity("contract")}
-          onEdit={(contract) => onEditEntity("contract", contract)}
-          onDelete={(contract) => onDeleteEntity("contract", contract)}
+          onEditEntity={(contract) => onEditEntity("contract", contract)}
+          onActivateEntity={(contract) => onEditEntity("contract", contract)}
+          onCancelEntity={(contract) => onEditEntity("contract", contract)}
+          onDeleteEntity={(contract) => onDeleteEntity("contract", contract)}
+          onViewDocuments={handleEntityDocuments}
+          onViewNotes={handleEntityNotes}
           toolbarClassName={styles.toolbarContainer}
         />
       ),
@@ -325,8 +355,23 @@ export const ClientWorkspaceContent = ({
         onCancel={() => documents.setIsWorkspaceUploadOpen(false)}
         onSubmit={handleClientUploadSubmit}
         form={documents.workspaceUploadForm}
-        relatedToType={RelatedToType.Client}
+        relatedToType={DocumentRelatedToType.Client}
         clientOptions={client ? [{ value: client.id, label: client.name }] : []}
+      />
+
+      {/* Related Document Upload */}
+      <DocumentUploadForm
+        open={documents.isRelatedUploadOpen}
+        onCancel={() => documents.setIsRelatedUploadOpen(false)}
+        onSubmit={documents.handleRelatedUpload}
+        form={documents.relatedUploadForm}
+        loading={documents.isRelatedDocsLoading}
+        zIndex={1300}
+        relatedToType={documents.relatedDocsTarget?.relatedToType}
+        contractOptions={workspaceData.contracts.map((contract) => ({
+          value: contract.id,
+          label: contract.contractNumber || contract.title || "Contract",
+        }))}
       />
 
       {/* Workspace Note Form */}
@@ -336,8 +381,67 @@ export const ClientWorkspaceContent = ({
         onSubmit={handleClientNoteSubmit}
         form={notes.workspaceNoteForm}
         loading={isLoading}
-        relatedToType={RelatedToType.Client}
+        relatedToType={NoteRelatedToType.Client}
         note={notes.editingWorkspaceNote}
+      />
+
+      {/* Related Note Form */}
+      <NoteForm
+        open={notes.isRelatedNoteFormOpen}
+        onCancel={notes.closeRelatedNoteForm}
+        onSubmit={notes.handleCreateRelatedNote}
+        form={notes.relatedNoteForm}
+        loading={notes.isRelatedNotesLoading}
+        zIndex={1300}
+        relatedToType={notes.relatedNotesTarget?.relatedToType}
+        note={notes.editingRelatedNote}
+      />
+
+      {/* Related Documents Modal */}
+      <RelatedDocumentsModal
+        open={documents.isRelatedDocsModalOpen}
+        target={documents.relatedDocsTarget}
+        documents={documents.relatedDocuments}
+        loading={documents.isRelatedDocsLoading}
+        selectedDocument={documents.selectedRelatedDocument}
+        onSelectDocument={documents.setSelectedRelatedDocument}
+        onUpload={documents.openRelatedUpload}
+        onDownload={documents.downloadDocument}
+        onDelete={(doc) =>
+          documents.deleteDocument(doc, async () => {
+            documents.setSelectedRelatedDocument(null);
+            if (documents.relatedDocsTarget) {
+              await documents.openRelatedDocuments(documents.relatedDocsTarget);
+            }
+          })
+        }
+        onClose={documents.closeRelatedDocuments}
+        canDelete={can("delete:document")}
+      />
+
+      {/* Related Notes Modal */}
+      <RelatedNotesModal
+        open={notes.isRelatedNotesModalOpen}
+        target={notes.relatedNotesTarget}
+        notes={notes.relatedNotes}
+        loading={notes.isRelatedNotesLoading}
+        selectedNote={notes.selectedRelatedNote}
+        onSelectNote={notes.setSelectedRelatedNote}
+        onAdd={notes.openRelatedNoteForm}
+        onEdit={(note) => {
+          notes.relatedNoteForm.setFieldsValue({ content: note.content });
+          notes.openRelatedNoteForm();
+        }}
+        onDelete={(note) =>
+          notes.deleteNote(note, async () => {
+            notes.setSelectedRelatedNote(null);
+            if (notes.relatedNotesTarget) {
+              await notes.openRelatedNotes(notes.relatedNotesTarget);
+            }
+          })
+        }
+        onClose={notes.closeRelatedNotes}
+        canDelete={can("delete:note")}
       />
 
       {/* Entity Modals */}
