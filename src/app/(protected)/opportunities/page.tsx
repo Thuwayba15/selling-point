@@ -16,7 +16,11 @@ import {
   OpportunityForm,
   OpportunityStageHistory,
 } from "@/components/opportunities";
-import { EntityWorkspaceTabs, WorkspaceEntityList, type WorkspaceTabItem } from "@/components/common";
+import {
+  EntityWorkspaceTabs,
+  WorkspaceEntityList,
+  type WorkspaceTabItem,
+} from "@/components/common";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
 import type { IUser } from "@/providers/users/context";
@@ -83,8 +87,12 @@ const OpportunitiesPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [createModalClientId, setCreateModalClientId] = useState<string | undefined>(undefined);
   const [editModalClientId, setEditModalClientId] = useState<string | undefined>(undefined);
-  const [createModalContacts, setCreateModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
-  const [editModalContacts, setEditModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
+  const [createModalContacts, setCreateModalContacts] = useState<
+    Array<{ id: string; firstName: string; lastName: string; email: string }>
+  >([]);
+  const [editModalContacts, setEditModalContacts] = useState<
+    Array<{ id: string; firstName: string; lastName: string; email: string }>
+  >([]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -125,7 +133,8 @@ const OpportunitiesPage = () => {
         const users = (data?.items || data || []) as IUser[];
         const options = users.map((item) => ({
           id: item.id,
-          label: item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
+          label:
+            item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
         }));
         setAssignableUsers(options);
       } catch (error) {
@@ -148,7 +157,12 @@ const OpportunitiesPage = () => {
         const { data } = await api.get("/api/contacts", {
           params: { clientId: createModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
         });
-        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        const contactsData = (data?.items || data || []) as Array<{
+          id: string;
+          firstName: string;
+          lastName: string;
+          email: string;
+        }>;
         setCreateModalContacts(contactsData);
       } catch (error) {
         setCreateModalContacts([]);
@@ -169,7 +183,12 @@ const OpportunitiesPage = () => {
         const { data } = await api.get("/api/contacts", {
           params: { clientId: editModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
         });
-        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        const contactsData = (data?.items || data || []) as Array<{
+          id: string;
+          firstName: string;
+          lastName: string;
+          email: string;
+        }>;
         setEditModalContacts(contactsData);
       } catch (error) {
         setEditModalContacts([]);
@@ -204,7 +223,7 @@ const OpportunitiesPage = () => {
       return;
     }
 
-      await getOpportunities({ ...params, isActive: true });
+    await getOpportunities({ ...params, isActive: true });
   };
 
   const fetchPipeline = async (overrideOwnerId?: string, useMy = showMyOpportunities) => {
@@ -236,58 +255,64 @@ const OpportunitiesPage = () => {
       setWorkspaceLoading(true);
       try {
         const api = getAxiosInstance();
-        const [activitiesRes, pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
-          await Promise.all([
-            api
-              .get("/api/activities", {
-                params: {
-                  relatedToType: 2,
-                  relatedToId: selectedOpportunity.id,
-                  pageNumber: 1,
-                  pageSize: 10,
-                },
-              })
-              .catch(() => ({ data: { items: [] } })),
-            api
-              .get("/api/pricingrequests", {
-                params: { pageNumber: 1, pageSize: 100 },
-              })
-              .catch(() => ({ data: { items: [] } })),
-            api
-              .get("/api/proposals", {
-                params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 10 },
-              })
-              .catch(() => ({ data: { items: [] } })),
-            api
-              .get("/api/contracts", {
-                params: {
-                  clientId: selectedOpportunity.clientId,
-                  pageNumber: 1,
-                  pageSize: 10,
-                },
-              })
-              .catch(() => ({ data: { items: [] } })),
-            api
-              .get("/api/documents", {
-                params: {
-                  relatedToType: 2,
-                  relatedToId: selectedOpportunity.id,
-                  pageNumber: 1,
-                  pageSize: 10,
-                },
-              })
-              .catch(() => ({ data: { items: [] } })),
-            api
-              .get("/api/notes", {
-                params: {
-                  relatedToType: 2,
-                  relatedToId: selectedOpportunity.id,
-                  pageNumber: 1,
-                  pageSize: 10,
-                },
-              })
-              .catch(() => ({ data: { items: [] } })),
-          ]);
+        const [
+          activitiesRes,
+          pricingRequestsRes,
+          proposalsRes,
+          contractsRes,
+          documentsRes,
+          notesRes,
+        ] = await Promise.all([
+          api
+            .get("/api/activities", {
+              params: {
+                relatedToType: 2,
+                relatedToId: selectedOpportunity.id,
+                pageNumber: 1,
+                pageSize: 10,
+              },
+            })
+            .catch(() => ({ data: { items: [] } })),
+          api
+            .get("/api/pricingrequests", {
+              params: { pageNumber: 1, pageSize: 100 },
+            })
+            .catch(() => ({ data: { items: [] } })),
+          api
+            .get("/api/proposals", {
+              params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 10 },
+            })
+            .catch(() => ({ data: { items: [] } })),
+          api
+            .get("/api/contracts", {
+              params: {
+                clientId: selectedOpportunity.clientId,
+                pageNumber: 1,
+                pageSize: 10,
+              },
+            })
+            .catch(() => ({ data: { items: [] } })),
+          api
+            .get("/api/documents", {
+              params: {
+                relatedToType: 2,
+                relatedToId: selectedOpportunity.id,
+                pageNumber: 1,
+                pageSize: 10,
+              },
+            })
+            .catch(() => ({ data: { items: [] } })),
+          api
+            .get("/api/notes", {
+              params: {
+                relatedToType: 2,
+                relatedToId: selectedOpportunity.id,
+                pageNumber: 1,
+                pageSize: 10,
+              },
+            })
+            .catch(() => ({ data: { items: [] } })),
+        ]);
 
         const activities = (activitiesRes.data?.items || activitiesRes.data || []).map(
           (item: { id: string; title?: string; typeName?: string; statusName?: string }) => ({
@@ -298,7 +323,9 @@ const OpportunitiesPage = () => {
         );
 
         const pricingRequests = (pricingRequestsRes.data?.items || pricingRequestsRes.data || [])
-          .filter((item: { opportunityId?: string }) => item.opportunityId === selectedOpportunity.id)
+          .filter(
+            (item: { opportunityId?: string }) => item.opportunityId === selectedOpportunity.id,
+          )
           .map((item: { id: string; title?: string; statusName?: string }) => ({
             id: item.id,
             title: item.title || "Pricing Request",
@@ -439,7 +466,11 @@ const OpportunitiesPage = () => {
     setIsStageModalOpen(true);
   };
 
-  const handleStageSubmit = async (values: { stage: number; notes?: string; lossReason?: string }) => {
+  const handleStageSubmit = async (values: {
+    stage: number;
+    notes?: string;
+    lossReason?: string;
+  }) => {
     if (!selectedOpportunity) return;
 
     const success = await updateOpportunityStage(
@@ -656,7 +687,9 @@ const OpportunitiesPage = () => {
       content: (
         <WorkspaceEntityList
           items={workspaceData.activities}
-          emptyText={workspaceLoading ? "Loading activities..." : "No activities for this opportunity"}
+          emptyText={
+            workspaceLoading ? "Loading activities..." : "No activities for this opportunity"
+          }
         />
       ),
     },
@@ -666,7 +699,11 @@ const OpportunitiesPage = () => {
       content: (
         <WorkspaceEntityList
           items={workspaceData.pricingRequests}
-          emptyText={workspaceLoading ? "Loading pricing requests..." : "No pricing requests for this opportunity"}
+          emptyText={
+            workspaceLoading
+              ? "Loading pricing requests..."
+              : "No pricing requests for this opportunity"
+          }
         />
       ),
     },
@@ -676,7 +713,9 @@ const OpportunitiesPage = () => {
       content: (
         <WorkspaceEntityList
           items={workspaceData.proposals}
-          emptyText={workspaceLoading ? "Loading proposals..." : "No proposals for this opportunity"}
+          emptyText={
+            workspaceLoading ? "Loading proposals..." : "No proposals for this opportunity"
+          }
         />
       ),
     },
@@ -686,7 +725,11 @@ const OpportunitiesPage = () => {
       content: (
         <WorkspaceEntityList
           items={workspaceData.contracts}
-          emptyText={workspaceLoading ? "Loading contracts..." : "No contracts linked to this opportunity's client"}
+          emptyText={
+            workspaceLoading
+              ? "Loading contracts..."
+              : "No contracts linked to this opportunity's client"
+          }
         />
       ),
     },
@@ -696,7 +739,9 @@ const OpportunitiesPage = () => {
       content: (
         <WorkspaceEntityList
           items={workspaceData.documents}
-          emptyText={workspaceLoading ? "Loading documents..." : "No documents for this opportunity"}
+          emptyText={
+            workspaceLoading ? "Loading documents..." : "No documents for this opportunity"
+          }
         />
       ),
     },

@@ -57,13 +57,12 @@ const DashboardPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-
         {/* Smart Automation Section */}
         <div className={styles.salesPerformanceSection}>
           <div className={styles.section}>
             <SmartAutomationDashboardNew />
           </div>
-        </div>   
+        </div>
       </div>
     </div>
   );

@@ -96,7 +96,8 @@ const PricingRequestsPage = () => {
         const users = (data?.items || data || []) as IUser[];
         const options = users.map((item) => ({
           id: item.id,
-          label: item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
+          label:
+            item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
         }));
         setAssignableUsers(options);
       } catch (error) {

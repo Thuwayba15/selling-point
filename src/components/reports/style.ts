@@ -65,16 +65,16 @@ export const useStyles = createStyles(({ token, css }) => ({
   reportCard: css`
     margin-bottom: ${token.marginLG}px;
     background-color: ${colors.primary};
-  
+
     & .ant-card-head {
       background-color: ${colors.shell};
       color: ${token.colorTextLightSolid};
     }
-  
+
     & .ant-card-body {
       background-color: ${colors.white};
     }
-  
+
     & .ant-table,
     & .ant-table-container,
     & .ant-table-content,

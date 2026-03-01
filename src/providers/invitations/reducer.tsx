@@ -4,7 +4,10 @@ import { InvitationsActionTypes } from "./actions";
 
 export const InvitationsReducer = handleActions<IInvitationsStateContext, any>(
   {
-    [InvitationsActionTypes.ADD_GENERATED_INVITATION]: (state, action: { payload: IInvitation }) => ({
+    [InvitationsActionTypes.ADD_GENERATED_INVITATION]: (
+      state,
+      action: { payload: IInvitation },
+    ) => ({
       ...state,
       generatedInvitations: [...state.generatedInvitations, action.payload],
     }),
@@ -14,7 +17,10 @@ export const InvitationsReducer = handleActions<IInvitationsStateContext, any>(
       generatedInvitations: state.generatedInvitations.filter((inv) => inv.id !== action.payload),
     }),
 
-    [InvitationsActionTypes.SET_GENERATED_INVITATIONS]: (state, action: { payload: IInvitation[] }) => ({
+    [InvitationsActionTypes.SET_GENERATED_INVITATIONS]: (
+      state,
+      action: { payload: IInvitation[] },
+    ) => ({
       ...state,
       generatedInvitations: action.payload,
     }),

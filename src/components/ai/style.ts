@@ -176,7 +176,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     .ant-table {
       font-size: 12px;
     }
-    
+
     .ant-table-thead > tr > th,
     .ant-table-tbody > tr > td {
       padding: 4px 8px;
@@ -377,7 +377,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     background: ${token.colorBgLayout};
     min-height: 100vh;
   `,
-  
+
   widgetsHeader: css`
     margin-bottom: 24px;
     color: ${token.colorText};
@@ -436,7 +436,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     border: 1px solid ${token.colorBorder};
     display: flex;
     flex-direction: column;
-    
+
     @media (max-width: 480px) {
       width: calc(100vw - 32px);
       height: calc(100vh - 120px);
@@ -449,16 +449,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     justify-content: space-between;
     align-items: center;
     padding: 0;
-  `,
-
-  title: css`
-    margin: 0;
-    line-height: 1.2;
-  `,
-
-  subtitle: css`
-    font-size: 11px;
-    line-height: 1;
   `,
 
   floatButton: css`
@@ -482,7 +472,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     font-size: 11px;
     height: auto;
     padding: 2px 8px;
-    
+
     &:hover {
       color: ${token.colorPrimary};
     }
@@ -496,15 +486,15 @@ export const useStyles = createStyles(({ token, css }) => ({
     background: ${token.colorBgContainer};
     display: flex;
     flex-direction: column;
-    
+
     &::-webkit-scrollbar {
       width: 4px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: transparent;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: ${token.colorBorder};
       border-radius: 2px;
@@ -548,7 +538,7 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding: 8px 12px;
     white-space: normal;
     font-size: 12px;
-    
+
     &:hover {
       border-color: ${token.colorPrimary};
       color: ${token.colorPrimary};
@@ -556,28 +546,19 @@ export const useStyles = createStyles(({ token, css }) => ({
   `,
 
   messagesList: css`
-  display: flex;
-  flex-direction: column;
-  gap: ${token.marginSM}px;
-  width: 100%;
-  padding: ${token.paddingXS}px;
-`,
+    display: flex;
+    flex-direction: column;
+    gap: ${token.marginSM}px;
+    width: 100%;
+    padding: ${token.paddingXS}px;
+  `,
 
-message: css`
-  display: flex;
-  gap: ${token.marginSM}px;
-  align-items: flex-start;
-  width: 100%;
-`,
-
-  user: css`
-  justify-content: flex-end;  /* ← pushes user messages right */
-  flex-direction: row-reverse; /* ← avatar on the right */
-`,
-
-assistant: css`
-  justify-content: flex-start;
-`,
+  message: css`
+    display: flex;
+    gap: ${token.marginSM}px;
+    align-items: flex-start;
+    width: 100%;
+  `,
 
   messageAvatar: css`
     flex-shrink: 0;
@@ -590,22 +571,22 @@ assistant: css`
     max-width: 70%;
     font-size: 14px;
     line-height: 1.4;
-    
+
     .user & {
       align-items: flex-end;
     }
-    
+
     p {
       margin-bottom: 8px;
       &:last-child {
         margin-bottom: 0;
       }
     }
-    
+
     ul {
       margin: 4px 0;
       padding-left: 16px;
-      
+
       li {
         margin-bottom: 4px;
         &:last-child {
@@ -613,12 +594,12 @@ assistant: css`
         }
       }
     }
-    
+
     strong {
       font-weight: 600;
       color: ${token.colorPrimary};
     }
-    
+
     em {
       font-style: italic;
     }
@@ -630,13 +611,17 @@ assistant: css`
     background: ${token.colorBgContainer};
     border: 1px solid ${token.colorBorder};
     word-wrap: break-word;
-    
+
     .user & {
-      background: linear-gradient(135deg, ${token.colorPrimary} 0%, ${token.colorPrimaryBorder} 100%);
+      background: linear-gradient(
+        135deg,
+        ${token.colorPrimary} 0%,
+        ${token.colorPrimaryBorder} 100%
+      );
       border-color: ${token.colorPrimary};
       color: white;
     }
-    
+
     .assistant & {
       background: ${token.colorBgContainer};
       border-color: ${token.colorBorder};
@@ -659,7 +644,7 @@ assistant: css`
     .ant-input {
       border-radius: 20px;
       border: 1px solid ${token.colorBorder};
-      
+
       &:focus {
         border-color: ${token.colorPrimary};
         box-shadow: 0 0 0 2px ${token.colorPrimaryBg};
@@ -670,7 +655,7 @@ assistant: css`
   sendButton: css`
     border-radius: 0 20px 20px 0;
     height: 32px;
-    
+
     &:disabled {
       opacity: 0.6;
     }
@@ -690,7 +675,7 @@ assistant: css`
     background: ${token.colorBgLayout};
     min-height: 100vh;
   `,
-  
+
   smartHeader: css`
     margin-bottom: 24px;
     color: ${token.colorText};
@@ -775,5 +760,5 @@ assistant: css`
 
   smartDivider: css`
     margin: 16px 0;
-  `
+  `,
 }));

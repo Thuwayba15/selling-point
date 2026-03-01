@@ -27,27 +27,30 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
   const [isWorkspaceUploadOpen, setIsWorkspaceUploadOpen] = useState(false);
   const [workspaceUploadForm] = Form.useForm();
 
-  const loadRelatedDocuments = useCallback(async (target: RelatedDocsTarget) => {
-    setIsRelatedDocsLoading(true);
-    try {
-      const api = getAxiosInstance();
-      const { data } = await api.get("/api/documents", {
-        params: {
-          relatedToType: target.relatedToType,
-          relatedToId: target.relatedToId,
-          pageNumber: 1,
-          pageSize: 1000,
-        },
-      });
-      setRelatedDocuments((data?.items || data || []) as IDocument[]);
-    } catch (error) {
-      console.error("Failed to load related documents:", error);
-      setRelatedDocuments([]);
-      message.error("Failed to load related documents");
-    } finally {
-      setIsRelatedDocsLoading(false);
-    }
-  }, [message]);
+  const loadRelatedDocuments = useCallback(
+    async (target: RelatedDocsTarget) => {
+      setIsRelatedDocsLoading(true);
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/documents", {
+          params: {
+            relatedToType: target.relatedToType,
+            relatedToId: target.relatedToId,
+            pageNumber: 1,
+            pageSize: 1000,
+          },
+        });
+        setRelatedDocuments((data?.items || data || []) as IDocument[]);
+      } catch (error) {
+        console.error("Failed to load related documents:", error);
+        setRelatedDocuments([]);
+        message.error("Failed to load related documents");
+      } finally {
+        setIsRelatedDocsLoading(false);
+      }
+    },
+    [message],
+  );
 
   const openRelatedDocuments = useCallback(
     async (target: RelatedDocsTarget) => {
@@ -150,7 +153,11 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
   );
 
   const handleWorkspaceUpload = useCallback(
-    async (values: { category: number; description?: string }, file: File, opportunityId: string) => {
+    async (
+      values: { category: number; description?: string },
+      file: File,
+      opportunityId: string,
+    ) => {
       const success = await documentsActions.uploadDocument(file, {
         category: values.category,
         relatedToType: RelatedToType.Opportunity,

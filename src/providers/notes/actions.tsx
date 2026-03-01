@@ -162,24 +162,18 @@ export const deleteNoteError = createAction<INotesStateContext, string>(
   }),
 );
 
-export const clearError = createAction<INotesStateContext>(
-  NotesActionEnums.clearError,
-  () => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: false,
-    isError: false,
-    errorMessage: undefined,
-  }),
-);
+export const clearError = createAction<INotesStateContext>(NotesActionEnums.clearError, () => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: false,
+  isError: false,
+  errorMessage: undefined,
+}));
 
-export const clearNote = createAction<INotesStateContext>(
-  NotesActionEnums.clearNote,
-  () => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: false,
-    isError: false,
-    note: undefined,
-  }),
-);
+export const clearNote = createAction<INotesStateContext>(NotesActionEnums.clearNote, () => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: false,
+  isError: false,
+  note: undefined,
+}));

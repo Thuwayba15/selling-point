@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { sendEmail } from '@/lib/email';
+import { NextRequest, NextResponse } from "next/server";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
 
     if (!to || !subject || !htmlContent) {
       return NextResponse.json(
-        { error: 'Missing required fields: to, subject, htmlContent' },
-        { status: 400 }
+        { error: "Missing required fields: to, subject, htmlContent" },
+        { status: 400 },
       );
     }
 
@@ -20,18 +20,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (result) {
-      return NextResponse.json({ success: true, message: 'Email sent successfully' });
+      return NextResponse.json({ success: true, message: "Email sent successfully" });
     } else {
       return NextResponse.json(
-        { error: 'Failed to send email - check Brevo configuration' },
-        { status: 500 }
+        { error: "Failed to send email - check Brevo configuration" },
+        { status: 500 },
       );
     }
   } catch (error) {
-    console.error('Email API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error("Email API Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

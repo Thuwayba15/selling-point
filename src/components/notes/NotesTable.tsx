@@ -36,11 +36,7 @@ export const NotesTable: React.FC<NotesTableProps> = ({
       dataIndex: "content",
       key: "content",
       ellipsis: true,
-      render: (value: string) => (
-        <Text ellipsis={{ tooltip: value }}>
-          {value || "—"}
-        </Text>
-      ),
+      render: (value: string) => <Text ellipsis={{ tooltip: value }}>{value || "—"}</Text>,
     },
     {
       title: "Related To Type",

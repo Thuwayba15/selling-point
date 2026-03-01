@@ -20,11 +20,7 @@ export interface IInvitationsStateContext {
 
 // Interface defining all the actions that can be performed
 export interface IInvitationsActionContext {
-  generateInvitationLink: (
-    tenantId: string,
-    invitedEmail: string,
-    role: UserRole,
-  ) => IInvitation;
+  generateInvitationLink: (tenantId: string, invitedEmail: string, role: UserRole) => IInvitation;
   getGeneratedInvitations: () => IInvitation[];
   deleteGeneratedInvitation: (id: string) => void;
 }

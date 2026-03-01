@@ -57,7 +57,7 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
               totalCount: data.totalCount || 0,
               totalPages: data.totalPages || 0,
             },
-          })
+          }),
         );
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch documents");
@@ -86,19 +86,19 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
         relatedToType: RelatedToType;
         relatedToId: string;
         description?: string;
-      }
+      },
     ): Promise<boolean> => {
       dispatch(uploadDocumentPending());
 
       try {
         const api = getAxiosInstance();
-        
+
         // Create a clean File object (Ant Design mutates the original by adding uid property)
         const cleanFile = new File([file], file.name, {
           type: file.type,
           lastModified: file.lastModified,
         });
-        
+
         const formData = new FormData();
         // API expects PascalCase field names per swagger.md (not lowercase as in docs.md)
         formData.append("File", cleanFile);
@@ -122,7 +122,7 @@ export const DocumentsProvider = ({ children }: { children: React.ReactNode }) =
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to upload document");
-        if (error && typeof error === 'object' && 'response' in error) {
+        if (error && typeof error === "object" && "response" in error) {
           const axiosError = error as any;
         }
         dispatch(uploadDocumentError(message));

@@ -25,7 +25,11 @@ export const WorkspaceEntityList = ({ items, emptyText }: WorkspaceEntityListPro
         <List.Item key={item.id}>
           <List.Item.Meta
             title={item.title}
-            description={item.subtitle ? <Typography.Text type="secondary">{item.subtitle}</Typography.Text> : undefined}
+            description={
+              item.subtitle ? (
+                <Typography.Text type="secondary">{item.subtitle}</Typography.Text>
+              ) : undefined
+            }
           />
         </List.Item>
       )}

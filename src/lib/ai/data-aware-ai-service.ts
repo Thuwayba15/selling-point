@@ -1,7 +1,7 @@
-import { groqService } from './groq-service';
-import { IOpportunity } from '@/providers/opportunities/context';
-import { IClient } from '@/providers/clients/context';
-import { getAxiosInstance } from '@/lib/api';
+import { groqService } from "./groq-service";
+import { IOpportunity } from "@/providers/opportunities/context";
+import { IClient } from "@/providers/clients/context";
+import { getAxiosInstance } from "@/lib/api";
 
 export class DataAwareAIService {
   private api = getAxiosInstance();
@@ -9,9 +9,9 @@ export class DataAwareAIService {
   public async fetchOpportunities(): Promise<IOpportunity[]> {
     try {
       const response = await this.api.get("/api/opportunities", {
-        params: { pageNumber: 1, pageSize: 100, isDeleted: false }
+        params: { pageNumber: 1, pageSize: 100, isDeleted: false },
       });
-      
+
       const opportunities = response.data?.items || [];
       return opportunities;
     } catch (error) {
@@ -22,9 +22,9 @@ export class DataAwareAIService {
   public async fetchClients(): Promise<IClient[]> {
     try {
       const response = await this.api.get("/api/clients", {
-        params: { pageNumber: 1, pageSize: 100, isDeleted: false }
+        params: { pageNumber: 1, pageSize: 100, isDeleted: false },
       });
-      
+
       const clients = response.data?.items || [];
       return clients;
     } catch (error) {
@@ -43,52 +43,54 @@ export class DataAwareAIService {
 
   private formatOpportunitiesForAI(opportunities: IOpportunity[]): string {
     if (opportunities.length === 0) return "No opportunities found.";
-    
+
     // Show all opportunities, sorted by value
     const sortedOpportunities = opportunities
-      .filter(opp => opp.estimatedValue && opp.estimatedValue > 0)
+      .filter((opp) => opp.estimatedValue && opp.estimatedValue > 0)
       .sort((a, b) => (b.estimatedValue || 0) - (a.estimatedValue || 0));
 
     const result = [
       `Total Opportunities: ${opportunities.length}`,
       `All Opportunities (sorted by value):`,
-      ...sortedOpportunities.map(opp => 
-        `• ${opp.title} (${opp.clientName}) - R${(opp.estimatedValue || 0).toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} - Stage: ${this.getStageName(opp.stage)}${opp.expectedCloseDate ? ` - Closing: ${new Date(opp.expectedCloseDate).toLocaleDateString()}` : ''}`
-      )
+      ...sortedOpportunities.map(
+        (opp) =>
+          `• ${opp.title} (${opp.clientName}) - R${(opp.estimatedValue || 0).toLocaleString("en-ZA", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} - Stage: ${this.getStageName(opp.stage)}${opp.expectedCloseDate ? ` - Closing: ${new Date(opp.expectedCloseDate).toLocaleDateString()}` : ""}`,
+      ),
     ];
 
-    return result.join('\n');
+    return result.join("\n");
   }
 
   private formatClientsForAI(clients: IClient[]): string {
     if (clients.length === 0) return "No clients found.";
-    
+
     // Show all active clients, sorted by name
     const activeClients = clients
-      .filter(client => client.isActive)
+      .filter((client) => client.isActive)
       .sort((a, b) => a.name.localeCompare(b.name));
 
     const result = [
       `Total Clients: ${clients.length}`,
       `All Active Clients:`,
-      ...activeClients.map(client => 
-        `• ${client.name} (${client.industry}) - ${client.companySize || 'Unknown size'} - ${client.opportunitiesCount || 0} opportunities`
-      )
+      ...activeClients.map(
+        (client) =>
+          `• ${client.name} (${client.industry}) - ${client.companySize || "Unknown size"} - ${client.opportunitiesCount || 0} opportunities`,
+      ),
     ];
 
-    return result.join('\n');
+    return result.join("\n");
   }
 
   private getStageName(stage?: number): string {
     const stages = {
-      1: 'Lead',
-      2: 'Qualified', 
-      3: 'Proposal',
-      4: 'Negotiation',
-      5: 'Closed Won',
-      6: 'Closed Lost'
+      1: "Lead",
+      2: "Qualified",
+      3: "Proposal",
+      4: "Negotiation",
+      5: "Closed Won",
+      6: "Closed Lost",
     };
-    return stages[stage as keyof typeof stages] || 'Unknown';
+    return stages[stage as keyof typeof stages] || "Unknown";
   }
 
   private async getRelevantData(userQuery: string): Promise<string> {
@@ -96,43 +98,66 @@ export class DataAwareAIService {
     let dataContext = "";
 
     // Fetch data based on query content
-    if (query.includes('opportunity') || query.includes('opportunities') || query.includes('pipeline') || query.includes('deal') || query.includes('negotiation') || query.includes('stage') || query.includes('closing') || query.includes('close') || query.includes('follow-up') || query.includes('followup')) {
+    if (
+      query.includes("opportunity") ||
+      query.includes("opportunities") ||
+      query.includes("pipeline") ||
+      query.includes("deal") ||
+      query.includes("negotiation") ||
+      query.includes("stage") ||
+      query.includes("closing") ||
+      query.includes("close") ||
+      query.includes("follow-up") ||
+      query.includes("followup")
+    ) {
       const opportunities = await this.fetchOpportunities();
       dataContext += `\n\nCURRENT OPPORTUNITIES:\n${this.formatOpportunitiesForAI(opportunities)}`;
-      
+
       // Add pipeline analysis
       const pipelineAnalysis = this.analyzePipeline(opportunities);
       dataContext += `\n\nPIPELINE ANALYSIS:\n${pipelineAnalysis}`;
     }
 
-    if (query.includes('client') || query.includes('customer')) {
+    if (query.includes("client") || query.includes("customer")) {
       const clients = await this.fetchClients();
       dataContext += `\n\nCURRENT CLIENTS:\n${this.formatClientsForAI(clients)}`;
     }
 
-    if (query.includes('dashboard') || query.includes('overview') || query.includes('metrics') || query.includes('win rate')) {
+    if (
+      query.includes("dashboard") ||
+      query.includes("overview") ||
+      query.includes("metrics") ||
+      query.includes("win rate")
+    ) {
       const dashboardData = await this.fetchDashboardData();
       dataContext += `\n\nDASHBOARD OVERVIEW:\n${this.formatDashboardForAI(dashboardData)}`;
-      
+
       // Also fetch opportunities for dashboard context
       const opportunities = await this.fetchOpportunities();
       dataContext += `\n\nCURRENT OPPORTUNITIES:\n${this.formatOpportunitiesForAI(opportunities)}`;
-      
+
       // Add pipeline analysis
       const pipelineAnalysis = this.analyzePipeline(opportunities);
       dataContext += `\n\nPIPELINE ANALYSIS:\n${pipelineAnalysis}`;
     }
 
-    if (query.includes('user') || query.includes('users') || query.includes('organization') || query.includes('org') || query.includes('team') || query.includes('employees')) {
+    if (
+      query.includes("user") ||
+      query.includes("users") ||
+      query.includes("organization") ||
+      query.includes("org") ||
+      query.includes("team") ||
+      query.includes("employees")
+    ) {
       try {
         // Fetch users for current tenant only - let API handle tenant filtering automatically
         const response = await this.api.get("/api/users", {
-          params: { pageNumber: 1, pageSize: 100 }
+          params: { pageNumber: 1, pageSize: 100 },
         });
         const users = response.data?.items || [];
         dataContext += `\n\nCURRENT USERS:\nTotal Users: ${users.length}\nAll Users:`;
         users.forEach((user: any, index: number) => {
-          dataContext += `\n• ${user.firstName} ${user.lastName} (${user.email}) - Roles: ${user.roles?.join(', ') || 'None'} - Active: ${user.isActive ? 'Yes' : 'No'}`;
+          dataContext += `\n• ${user.firstName} ${user.lastName} (${user.email}) - Roles: ${user.roles?.join(", ") || "None"} - Active: ${user.isActive ? "Yes" : "No"}`;
         });
       } catch (error) {
         dataContext += `\n\nCURRENT USERS:\nNo users found or error fetching user data.`;
@@ -144,14 +169,17 @@ export class DataAwareAIService {
 
   private analyzePipeline(opportunities: IOpportunity[]): string {
     const totalValue = opportunities.reduce((sum, opp) => sum + (opp.estimatedValue || 0), 0);
-    const stageCounts = opportunities.reduce((acc, opp) => {
-      const stage = this.getStageName(opp.stage);
-      acc[stage] = (acc[stage] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const stageCounts = opportunities.reduce(
+      (acc, opp) => {
+        const stage = this.getStageName(opp.stage);
+        acc[stage] = (acc[stage] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const highValueOpportunities = opportunities.filter(opp => (opp.estimatedValue || 0) > 50000);
-    const closingSoon = opportunities.filter(opp => {
+    const highValueOpportunities = opportunities.filter((opp) => (opp.estimatedValue || 0) > 50000);
+    const closingSoon = opportunities.filter((opp) => {
       if (!opp.expectedCloseDate) return false;
       const closeDate = new Date(opp.expectedCloseDate);
       const thirtyDaysFromNow = new Date();
@@ -159,31 +187,33 @@ export class DataAwareAIService {
       return closeDate <= thirtyDaysFromNow;
     });
 
-    return `• Total Pipeline Value: R${totalValue.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+    return `• Total Pipeline Value: R${totalValue.toLocaleString("en-ZA", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
 • Total Opportunities: ${opportunities.length}
 • High Value Opportunities (>R50,000): ${highValueOpportunities.length}
 • Closing in 30 days: ${closingSoon.length}
-• By Stage: ${Object.entries(stageCounts).map(([stage, count]) => `${stage} (${count})`).join(', ')}`;
+• By Stage: ${Object.entries(stageCounts)
+      .map(([stage, count]) => `${stage} (${count})`)
+      .join(", ")}`;
   }
 
   private formatDashboardForAI(data: any): string {
-    return `• Total Clients: ${data.totalClients || 'N/A'}
-• Active Opportunities: ${data.activeOpportunities || 'N/A'}
-• Win Rate: ${data.winRate ? `${(data.winRate * 100).toFixed(1)}%` : 'N/A'}
-• Pipeline Value: ${data.pipelineValue ? `R${data.pipelineValue.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : 'N/A'}
-• Upcoming Activities: ${data.upcomingActivities || 'N/A'}`;
+    return `• Total Clients: ${data.totalClients || "N/A"}
+• Active Opportunities: ${data.activeOpportunities || "N/A"}
+• Win Rate: ${data.winRate ? `${(data.winRate * 100).toFixed(1)}%` : "N/A"}
+• Pipeline Value: ${data.pipelineValue ? `R${data.pipelineValue.toLocaleString("en-ZA", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : "N/A"}
+• Upcoming Activities: ${data.upcomingActivities || "N/A"}`;
   }
 
   async chatWithRealData(userMessage: string): Promise<string> {
     try {
       // Get relevant data based on the user's query
       const realData = await this.getRelevantData(userMessage);
-      
+
       // Create enhanced prompt with real data
-      console.log('=== AI DEBUG: Real data being sent to AI ===');
+      console.log("=== AI DEBUG: Real data being sent to AI ===");
       console.log(realData);
-      console.log('=== END DEBUG DATA ===');
-      
+      console.log("=== END DEBUG DATA ===");
+
       const enhancedPrompt = `You are a helpful AI assistant for Selling Point CRM system.
 
 IMPORTANT: All monetary values are in **South African Rands (R)**, not dollars. Use "R" prefix for all currency amounts.
@@ -239,13 +269,11 @@ ANSWER THE ACTUAL QUESTION:
 Answer based ONLY on the real data provided above: "${userMessage}"`;
 
       // Get AI response with enhanced context
-      const response = await groqService.chat([
-        { role: "user", content: enhancedPrompt }
-      ]);
+      const response = await groqService.chat([{ role: "user", content: enhancedPrompt }]);
 
       return response;
     } catch (error) {
-      console.error('Data-aware AI service error:', error);
+      console.error("Data-aware AI service error:", error);
       // Fallback to regular service if data fetch fails
       return groqService.chat([{ role: "user", content: userMessage }]);
     }

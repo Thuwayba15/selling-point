@@ -40,9 +40,9 @@ export const CreateOpportunityModal = ({
     } else if (isOpen) {
       // Set default values for new opportunities
       form.setFieldsValue({
-        currency: 'R',
-        stage: 'Lead',
-        probability: 50
+        currency: "R",
+        stage: "Lead",
+        probability: 50,
       });
     } else if (!isOpen) {
       form.resetFields();

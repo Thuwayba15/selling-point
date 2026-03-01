@@ -244,7 +244,7 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   barContainer: css`
     width: 100%;
-    height: 280px; 
+    height: 280px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

@@ -24,13 +24,7 @@ export const EditContactModal = ({
   onCancel,
 }: EditContactModalProps) => {
   return (
-    <Modal
-      title="Edit Contact"
-      open={isOpen}
-      onCancel={onCancel}
-      footer={null}
-      width={600}
-    >
+    <Modal title="Edit Contact" open={isOpen} onCancel={onCancel} footer={null} width={600}>
       <ContactForm
         form={form}
         initialValues={contact || undefined}

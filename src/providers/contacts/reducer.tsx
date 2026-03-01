@@ -2,9 +2,7 @@ import { handleActions } from "redux-actions";
 import type { Action } from "redux-actions";
 
 import { INITIAL_STATE, type IContactsStateContext } from "./context";
-import {
-  ContactsActionEnums,
-} from "./actions";
+import { ContactsActionEnums } from "./actions";
 
 export const contactsReducer = handleActions<IContactsStateContext, IContactsStateContext>(
   {

@@ -39,14 +39,8 @@ const OpportunityWorkspacePage = () => {
   const opportunityId = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
   // State & hooks
-  const {
-    isPending,
-    isLoadingDetails,
-    isError,
-    errorMessage,
-    opportunity,
-    stageHistory,
-  } = useOpportunitiesState();
+  const { isPending, isLoadingDetails, isError, errorMessage, opportunity, stageHistory } =
+    useOpportunitiesState();
 
   const {
     getOpportunity,
@@ -66,7 +60,14 @@ const OpportunityWorkspacePage = () => {
 
   // Custom hooks
   const filters = useOpportunityFilters(opportunityId);
-  const { workspaceData, workspaceLoading, assignableUsers, loadWorkspaceData, loadUsers, loadContacts } = useOpportunityWorkspaceData();
+  const {
+    workspaceData,
+    workspaceLoading,
+    assignableUsers,
+    loadWorkspaceData,
+    loadUsers,
+    loadContacts,
+  } = useOpportunityWorkspaceData();
   const entityModals = useEntityModals();
 
   // Local state
@@ -118,7 +119,10 @@ const OpportunityWorkspacePage = () => {
     selectedOpportunity,
     selectedEntity: entityModals.selectedEntity,
     onRefresh: refreshWorkspace,
-    usersList: (usersState.users || []).map(u => ({ value: u.id, label: `${u.firstName} ${u.lastName}` })),
+    usersList: (usersState.users || []).map((u) => ({
+      value: u.id,
+      label: `${u.firstName} ${u.lastName}`,
+    })),
     clientsList: (clientsState.clients || []).map((c) => ({ value: c.id, label: c.name })),
     opportunitiesList: selectedOpportunity?.id
       ? [{ value: selectedOpportunity.id, label: selectedOpportunity.title || "Opportunity" }]
@@ -266,7 +270,11 @@ const OpportunityWorkspacePage = () => {
     setIsStageModalOpen(true);
   };
 
-  const handleStageSubmit = async (values: { stage: number; notes?: string; lossReason?: string }) => {
+  const handleStageSubmit = async (values: {
+    stage: number;
+    notes?: string;
+    lossReason?: string;
+  }) => {
     if (!selectedOpportunity) return;
 
     const success = await updateOpportunityStage(
@@ -333,12 +341,12 @@ const OpportunityWorkspacePage = () => {
 
   const handleEditEntity = (type: EntityType, entity: WorkspaceEntity) => {
     entityModals.openEditModal(type, entity);
-    if (type === "activity" && 'dueDate' in entity) {
+    if (type === "activity" && "dueDate" in entity) {
       entityModals.forms.activity.edit.setFieldsValue({
         ...entity,
         dueDate: entity?.dueDate ? dayjs(entity.dueDate) : undefined,
       });
-    } else if (type === "contract" && 'startDate' in entity && 'endDate' in entity) {
+    } else if (type === "contract" && "startDate" in entity && "endDate" in entity) {
       entityModals.forms.contract.edit.setFieldsValue({
         ...entity,
         startDate: entity?.startDate ? dayjs(entity.startDate) : undefined,

@@ -286,13 +286,13 @@ const ActivitiesPage = () => {
   const handleEdit = async (activity?: Activity) => {
     const activityToEdit = activity || selectedActivity;
     if (!activityToEdit?.id) return;
-    
+
     // Load full activity details if not already loaded
     await activitiesActions.getActivity(activityToEdit.id);
     const fullActivity = activitiesState.activity;
-    
+
     if (!fullActivity) return;
-    
+
     const formValues: Record<string, unknown> = {
       subject: fullActivity.subject || "",
       type: fullActivity.type || ActivityType.Task,
@@ -336,7 +336,7 @@ const ActivitiesPage = () => {
   const handleCompleteClick = (activity?: Activity) => {
     const activityToComplete = activity || selectedActivity;
     if (!activityToComplete?.id) return;
-    
+
     setSelectedActivity(activityToComplete);
     completeForm.resetFields();
     setIsCompleteModalOpen(true);
@@ -559,7 +559,7 @@ const ActivitiesPage = () => {
             ]}
           />
         </div>
-    </div>
+      </div>
 
       {/* Create Modal */}
       <Modal
@@ -615,10 +615,7 @@ const ActivitiesPage = () => {
       >
         <Form form={completeForm} layout="vertical">
           <Form.Item label="Outcome" name="outcome">
-            <Input.TextArea
-              rows={4}
-              placeholder="Enter the outcome of this activity (optional)"
-            />
+            <Input.TextArea rows={4} placeholder="Enter the outcome of this activity (optional)" />
           </Form.Item>
         </Form>
       </Modal>

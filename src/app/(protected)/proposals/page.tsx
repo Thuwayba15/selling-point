@@ -92,7 +92,13 @@ const ProposalsPage = () => {
     if (proposal?.id && selectedProposal?.id === proposal.id) {
       // Totals updated
     }
-  }, [proposal?.subtotal, proposal?.tax, proposal?.totalAmount, proposal?.id, selectedProposal?.id]);
+  }, [
+    proposal?.subtotal,
+    proposal?.tax,
+    proposal?.totalAmount,
+    proposal?.id,
+    selectedProposal?.id,
+  ]);
 
   // Show error messages
   useEffect(() => {
@@ -171,10 +177,10 @@ const ProposalsPage = () => {
       // Handle line items
       if (lineItems && selectedProposal.id) {
         const existingLineItems = proposal?.lineItems || [];
-        const existingIds = new Set(existingLineItems.map(item => item.id));
+        const existingIds = new Set(existingLineItems.map((item) => item.id));
 
         // Add new line items
-        const newItems = lineItems.filter(item => !item.id || !existingIds.has(item.id));
+        const newItems = lineItems.filter((item) => !item.id || !existingIds.has(item.id));
         for (const item of newItems) {
           await addLineItem(selectedProposal.id, {
             productServiceName: item.productServiceName,
@@ -187,8 +193,10 @@ const ProposalsPage = () => {
         }
 
         // Delete removed line items
-        const newItemIds = new Set(lineItems.filter(item => item.id).map(item => item.id));
-        const deletedItems = existingLineItems.filter(item => item.id && !newItemIds.has(item.id));
+        const newItemIds = new Set(lineItems.filter((item) => item.id).map((item) => item.id));
+        const deletedItems = existingLineItems.filter(
+          (item) => item.id && !newItemIds.has(item.id),
+        );
         for (const item of deletedItems) {
           if (item.id) await deleteLineItem(selectedProposal.id, item.id);
         }
@@ -323,11 +331,11 @@ const ProposalsPage = () => {
       <div className={styles.mainContent}>
         <ProposalsHeader onCreateClick={handleCreateClick} />
 
-        <ProposalsFilters 
+        <ProposalsFilters
           clients={clientsList}
           opportunities={opportunitiesList}
-          onApplyFilters={handleApplyFilters} 
-          onClear={handleClearFilters} 
+          onApplyFilters={handleApplyFilters}
+          onClear={handleClearFilters}
         />
 
         <ProposalsTable

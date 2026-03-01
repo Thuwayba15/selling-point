@@ -27,7 +27,7 @@ export const ProtectedShell = ({ children }: { children: ReactNode }) => {
           <div className={styles.page}>{children}</div>
         </Content>
       </Layout>
-      
+
       {/* AI Assistant */}
       <AIAssistant />
     </Layout>

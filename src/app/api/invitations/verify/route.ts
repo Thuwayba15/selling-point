@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     const payload = await verifyInvitationToken(token);
 
     if (!payload) {
-      return NextResponse.json(
-        { error: "Invalid or expired invitation token" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Invalid or expired invitation token" }, { status: 401 });
     }
 
     return NextResponse.json(

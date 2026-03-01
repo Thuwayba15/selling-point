@@ -127,7 +127,9 @@ export const OpportunityWorkspaceContent = ({
   const handleEntityDocuments = (type: "proposal" | "contract", entity: IProposal | IContract) => {
     if (!entity?.id) return;
     const target: RelatedDocsTarget = {
-      relatedToType: (type === "proposal" ? DocRelatedToType.Proposal : DocRelatedToType.Contract) as any,
+      relatedToType: (type === "proposal"
+        ? DocRelatedToType.Proposal
+        : DocRelatedToType.Contract) as any,
       relatedToId: entity.id,
       title:
         type === "proposal"
@@ -258,9 +260,7 @@ export const OpportunityWorkspaceContent = ({
           onSelectNote={notes.setSelectedNote}
           onAdd={notes.openWorkspaceNoteForm}
           onEdit={() => notes.selectedNote && notes.editWorkspaceNote(notes.selectedNote)}
-          onDelete={() =>
-            notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))
-          }
+          onDelete={() => notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))}
         />
       ),
     },

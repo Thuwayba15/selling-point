@@ -28,9 +28,7 @@ const PRIORITY_OPTIONS = [
   { label: "Urgent", value: 4 },
 ];
 
-const CURRENCY_OPTIONS = [
-  { label: "ZAR (R)", value: "R" },
-];
+const CURRENCY_OPTIONS = [{ label: "ZAR (R)", value: "R" }];
 
 export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
   form,
@@ -82,12 +80,14 @@ export const PricingRequestForm: React.FC<PricingRequestFormProps> = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={opportunities?.map((opp) => {
-            if ('value' in opp) {
-              return { value: opp.value, label: opp.label };
-            }
-            return { value: opp.id, label: opp.title };
-          }) || []}
+          options={
+            opportunities?.map((opp) => {
+              if ("value" in opp) {
+                return { value: opp.value, label: opp.label };
+              }
+              return { value: opp.id, label: opp.title };
+            }) || []
+          }
         />
       </Form.Item>
 

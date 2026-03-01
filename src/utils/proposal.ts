@@ -16,9 +16,7 @@ export interface ProposalTotals {
  * @param lineItems - Array of proposal line items
  * @returns Object containing subtotal, tax, and totalAmount
  */
-export const calculateProposalTotals = (
-  lineItems: ProposalLineItemForTotals[],
-): ProposalTotals => {
+export const calculateProposalTotals = (lineItems: ProposalLineItemForTotals[]): ProposalTotals => {
   let subtotal = 0;
   let totalTax = 0;
   let totalAmount = 0;
@@ -27,18 +25,18 @@ export const calculateProposalTotals = (
     if (item.quantity && item.unitPrice) {
       // Calculate before-discount amount
       const itemSubtotal = item.quantity * item.unitPrice;
-      
+
       // Apply discount
       const discount = item.discount || 0;
       const discountAmount = itemSubtotal * (discount / 100);
       const afterDiscount = itemSubtotal - discountAmount;
-      
+
       // Calculate and apply tax
       const taxRate = item.taxRate || 0;
       const itemTax = afterDiscount * (taxRate / 100);
       const itemTotal = afterDiscount + itemTax;
 
-      subtotal += afterDiscount;  // Subtotal after discount, before tax
+      subtotal += afterDiscount; // Subtotal after discount, before tax
       totalTax += itemTax;
       totalAmount += itemTotal;
     }

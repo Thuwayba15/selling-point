@@ -137,7 +137,16 @@ export const useClientEntityModals = (onRefresh?: () => Promise<void>) => {
         });
       });
     },
-    [can, message, contactsActions, opportunitiesActions, contractsActions, documentsActions, notesActions, onRefresh],
+    [
+      can,
+      message,
+      contactsActions,
+      opportunitiesActions,
+      contractsActions,
+      documentsActions,
+      notesActions,
+      onRefresh,
+    ],
   );
 
   return {

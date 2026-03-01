@@ -1,24 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { 
-  Card, 
-  Input, 
-  Button, 
-  Space, 
-  Typography, 
-  Avatar, 
-  Spin, 
-  message,
-  FloatButton,
-} from "antd";
-import { 
-  SendOutlined, 
-  RobotOutlined, 
-  UserOutlined, 
+import { Card, Input, Button, Space, Typography, Avatar, Spin, message, FloatButton } from "antd";
+import {
+  SendOutlined,
+  RobotOutlined,
+  UserOutlined,
   CloseOutlined,
   MessageOutlined,
-  BulbOutlined
+  BulbOutlined,
 } from "@ant-design/icons";
 import { groqService } from "@/lib/ai/groq-service";
 import { dataAwareAIService } from "@/lib/ai/data-aware-ai-service";
@@ -39,23 +29,23 @@ const suggestedQueries = [
   "Show me my high-value opportunities (over R50,000)",
   "Which clients need follow-up?",
   "What's my win rate looking like?",
-  "How many opportunities are closing soon?"
+  "How many opportunities are closing soon?",
 ];
 
 const formatMessageContent = (content: string) => {
-    // Convert markdown-style formatting to HTML
-    return content
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^- (.+)$/gm, '<li>• $1</li>')
-      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>')
-      .replace(/^(.+)$/gm, '<p>$1</p>')
-      .replace(/<p><li>/g, '<ul><li>')
-      .replace(/<\/li><\/p>/g, '</li></ul>')
-      .replace(/<p><\/p>/g, '');
-  };
+  // Convert markdown-style formatting to HTML
+  return content
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/^- (.+)$/gm, "<li>• $1</li>")
+    .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/\n/g, "<br>")
+    .replace(/^(.+)$/gm, "<p>$1</p>")
+    .replace(/<p><li>/g, "<ul><li>")
+    .replace(/<\/li><\/p>/g, "</li></ul>")
+    .replace(/<p><\/p>/g, "");
+};
 
 export const AIAssistant = () => {
   const { styles } = useStyles();
@@ -84,7 +74,7 @@ export const AIAssistant = () => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
@@ -99,48 +89,58 @@ export const AIAssistant = () => {
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, aiMessage]);
-      
+      setMessages((prev) => [...prev, aiMessage]);
+
       if (!isOpen) {
-        setUnreadCount(prev => prev + 1);
+        setUnreadCount((prev) => prev + 1);
       }
     } catch (error: any) {
       console.error("AI Assistant error:", error);
       console.error("Error details:", {
         message: error.message,
         stack: error.stack,
-        name: error.name
+        name: error.name,
       });
-      
+
       let errorMessage = "Sorry, I'm having trouble connecting. Please try again.";
       let fallbackResponse = "";
-      
+
       if (error && error.message) {
         console.error("Error type check passed - instance of Error");
         if (error.message.includes("API key not configured")) {
           errorMessage = "AI service not configured. Please add your Groq API key to continue.";
-          fallbackResponse = "I'm your AI assistant for the Selling Point CRM! I can help you with:\n\n• Analyzing sales data and opportunities\n• Finding insights about your clients\n• Suggesting next steps for deals\n• Answering questions about your pipeline\n\nTo get started, please configure your Groq API key in the environment variables.";
-        } else if (error.message.includes("model_decommissioned") || error.message.includes("decommissioned")) {
+          fallbackResponse =
+            "I'm your AI assistant for the Selling Point CRM! I can help you with:\n\n• Analyzing sales data and opportunities\n• Finding insights about your clients\n• Suggesting next steps for deals\n• Answering questions about your pipeline\n\nTo get started, please configure your Groq API key in the environment variables.";
+        } else if (
+          error.message.includes("model_decommissioned") ||
+          error.message.includes("decommissioned")
+        ) {
           errorMessage = "AI model updated. The service has been updated with a new model.";
-          fallbackResponse = "I've been updated with a new AI model! Please try your question again. I'm here to help you with your CRM data, sales insights, and business questions.";
+          fallbackResponse =
+            "I've been updated with a new AI model! Please try your question again. I'm here to help you with your CRM data, sales insights, and business questions.";
         } else if (error.message.includes("400")) {
           errorMessage = "Invalid request format. Please try rephrasing your question.";
-          fallbackResponse = "I didn't quite understand that. Could you try rephrasing your question? For example, you could ask about your sales pipeline, client information, or opportunities.";
+          fallbackResponse =
+            "I didn't quite understand that. Could you try rephrasing your question? For example, you could ask about your sales pipeline, client information, or opportunities.";
         } else if (error.message.includes("401")) {
           errorMessage = "Invalid API key. Please check your Groq API configuration.";
-          fallbackResponse = "There's an issue with the API configuration. Please check your Groq API key and try again.";
+          fallbackResponse =
+            "There's an issue with the API configuration. Please check your Groq API key and try again.";
         } else if (error.message.includes("429")) {
           errorMessage = "Too many requests. Please wait a moment and try again.";
-          fallbackResponse = "I'm processing too many requests right now. Please wait a moment and try again.";
+          fallbackResponse =
+            "I'm processing too many requests right now. Please wait a moment and try again.";
         } else if (error.message.includes("500")) {
           errorMessage = "AI service is temporarily unavailable. Please try again later.";
-          fallbackResponse = "The AI service is temporarily unavailable. Please try again in a few moments.";
+          fallbackResponse =
+            "The AI service is temporarily unavailable. Please try again in a few moments.";
         } else {
           errorMessage = `Error: ${error.message}`;
-          fallbackResponse = "I encountered an unexpected error. Please try again or contact support if the issue persists.";
+          fallbackResponse =
+            "I encountered an unexpected error. Please try again or contact support if the issue persists.";
         }
       }
-      
+
       // Add fallback response
       if (fallbackResponse) {
         const fallbackMessage: Message = {
@@ -149,9 +149,9 @@ export const AIAssistant = () => {
           content: fallbackResponse,
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, fallbackMessage]);
+        setMessages((prev) => [...prev, fallbackMessage]);
       }
-      
+
       message.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -201,15 +201,13 @@ export const AIAssistant = () => {
       {isOpen && (
         <Card
           className={styles.chatWindow}
-          styles={{ body: { padding: 0, height: '100%', display: 'flex', flexDirection: 'column' } }}
+          styles={{
+            body: { padding: 0, height: "100%", display: "flex", flexDirection: "column" },
+          }}
           title={
             <div className={styles.chatHeader}>
               <Space>
-                <Avatar 
-                  size="small" 
-                  icon={<RobotOutlined />} 
-                  className={styles.avatar}
-                />
+                <Avatar size="small" icon={<RobotOutlined />} className={styles.avatar} />
                 <div>
                   <Title level={5} className={styles.title}>
                     AI Assistant
@@ -228,12 +226,7 @@ export const AIAssistant = () => {
             </div>
           }
           extra={
-            <Button
-              type="text"
-              size="small"
-              onClick={clearChat}
-              className={styles.clearButton}
-            >
+            <Button type="text" size="small" onClick={clearChat} className={styles.clearButton}>
               Clear
             </Button>
           }
@@ -246,9 +239,10 @@ export const AIAssistant = () => {
                   <BulbOutlined className={styles.welcomeIcon} />
                   <Title level={4}>Hello! I'm your AI Assistant</Title>
                   <Text type="secondary">
-                    I can help you with CRM guidance and provide insights based on your actual sales data, opportunities, and clients.
+                    I can help you with CRM guidance and provide insights based on your actual sales
+                    data, opportunities, and clients.
                   </Text>
-                  
+
                   <div className={styles.suggestions}>
                     <Text strong>Try asking:</Text>
                     <div className={styles.suggestionButtons}>
@@ -272,7 +266,7 @@ export const AIAssistant = () => {
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`${styles.message} ${message.role === 'user' ? styles.user : styles.assistant}`}
+                    className={`${styles.message} ${message.role === "user" ? styles.user : styles.assistant}`}
                   >
                     <Avatar
                       size="small"
@@ -281,15 +275,15 @@ export const AIAssistant = () => {
                     />
                     <div className={styles.messageContent}>
                       <div className={styles.messageBubble}>
-                        <div 
+                        <div
                           dangerouslySetInnerHTML={{ __html: message.content }}
                           className={styles.messageContent}
                         />
                       </div>
                       <Text type="secondary" className={styles.messageTime}>
-                        {message.timestamp.toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </Text>
                     </div>

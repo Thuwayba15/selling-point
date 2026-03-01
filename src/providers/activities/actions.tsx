@@ -221,16 +221,13 @@ export const getActivityParticipantsPending = createAction<IActivitiesStateConte
 export const getActivityParticipantsSuccess = createAction<
   IActivitiesStateContext,
   IActivityParticipant[]
->(
-  ActivitiesActionEnums.getActivityParticipantsSuccess,
-  (participants: IActivityParticipant[]) => ({
-    isPending: false,
-    isLoadingDetails: false,
-    isSuccess: true,
-    isError: false,
-    participants,
-  }),
-);
+>(ActivitiesActionEnums.getActivityParticipantsSuccess, (participants: IActivityParticipant[]) => ({
+  isPending: false,
+  isLoadingDetails: false,
+  isSuccess: true,
+  isError: false,
+  participants,
+}));
 
 export const getActivityParticipantsError = createAction<IActivitiesStateContext, string>(
   ActivitiesActionEnums.getActivityParticipantsError,

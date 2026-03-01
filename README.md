@@ -26,30 +26,34 @@ A modern sales automation platform built with Next.js, TypeScript, and Ant Desig
 ## 🚦 Getting Started
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Thuwayba15/selling-point.git
    cd selling-point
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
-   
+
    Create a `.env.local` file in the root directory:
+
    ```env
    NEXT_PUBLIC_BACKEND_API_URL=your_api_url_here
    ```
 
 4. **Run the development server**
+
    ```bash
    pnpm dev
    ```
 
 5. **Open your browser**
-   
+
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure

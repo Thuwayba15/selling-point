@@ -55,14 +55,15 @@ const ClientWorkspacePage = () => {
   const initializedRef = useRef(false);
 
   // Custom hooks
-  const { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh } = useClientWorkspaceData();
-  
+  const { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh } =
+    useClientWorkspaceData();
+
   const refreshWorkspace = useCallback(async () => {
     if (selectedClient) {
       await fetchWorkspaceData(selectedClient, true);
     }
   }, [selectedClient, fetchWorkspaceData]);
-  
+
   const entityModals = useClientEntityModals(refreshWorkspace);
 
   // Initialize page - load client data
@@ -81,7 +82,11 @@ const ClientWorkspacePage = () => {
 
   // Update selected client when client data is loaded
   useEffect(() => {
-    if (client?.id && client.id === clientId && (!selectedClient || selectedClient.id !== client.id)) {
+    if (
+      client?.id &&
+      client.id === clientId &&
+      (!selectedClient || selectedClient.id !== client.id)
+    ) {
       setSelectedClient(client);
     }
   }, [client?.id, clientId]);
@@ -105,14 +110,14 @@ const ClientWorkspacePage = () => {
   // Refresh data when page becomes visible (user navigates back)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && selectedClient) {
+      if (document.visibilityState === "visible" && selectedClient) {
         // Force refresh when page becomes visible
         fetchWorkspaceData(selectedClient, true);
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [selectedClient, fetchWorkspaceData]);
 
   // Refresh data when window gets focus (user switches back to tab)
@@ -123,8 +128,8 @@ const ClientWorkspacePage = () => {
       }
     };
 
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, [selectedClient, fetchWorkspaceData]);
 
   // Handle back button
@@ -165,46 +170,61 @@ const ClientWorkspacePage = () => {
     setIsEditModalOpen(true);
   }, [selectedClient, editClientForm]);
 
-  const handleEditClientSubmit = useCallback(async (values: Partial<IClient>) => {
-    if (!selectedClient?.id) return;
+  const handleEditClientSubmit = useCallback(
+    async (values: Partial<IClient>) => {
+      if (!selectedClient?.id) return;
 
-    try {
-      await updateClient(selectedClient.id, values);
-      message.success("Client updated successfully");
-      setIsEditModalOpen(false);
-      editClientForm.resetFields();
-      await getClient(selectedClient.id);
-    } catch (error) {
-      message.error("Failed to update client");
-    }
-  }, [selectedClient?.id, updateClient, message, editClientForm, getClient]);
+      try {
+        await updateClient(selectedClient.id, values);
+        message.success("Client updated successfully");
+        setIsEditModalOpen(false);
+        editClientForm.resetFields();
+        await getClient(selectedClient.id);
+      } catch (error) {
+        message.error("Failed to update client");
+      }
+    },
+    [selectedClient?.id, updateClient, message, editClientForm, getClient],
+  );
 
   const handleEditClientCancel = useCallback(() => {
     setIsEditModalOpen(false);
     editClientForm.resetFields();
   }, [editClientForm]);
 
-  const handleSetPrimaryContact = useCallback(async (contact: IContact) => {
-    try {
-      await contactsActions.setPrimaryContact(contact.id);
-      message.success("Primary contact updated successfully");
-      await fetchWorkspaceData(selectedClient!, true);
-    } catch (error) {
-      message.error("Failed to update primary contact");
-    }
-  }, [selectedClient, fetchWorkspaceData, contactsActions, message]);
+  const handleSetPrimaryContact = useCallback(
+    async (contact: IContact) => {
+      try {
+        await contactsActions.setPrimaryContact(contact.id);
+        message.success("Primary contact updated successfully");
+        await fetchWorkspaceData(selectedClient!, true);
+      } catch (error) {
+        message.error("Failed to update primary contact");
+      }
+    },
+    [selectedClient, fetchWorkspaceData, contactsActions, message],
+  );
 
-  const handleCreateEntity = useCallback((type: EntityType) => {
-    entityModals.openCreateModal(type);
-  }, [entityModals]);
+  const handleCreateEntity = useCallback(
+    (type: EntityType) => {
+      entityModals.openCreateModal(type);
+    },
+    [entityModals],
+  );
 
-  const handleEditEntity = useCallback((type: EntityType, entity: WorkspaceEntity) => {
-    entityModals.openEditModal(type, entity);
-  }, [entityModals]);
+  const handleEditEntity = useCallback(
+    (type: EntityType, entity: WorkspaceEntity) => {
+      entityModals.openEditModal(type, entity);
+    },
+    [entityModals],
+  );
 
-  const handleDeleteEntity = useCallback(async (type: EntityType, entity: WorkspaceEntity) => {
-    await entityModals.handleDeleteEntity(type, entity, selectedClient?.id || "");
-  }, [entityModals, selectedClient?.id]);
+  const handleDeleteEntity = useCallback(
+    async (type: EntityType, entity: WorkspaceEntity) => {
+      await entityModals.handleDeleteEntity(type, entity, selectedClient?.id || "");
+    },
+    [entityModals, selectedClient?.id],
+  );
 
   return (
     <div className={styles.pageContainer}>

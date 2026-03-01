@@ -58,16 +58,16 @@ export const OpportunitiesTab = ({
       title: "Title",
       key: "title",
       render: (_, record) => (
-        <span 
+        <span
           onClick={(e) => {
             e.stopPropagation(); // Prevent row click from firing twice
             console.log("Navigating to opportunity:", record.id, record.title);
             window.location.href = `/opportunities/${record.id}`;
           }}
-          style={{ 
-            cursor: 'pointer', 
-            color: '#1890ff', 
-            textDecoration: 'underline'
+          style={{
+            cursor: "pointer",
+            color: "#1890ff",
+            textDecoration: "underline",
           }}
         >
           {record.title || "—"}
@@ -137,7 +137,7 @@ export const OpportunitiesTab = ({
                   console.log("Row clicked - Navigating to opportunity:", record.id, record.title);
                   window.location.href = `/opportunities/${record.id}`;
                 },
-                style: { cursor: 'pointer' }
+                style: { cursor: "pointer" },
               })}
             />
           </Card>

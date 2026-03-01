@@ -83,14 +83,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
           averageProbability?: number;
           conversionToNext?: number;
         }
-        
+
         const transformedStages = (data?.stages || []).map((stage: APIStageMetrics) => {
           const avgDealSize = stage.count > 0 ? stage.totalValue / stage.count : 0;
           return {
             stage: stage.stage,
             stageName: stage.stageName,
             count: stage.count || 0,
-            value: stage.totalValue || 0,  // Use totalValue as the value for the chart
+            value: stage.totalValue || 0, // Use totalValue as the value for the chart
             avgDealSize,
             totalValue: stage.totalValue,
             averageProbability: stage.averageProbability,
@@ -125,7 +125,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         // API returns { topPerformers: [...], averageDealsPerUser, averageRevenuePerUser }
         // Extract and transform the topPerformers array
         const topPerformers = Array.isArray(data) ? data : data?.topPerformers || [];
-        
+
         interface APIPerformer {
           userId: string;
           userName: string;
@@ -135,17 +135,18 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
           totalRevenue: number;
           winRate: number;
         }
-        
+
         const salesPerformanceData = topPerformers.map((performer: APIPerformer) => ({
           userId: performer.userId,
-          userName: performer.userName || 'Unknown',
+          userName: performer.userName || "Unknown",
           opportunitiesCount: performer.opportunitiesCount || 0,
           wonCount: performer.wonCount || 0,
           lostCount: performer.lostCount || 0,
           totalRevenue: performer.totalRevenue || 0,
-          winRate: performer.opportunitiesCount > 0 
-            ? (performer.wonCount / performer.opportunitiesCount) * 100 
-            : 0,
+          winRate:
+            performer.opportunitiesCount > 0
+              ? (performer.wonCount / performer.opportunitiesCount) * 100
+              : 0,
         }));
 
         dispatch(getSalesPerformanceSuccess({ salesPerformance: salesPerformanceData }));
@@ -198,7 +199,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             }
           : {
               contracts: data?.contracts || [],
-              totalCount: data?.totalCount || (data?.contracts?.length || 0),
+              totalCount: data?.totalCount || data?.contracts?.length || 0,
             };
 
         dispatch(getExpiringContractsSuccess({ expiringContracts: contractsList }));

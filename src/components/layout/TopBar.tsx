@@ -34,11 +34,11 @@ export const TopBar = () => {
 
   // Check for dynamic routes
   let pageName = PAGE_NAMES[pathname];
-  
+
   if (!pageName) {
     // Handle opportunity workspace route
-    if (pathname.startsWith('/opportunities/')) {
-      const pathParts = pathname.split('/');
+    if (pathname.startsWith("/opportunities/")) {
+      const pathParts = pathname.split("/");
       if (pathParts.length >= 3 && pathParts[2]) {
         pageName = "Opportunity Workspace";
       }

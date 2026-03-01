@@ -16,19 +16,21 @@ interface ChatResponse {
 export class GroqService {
   private apiKey: string;
   private baseUrl = "https://api.groq.com/openai/v1";
-  
+
   // List of models to try in order (current to fallback)
   private models = [
     "llama-3.1-70b-versatile",
-    "llama-3.1-8b-instant", 
+    "llama-3.1-8b-instant",
     "mixtral-8x7b-32768",
-    "gemma2-9b-it"
+    "gemma2-9b-it",
   ];
 
   constructor() {
     this.apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
     if (!this.apiKey) {
-      console.warn("Groq API key not found. Please set NEXT_PUBLIC_GROQ_API_KEY in your environment variables.");
+      console.warn(
+        "Groq API key not found. Please set NEXT_PUBLIC_GROQ_API_KEY in your environment variables.",
+      );
     }
   }
 
@@ -43,7 +45,7 @@ export class GroqService {
     for (const model of this.models) {
       try {
         console.log(`Trying model: ${model}`);
-        
+
         const requestBody = {
           model: model,
           messages: [
@@ -139,9 +141,9 @@ RESPONSE GUIDELINES:
 - Use **bold** for important terms
 - Keep under 150 words when possible
 - Focus on most important information first
-- When you have real data, use it to provide specific, actionable insights`
+- When you have real data, use it to provide specific, actionable insights`,
             },
-            ...messages
+            ...messages,
           ],
           temperature: 0.7,
           max_tokens: 800,
@@ -152,7 +154,7 @@ RESPONSE GUIDELINES:
         const response = await fetch(`${this.baseUrl}/chat/completions`, {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${this.apiKey}`,
+            Authorization: `Bearer ${this.apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
@@ -164,25 +166,31 @@ RESPONSE GUIDELINES:
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`Error with model ${model}:`, errorText);
-          
+
           // If this model is decommissioned, try the next one
           if (errorText.includes("decommissioned") || errorText.includes("not supported")) {
             console.log(`Model ${model} is decommissioned, trying next model...`);
-            lastError = new Error(`Groq API error: ${response.status} ${response.statusText} - ${errorText}`);
+            lastError = new Error(
+              `Groq API error: ${response.status} ${response.statusText} - ${errorText}`,
+            );
             continue; // Try next model
           }
-          
-          throw new Error(`Groq API error: ${response.status} ${response.statusText} - ${errorText}`);
+
+          throw new Error(
+            `Groq API error: ${response.status} ${response.statusText} - ${errorText}`,
+          );
         }
 
         const data: ChatResponse = await response.json();
         console.log("Response data:", data);
-        
-        return data.choices[0]?.message?.content || "I apologize, but I couldn't process your request.";
+
+        return (
+          data.choices[0]?.message?.content || "I apologize, but I couldn't process your request."
+        );
       } catch (error) {
-        return `I apologize, but I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        return `I apologize, but I encountered an error: ${error instanceof Error ? error.message : "Unknown error"}`;
       }
-  }
+    }
 
     // If we get here, all models failed
     throw lastError || new Error("All models failed to respond");

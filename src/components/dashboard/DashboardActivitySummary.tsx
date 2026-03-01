@@ -53,7 +53,12 @@ export const DashboardActivitySummary = ({
   const activityStatus = [
     { key: "upcoming", label: "Upcoming", value: activitySummary.upcomingCount, color: "#1890ff" },
     { key: "overdue", label: "Overdue", value: activitySummary.overdueCount, color: "#ff4d4f" },
-    { key: "completed-today", label: "Completed Today", value: activitySummary.completedTodayCount, color: "#52c41a" },
+    {
+      key: "completed-today",
+      label: "Completed Today",
+      value: activitySummary.completedTodayCount,
+      color: "#52c41a",
+    },
     {
       key: "completed-week",
       label: "Completed This Week",
@@ -82,7 +87,7 @@ export const DashboardActivitySummary = ({
 
     let accumulated = 0;
     const segments = data
-      .filter(item => item.value > 0)
+      .filter((item) => item.value > 0)
       .map((item) => {
         const percentage = (item.value / total) * 100;
         const start = accumulated;
@@ -99,21 +104,18 @@ export const DashboardActivitySummary = ({
   return (
     <div className={styles.section}>
       <h3 className={styles.sectionTitle}>Activity Breakdown</h3>
-      
+
       <div className={styles.chartGrid}>
         {/* Activity Types Pie Chart */}
         <div className={styles.chartCard}>
           <h4 className={styles.chartTitle}>By Type</h4>
           {activityTypes.length > 0 ? (
             <>
-              <div 
-                className={styles.pieChart}
-                style={{ background: typesChartGradient }}
-              />
+              <div className={styles.pieChart} style={{ background: typesChartGradient }} />
               <div className={styles.legendContainer}>
                 {activityTypes.map((activity) => (
                   <div key={activity.key} className={styles.legendItem}>
-                    <div 
+                    <div
                       className={styles.legendColor}
                       style={{ backgroundColor: activity.color }}
                     />
@@ -131,17 +133,11 @@ export const DashboardActivitySummary = ({
         {/* Activity Status Pie Chart */}
         <div className={styles.chartCard}>
           <h4 className={styles.chartTitle}>By Status</h4>
-          <div 
-            className={styles.pieChart}
-            style={{ background: statusChartGradient }}
-          />
+          <div className={styles.pieChart} style={{ background: statusChartGradient }} />
           <div className={styles.legendContainer}>
             {activityStatus.map((status) => (
               <div key={status.key} className={styles.legendItem}>
-                <div 
-                  className={styles.legendColor}
-                  style={{ backgroundColor: status.color }}
-                />
+                <div className={styles.legendColor} style={{ backgroundColor: status.color }} />
                 <span className={styles.legendLabel}>{status.label}</span>
                 <span className={styles.legendValue}>{status.value}</span>
               </div>
