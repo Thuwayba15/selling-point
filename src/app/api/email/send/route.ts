@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Email API Error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

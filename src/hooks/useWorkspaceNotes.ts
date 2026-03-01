@@ -44,7 +44,6 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
         });
         setRelatedNotes((data?.items || data || []) as INote[]);
       } catch (error) {
-        console.error("Failed to load related notes:", error);
         setRelatedNotes([]);
         message.error("Failed to load related notes");
       } finally {
@@ -161,7 +160,6 @@ export const useWorkspaceNotes = (onRefresh: () => Promise<void>) => {
             await onRefresh();
             await loadRelatedNotes(relatedNotesTarget);
           } catch (error) {
-            console.error("Refresh failed, but note was created:", error);
             // Add the note to local state as fallback
             const newNote: INote = {
               id: `temp-${Date.now()}`, // Temporary ID

@@ -44,11 +44,9 @@ export const useClientWorkspaceData = () => {
     // Skip if we fetched recently (within 30 seconds) unless force refresh
     const now = Date.now();
     if (!forceRefresh && now - lastFetchTime.current < 30000) {
-      console.log("Skipping fetch - using cached data");
       return; // Use cached data
     }
 
-    console.log("Fetching workspace data for client:", client.id, "forceRefresh:", forceRefresh);
     lastFetchTime.current = now;
     setWorkspaceLoading(true);
     try {
@@ -105,17 +103,9 @@ export const useClientWorkspaceData = () => {
         notes: notesRes.data?.items || [],
       };
 
-      console.log("Workspace data fetched:", {
-        contacts: newWorkspaceData.contacts.length,
-        opportunities: newWorkspaceData.opportunities.length,
-        contracts: newWorkspaceData.contracts.length,
-        documents: newWorkspaceData.documents.length,
-        notes: newWorkspaceData.notes.length,
-      });
 
       setWorkspaceData(newWorkspaceData);
     } catch (error) {
-      console.error("Failed to fetch workspace data:", error);
     } finally {
       setWorkspaceLoading(false);
     }

@@ -71,7 +71,6 @@ export const SmartAutomationDashboard = () => {
 
       setInsights(automationInsights);
     } catch (error) {
-      console.error("Error loading automation insights:", error);
       message.error("Failed to load automation insights");
     } finally {
       setLoading(false);

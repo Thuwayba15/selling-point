@@ -77,7 +77,6 @@ export const ContractForm: React.FC<ContractFormProps> = ({
 
       await Promise.resolve(onSubmit(submittedValues));
     } catch (error) {
-      console.error("Form validation failed:", error);
     }
   };
 
