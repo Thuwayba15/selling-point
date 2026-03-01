@@ -9,7 +9,6 @@ import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import {
-  OpportunitiesHeader,
   OpportunitiesFilters,
   OpportunitiesTable,
   OpportunityDetails,
@@ -35,7 +34,6 @@ const OpportunitiesPage = () => {
     opportunities,
     opportunity,
     pagination,
-    pipeline,
     stageHistory,
   } = useOpportunitiesState();
   const {

@@ -11,6 +11,7 @@ import {
   NotesTab,
 } from "./tabs";
 import { useRbac } from "@/hooks/useRbac";
+import { useStyles } from "./style";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
 import type { IOpportunity } from "@/providers/opportunities/context";
@@ -69,6 +70,7 @@ export const ClientWorkspaceContent = ({
   onBackToClients,
 }: ClientWorkspaceContentProps) => {
   const { can } = useRbac();
+  const { styles } = useStyles();
 
   if (!client) {
     if (isLoadingDetails) {
@@ -99,10 +101,10 @@ export const ClientWorkspaceContent = ({
         <OpportunitiesTab
           opportunities={workspaceData.opportunities}
           loading={isLoading}
-          clientId={client.id}
-          onCreate={() => onCreateEntity("opportunity")}
+          onCreateEntity={() => onCreateEntity("opportunity")}
           onEdit={(opp) => onEditEntity("opportunity", opp)}
           onDelete={(opp) => onDeleteEntity("opportunity", opp)}
+          toolbarClassName={styles.toolbarContainer}
         />
       ),
     },

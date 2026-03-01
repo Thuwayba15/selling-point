@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { getAxiosInstance } from "@/lib/api";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
@@ -26,8 +26,10 @@ export const useClientWorkspaceData = () => {
     notes: [],
   });
   const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const lastFetchTime = useRef<number>(0);
 
-  const loadWorkspaceData = useCallback(async (client: IClient | null) => {
+  const fetchWorkspaceData = useCallback(async (client: IClient | null, forceRefresh = false) => {
     if (!client?.id) {
       setWorkspaceData({
         contacts: [],
@@ -39,6 +41,13 @@ export const useClientWorkspaceData = () => {
       return;
     }
 
+    // Skip if we fetched recently (within 30 seconds) unless force refresh
+    const now = Date.now();
+    if (!forceRefresh && now - lastFetchTime.current < 30000) {
+      return; // Use cached data
+    }
+
+    lastFetchTime.current = now;
     setWorkspaceLoading(true);
     try {
       const api = getAxiosInstance();
@@ -87,29 +96,31 @@ export const useClientWorkspaceData = () => {
         ]);
 
       setWorkspaceData({
-        contacts: (contactsRes.data?.items || contactsRes.data || []) as IContact[],
-        opportunities: (opportunitiesRes.data?.items || opportunitiesRes.data || []) as IOpportunity[],
-        contracts: (contractsRes.data?.items || contractsRes.data || []) as IContract[],
-        documents: (documentsRes.data?.items || documentsRes.data || []) as IDocument[],
-        notes: (notesRes.data?.items || notesRes.data || []) as INote[],
+        contacts: contactsRes.data?.items || [],
+        opportunities: opportunitiesRes.data?.items || [],
+        contracts: contractsRes.data?.items || [],
+        documents: documentsRes.data?.items || [],
+        notes: notesRes.data?.items || [],
       });
     } catch (error) {
-      console.error("Error loading workspace data:", error);
-      setWorkspaceData({
-        contacts: [],
-        opportunities: [],
-        contracts: [],
-        documents: [],
-        notes: [],
-      });
+      console.error("Failed to fetch workspace data:", error);
     } finally {
       setWorkspaceLoading(false);
     }
   }, []);
 
-  return {
-    workspaceData,
-    workspaceLoading,
-    loadWorkspaceData,
-  };
+  // Force refresh function
+  const forceRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
+  // Auto-refresh when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      // This will trigger a refresh on the next fetchWorkspaceData call
+      lastFetchTime.current = 0;
+    }
+  }, [refreshTrigger]);
+
+  return { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh };
 };

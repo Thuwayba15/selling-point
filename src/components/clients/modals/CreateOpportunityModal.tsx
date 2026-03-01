@@ -1,6 +1,7 @@
 "use client";
 
 import { Modal, Form, Input, Select, Button } from "antd";
+import { useEffect } from "react";
 import type { FormInstance } from "antd";
 import type { IOpportunity } from "@/providers/opportunities/context";
 import type { IClient } from "@/providers/clients/context";
@@ -12,6 +13,7 @@ interface CreateOpportunityModalProps {
   loading?: boolean;
   onSubmit: (values: any) => Promise<void>;
   onCancel: () => void;
+  initialValues?: IOpportunity;
 }
 
 export const CreateOpportunityModal = ({
@@ -21,6 +23,7 @@ export const CreateOpportunityModal = ({
   loading = false,
   onSubmit,
   onCancel,
+  initialValues,
 }: CreateOpportunityModalProps) => {
   const handleSubmit = async () => {
     try {
@@ -31,9 +34,24 @@ export const CreateOpportunityModal = ({
     }
   };
 
+  useEffect(() => {
+    if (isOpen && initialValues) {
+      form.setFieldsValue(initialValues);
+    } else if (isOpen) {
+      // Set default values for new opportunities
+      form.setFieldsValue({
+        currency: 'R',
+        stage: 'Lead',
+        probability: 50
+      });
+    } else if (!isOpen) {
+      form.resetFields();
+    }
+  }, [isOpen, initialValues, form]);
+
   return (
     <Modal
-      title="Create Opportunity"
+      title={initialValues ? "Edit Opportunity" : "Create Opportunity"}
       open={isOpen}
       onCancel={onCancel}
       onOk={handleSubmit}
@@ -72,6 +90,10 @@ export const CreateOpportunityModal = ({
 
         <Form.Item label="Estimated Value" name="estimatedValue">
           <Input type="number" placeholder="0" />
+        </Form.Item>
+
+        <Form.Item label="Currency">
+          <Input value="ZAR" disabled />
         </Form.Item>
 
         <Form.Item label="Probability (%)" name="probability">

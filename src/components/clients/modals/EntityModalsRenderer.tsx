@@ -88,6 +88,7 @@ export const EntityModalsRenderer = ({
           clientId: selectedClient.id,
           estimatedValue: values.estimatedValue ? parseFloat(values.estimatedValue) : 0,
           probability: values.probability ? parseFloat(values.probability) : 0,
+          currency: 'R', // Always set to ZAR
         };
 
         await opportunitiesActions.createOpportunity(payload);
@@ -97,6 +98,37 @@ export const EntityModalsRenderer = ({
         await onRefresh();
       } catch (error) {
         message.error("Failed to create opportunity");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [selectedClient?.id, opportunitiesActions, message, entityModals, opportunityForm, onRefresh],
+  );
+
+  const handleEditOpportunity = useCallback(
+    async (values: any) => {
+      if (!entityModals.modals.opportunity.entity || !selectedClient?.id) {
+        message.error("Unable to update opportunity");
+        return;
+      }
+
+      const opportunity = entityModals.modals.opportunity.entity as IOpportunity;
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          ...values,
+          clientId: selectedClient.id,
+          estimatedValue: values.estimatedValue ? parseFloat(values.estimatedValue) : 0,
+          probability: values.probability ? parseFloat(values.probability) : 0,
+        };
+
+        await opportunitiesActions.updateOpportunity(opportunity.id, payload);
+        message.success("Opportunity updated successfully");
+        opportunityForm.resetFields();
+        entityModals.closeModal("opportunity");
+        await onRefresh();
+      } catch (error) {
+        message.error("Failed to update opportunity");
       } finally {
         setIsSubmitting(false);
       }
@@ -206,7 +238,8 @@ export const EntityModalsRenderer = ({
         client={selectedClient}
         form={opportunityForm}
         loading={isSubmitting}
-        onSubmit={handleCreateOpportunity}
+        onSubmit={entityModals.modals.opportunity.mode === "create" ? handleCreateOpportunity : handleEditOpportunity}
+        initialValues={entityModals.modals.opportunity.mode === "edit" ? entityModals.modals.opportunity.entity as IOpportunity : undefined}
         onCancel={() => entityModals.closeModal("opportunity")}
       />
     </>

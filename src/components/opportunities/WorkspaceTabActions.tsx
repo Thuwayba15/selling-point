@@ -10,7 +10,7 @@ interface WorkspaceTabActionsProps {
   compact?: boolean;
 }
 
-type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note" | "contact";
+type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note" | "contact" | "opportunity";
 
 const ENTITY_LABELS: Record<EntityType, string> = {
   activity: "Activity",
@@ -20,6 +20,7 @@ const ENTITY_LABELS: Record<EntityType, string> = {
   document: "Document",
   note: "Note",
   contact: "Contact",
+  opportunity: "Opportunity",
 };
 
 export const WorkspaceTabActions = ({
@@ -37,6 +38,7 @@ export const WorkspaceTabActions = ({
     document: "create:document",
     note: "create:note",
     contact: "create:contact",
+    opportunity: "create:opportunity",
   };
 
   if (!can(permissionMap[entityType])) {

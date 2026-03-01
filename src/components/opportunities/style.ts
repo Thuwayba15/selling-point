@@ -196,6 +196,39 @@ export const useStyles = createStyles(({ token, css }) => ({
     float: right;
   `,
 
+  workspaceFiltersBar: css`
+    margin-left: auto;
+  `,
+
+  workspaceFiltersForm: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  `,
+
+  workspaceFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFilterSelect: css`
+    width: 140px;
+  `,
+
+  workspaceFilterActionsItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFiltersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+  `,
+
   inlineFiltersBar: css`
     margin-bottom: ${token.marginLG}px;
     background-color: ${colors.light};

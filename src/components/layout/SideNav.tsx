@@ -6,10 +6,8 @@ import { Menu } from "antd";
 import {
   HomeOutlined,
   ProjectOutlined,
-  FileTextOutlined,
   TeamOutlined,
   CalendarOutlined,
-  FolderOutlined,
   BarChartOutlined,
   UnlockOutlined,
 } from "@ant-design/icons";
@@ -36,11 +34,6 @@ export const SideNav = () => {
       key: ROUTES.clients,
       icon: <TeamOutlined />,
       label: <Link href={ROUTES.clients}>Clients</Link>,
-    },
-    {
-      key: ROUTES.contacts,
-      icon: <TeamOutlined />,
-      label: <Link href={ROUTES.contacts}>Contacts</Link>,
     },
     {
       key: ROUTES.opportunities,

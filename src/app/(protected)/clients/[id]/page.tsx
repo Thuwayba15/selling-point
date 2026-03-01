@@ -44,7 +44,7 @@ const ClientWorkspacePage = () => {
   const usersActions = useUsersActions();
 
   // Custom hooks
-  const { workspaceData, workspaceLoading, loadWorkspaceData } = useClientWorkspaceData();
+  const { workspaceData, workspaceLoading, fetchWorkspaceData, forceRefresh } = useClientWorkspaceData();
   const entityModals = useClientEntityModals();
 
   // Local state
@@ -91,9 +91,34 @@ const ClientWorkspacePage = () => {
   // Load workspace data when selected client changes
   useEffect(() => {
     if (selectedClient?.id) {
-      loadWorkspaceData(selectedClient);
+      fetchWorkspaceData(selectedClient);
     }
   }, [selectedClient?.id]);
+
+  // Refresh data when page becomes visible (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && selectedClient) {
+        // Force refresh when page becomes visible
+        fetchWorkspaceData(selectedClient, true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [selectedClient, fetchWorkspaceData]);
+
+  // Refresh data when window gets focus (user switches back to tab)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (selectedClient) {
+        fetchWorkspaceData(selectedClient, true);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [selectedClient, fetchWorkspaceData]);
 
   // Handle back button
   const handleBackToClients = useCallback(() => {
@@ -129,9 +154,9 @@ const ClientWorkspacePage = () => {
 
   const refreshWorkspace = useCallback(async () => {
     if (selectedClient) {
-      await loadWorkspaceData(selectedClient);
+      await fetchWorkspaceData(selectedClient, true);
     }
-  }, [selectedClient, loadWorkspaceData]);
+  }, [selectedClient, fetchWorkspaceData]);
 
   const handleEditClient = useCallback(() => {
     if (!selectedClient) return;
@@ -162,11 +187,11 @@ const ClientWorkspacePage = () => {
     try {
       await contactsActions.setPrimaryContact(contact.id);
       message.success("Primary contact updated successfully");
-      await loadWorkspaceData(selectedClient!);
+      await fetchWorkspaceData(selectedClient!, true);
     } catch (error) {
       message.error("Failed to update primary contact");
     }
-  }, [selectedClient, loadWorkspaceData, contactsActions, message]);
+  }, [selectedClient, fetchWorkspaceData, contactsActions, message]);
 
   const handleCreateEntity = useCallback((type: EntityType) => {
     entityModals.openCreateModal(type);

@@ -56,6 +56,7 @@ export const OpportunitiesFilters = ({
     setClientId(undefined);
     setStage(undefined);
     setOwnerId(undefined);
+    form.resetFields();
     onClear();
   };
 
