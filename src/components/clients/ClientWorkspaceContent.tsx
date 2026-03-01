@@ -1,24 +1,28 @@
 "use client";
 
-import { Button, Space, Row, Col, Card, Descriptions, Tag, Spin, Empty } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { EntityWorkspaceTabs, WorkspaceTabItem } from "@/components/common";
-import {
-  ContactsTab,
-  OpportunitiesTab,
-  ContractsTab,
-  DocumentsTab,
-  NotesTab,
-} from "./tabs";
+import { useState, useCallback } from "react";
+import { Tabs, Spin, Empty, Card, Row, Col, Space, Button, Descriptions, Tag, App } from "antd";
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { ContactsTab } from "./tabs/ContactsTab";
+import { OpportunitiesTab } from "./tabs/OpportunitiesTab";
+import { ContractsTab } from "./tabs/ContractsTab";
+import { DocumentsTab } from "./tabs/DocumentsTab";
+import { NotesTab } from "./tabs/NotesTab";
+import { EntityModalsRenderer } from "./modals/EntityModalsRenderer";
+import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
+import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import { useRbac } from "@/hooks/useRbac";
-import { useStyles } from "./style";
+import { useWorkspaceDocuments } from "@/hooks/useWorkspaceDocuments";
+import { useDocumentsActions } from "@/providers/documents";
+import { RelatedToType } from "@/providers/documents/context";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
 import type { IOpportunity } from "@/providers/opportunities/context";
 import type { IContract } from "@/providers/contracts/context";
 import type { IDocument } from "@/providers/documents/context";
 import type { INote } from "@/providers/notes/context";
-import type { EntityType } from "./hooks";
+import { useStyles } from "./style";
+import type { EntityType } from "./hooks/useClientEntityModals";
 
 type WorkspaceEntity = IContact | IOpportunity | IContract | IDocument | INote;
 
@@ -45,6 +49,7 @@ interface ClientWorkspaceContentProps {
   onSetPrimaryContact?: (contact: IContact) => Promise<void>;
   onRefreshWorkspace: () => Promise<void>;
   onBackToClients: () => void;
+  entityModals: any; // TODO: Add proper type
 }
 
 const CLIENT_TYPE_MAP: Record<number, { label: string; color: string }> = {
@@ -68,9 +73,48 @@ export const ClientWorkspaceContent = ({
   onSetPrimaryContact,
   onRefreshWorkspace,
   onBackToClients,
+  entityModals,
 }: ClientWorkspaceContentProps) => {
   const { can } = useRbac();
   const { styles } = useStyles();
+  const { message } = App.useApp();
+  
+  // Document management hook - same as opportunities workspace
+  const documents = useWorkspaceDocuments(onRefreshWorkspace);
+  const documentsActions = useDocumentsActions();
+
+  // Client-specific document upload handler
+  const handleClientUpload = useCallback(() => {
+    if (!client?.id) return;
+    // Set the form values for client upload
+    documents.workspaceUploadForm.setFieldsValue({
+      relatedToType: RelatedToType.Client,
+      relatedToId: client.id,
+    });
+    documents.setIsWorkspaceUploadOpen(true);
+  }, [client?.id, documents]);
+
+  // Client-specific document upload submit handler
+  const handleClientUploadSubmit = useCallback(async (values: any, file: File) => {
+    if (!client?.id) return;
+    
+    try {
+      const success = await documentsActions.uploadDocument(file, {
+        category: values.category,
+        relatedToType: RelatedToType.Client,
+        relatedToId: client.id,
+        description: values.description,
+      });
+
+      if (!success) return;
+
+      message.success("Document uploaded successfully");
+      documents.setIsWorkspaceUploadOpen(false);
+      await onRefreshWorkspace();
+    } catch (error) {
+      message.error("Failed to upload document");
+    }
+  }, [client?.id, documentsActions, documents, message, onRefreshWorkspace]);
 
   if (!client) {
     if (isLoadingDetails) {
@@ -128,9 +172,13 @@ export const ClientWorkspaceContent = ({
       content: (
         <DocumentsTab
           documents={workspaceData.documents}
-          loading={isLoading}
-          onEdit={(doc) => onEditEntity("document", doc)}
-          onDelete={(doc) => onDeleteEntity("document", doc)}
+          isLoading={isLoading}
+          selectedDocument={documents.selectedDocument}
+          onSelectDocument={documents.setSelectedDocument}
+          onUpload={handleClientUpload}
+          onDownload={() => documents.downloadDocument(documents.selectedDocument)}
+          onDelete={() => documents.deleteDocument(documents.selectedDocument)}
+          canDelete={can("delete:document")}
         />
       ),
     },
@@ -226,6 +274,24 @@ export const ClientWorkspaceContent = ({
         items={tabs}
         activeKey={activeTab}
         onChange={onTabChange}
+      />
+
+      {/* Document Upload Modal */}
+      <DocumentUploadForm
+        open={documents.isWorkspaceUploadOpen}
+        onCancel={() => documents.setIsWorkspaceUploadOpen(false)}
+        onSubmit={handleClientUploadSubmit}
+        form={documents.workspaceUploadForm}
+        relatedToType={RelatedToType.Client}
+        clientOptions={client ? [{ value: client.id, label: client.name }] : []}
+      />
+
+      {/* Entity Modals */}
+      <EntityModalsRenderer
+        entityModals={entityModals}
+        selectedClient={client}
+        workspaceData={workspaceData}
+        onRefresh={onRefreshWorkspace}
       />
     </div>
   );

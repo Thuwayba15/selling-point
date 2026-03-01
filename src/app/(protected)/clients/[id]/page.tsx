@@ -223,6 +223,7 @@ const ClientWorkspacePage = () => {
         onSetPrimaryContact={handleSetPrimaryContact}
         onRefreshWorkspace={refreshWorkspace}
         onBackToClients={handleBackToClients}
+        entityModals={entityModals}
       />
 
       <EntityModalsRenderer
