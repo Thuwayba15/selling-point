@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Statistic, Progress, Typography, Button } from 'antd';
 import { dataAwareAIService } from '@/lib/ai/data-aware-ai-service';
-import { styles } from './DashboardWidgets.style';
+import { useStyles } from './style';
 
 const { Title, Text } = Typography;
 
 export const DashboardWidgets = () => {
+  const { styles } = useStyles();
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [automationInsights, setAutomationInsights] = useState<any[]>([]);
@@ -79,11 +80,11 @@ export const DashboardWidgets = () => {
   };
 
   return (
-    <div style={{ padding: '24px', background: '#f4ebdb' }}>
+    <div className={styles.widgetsContainer}>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} md={8}>
           {/* Automation Overview */}
-          <Card title="🤖 Automation Overview" style={{ marginBottom: '16px' }}>
+          <Card title="Automation Overview" className={styles.widgetsCard}>
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <Statistic 
@@ -97,30 +98,18 @@ export const DashboardWidgets = () => {
                   prefix="R" 
                 />
               </Col>
-              <Col span={12}>
-                <Statistic 
-                  title="Follow-up Needed" 
-                  value={automationInsights.find(i => i.title === 'Follow-up Efficiency')?.value || 0} 
-                  valueStyle={{ color: automationInsights.find(i => i.title === 'Follow-up Efficiency')?.color }}
-                />
-                <Statistic 
-                  title="Smart Tasks Ready" 
-                  value={automationInsights.find(i => i.title === 'Smart Tasks Ready')?.value || 0} 
-                  valueStyle={{ color: automationInsights.find(i => i.title === 'Smart Tasks Ready')?.color }}
-                />
-              </Col>
             </Row>
           </Card>
 
           {/* Automation Insights */}
-          <Card title="📊 Automation Insights" style={{ marginBottom: '16px' }}>
+          <Card title="Automation Insights" className={styles.widgetsCard}>
             <Title level={4}>Automation Potential</Title>
             <div style={{ marginBottom: '12px' }}>
               {automationInsights.map((insight, index) => (
-                <div key={index} style={{ marginBottom: '8px', padding: '12px', border: '1px solid #d9d9d9', borderRadius: '6px' }}>
+                <div key={index} className={styles.insight}>
                   <Text strong style={{ color: insight.color }}>{insight.title}</Text>
                   <Text type="secondary">{insight.description}</Text>
-                  <Text type="secondary" style={{ marginTop: '4px' }}>
+                  <Text type="secondary" className={styles.insightValue}>
                     <Statistic 
                       title="Value" 
                       value={insight.value} 
@@ -133,7 +122,7 @@ export const DashboardWidgets = () => {
           </Card>
 
           {/* Quick Actions */}
-          <Card title="⚡ Quick Actions" style={{ marginBottom: '16px' }}>
+          <Card title="Quick Actions" className={styles.widgetsCard}>
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <Button type="primary" size="large" icon="⚡">
@@ -147,27 +136,76 @@ export const DashboardWidgets = () => {
                 <Button type="default" icon="📊">
                   View Automation Insights
                 </Button>
+                <Button type="default" icon="⚙️">
+                  Automation Settings
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={12} md={16}>
+          {/* Performance Metrics */}
+          <Card title="📈 Performance Metrics" className={styles.widgetsCard}>
+            <Row gutter={[16, 16]}>
+              <Col span={8}>
+                <Statistic 
+                  title="Conversion Rate" 
+                  value={dashboardData?.conversionRate || 0} 
+                  suffix="%" 
+                  valueStyle={{ color: '#52c41a' }}
+                />
+                <Progress 
+                  percent={dashboardData?.conversionRate || 0} 
+                  strokeColor="#52c41a" 
+                  showInfo={false}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic 
+                  title="Avg Deal Size" 
+                  value={dashboardData?.avgDealSize || 0} 
+                  prefix="R" 
+                  valueStyle={{ color: '#1890ff' }}
+                />
+                <Progress 
+                  percent={Math.min((dashboardData?.avgDealSize || 0) / 100000 * 100, 100)} 
+                  strokeColor="#1890ff" 
+                  showInfo={false}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic 
+                  title="Response Time" 
+                  value={dashboardData?.avgResponseTime || 0} 
+                  suffix="hrs" 
+                  valueStyle={{ color: '#faad14' }}
+                />
+                <Progress 
+                  percent={Math.max(100 - (dashboardData?.avgResponseTime || 0), 0)} 
+                  strokeColor="#faad14" 
+                  showInfo={false}
+                />
               </Col>
             </Row>
           </Card>
 
-          {/* Loading State */}
-          {loading && (
-            <div style={{ 
-              position: 'fixed', 
-              top: 0, 
-              left: 0, 
-              width: '100%', 
-              height: '100%', 
-              backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              zIndex: 1000 
-            }}>
-              <Progress />
+          {/* Recent Activity */}
+          <Card title="📋 Recent Activity" className={styles.widgetsCard}>
+            <div style={{ marginBottom: '12px' }}>
+              {dashboardData?.recentActivity?.map((activity: any, index: number) => (
+                <div key={index} className={styles.insight}>
+                  <Text strong>{activity.title}</Text>
+                  <Text type="secondary">{activity.description}</Text>
+                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                    {activity.timestamp}
+                  </Text>
+                </div>
+              )) || (
+                <Text type="secondary">No recent activity available</Text>
+              )}
             </div>
-          )}
+          </Card>
         </Col>
       </Row>
     </div>

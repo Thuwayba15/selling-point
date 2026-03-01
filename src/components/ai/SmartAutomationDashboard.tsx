@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Typography, Space, Progress, message, List } from 'antd';
 import { dataAwareAIService } from '@/lib/ai/data-aware-ai-service';
 import { groqService } from '@/lib/ai/groq-service';
+import { useStyles } from './style';
 
 const { Title, Text } = Typography;
 
 export const SmartAutomationDashboard = () => {
+  const { styles } = useStyles();
   const [loading, setLoading] = useState(false);
   const [insights, setInsights] = useState<any[]>([]);
 
@@ -197,10 +199,10 @@ Selling Point AI Assistant`;
   };
 
   return (
-    <div style={{ padding: '24px', background: '#f4ebdb' }}>
+    <div className={styles.smartContainer}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <Space direction="vertical" size="large">
-          <Title level={2} style={{ marginBottom: '16px' }}>
+          <Title level={2} className={styles.smartTitle}>
             🤖 Smart Automation Dashboard
           </Title>
           
@@ -209,17 +211,11 @@ Selling Point AI Assistant`;
           </Text>
 
           {/* Automation Insights */}
-          <Card title="📊 Automation Insights" style={{ marginBottom: '16px' }}>
+          <Card title="📊 Automation Insights" className={styles.smartCard}>
             <Title level={4}>Automation Metrics</Title>
             <div style={{ marginBottom: '12px' }}>
               {insights.map((insight: any, index: number) => (
-                <div key={index} style={{ 
-                  marginBottom: '8px', 
-                  padding: '12px', 
-                  border: '1px solid #d9d9d9', 
-                  borderRadius: '6px',
-                  backgroundColor: '#ffffff'
-                }}>
+                <div key={index} className={styles.smartCard}>
                   <Text strong style={{ color: insight.color }}>{insight.title}</Text>
                   <br />
                   <Text type="secondary">{insight.description}</Text>
@@ -235,44 +231,41 @@ Selling Point AI Assistant`;
           </Card>
 
           {/* Quick Actions */}
-          <Card title="⚡ Quick Actions" style={{ marginBottom: '16px' }}>
+          <Card title="⚡ Quick Actions" className={styles.smartCard}>
             <Space direction="vertical" size="large">
               <Button 
                 type="primary" 
                 size="large"
                 onClick={handleAutoCreateOpportunity}
                 loading={loading}
-                style={{ marginBottom: '8px' }}
+                className={styles.smartButton}
               >
                 🚀 Create Opportunity from Client Data
               </Button>
-              
               <Button 
                 type="default" 
                 size="large"
                 onClick={handleGenerateFollowUps}
                 loading={loading}
-                style={{ marginBottom: '8px' }}
+                className={styles.smartButton}
               >
                 📋 Generate Follow-up Reminders
               </Button>
-              
               <Button 
                 type="default" 
                 size="large"
                 onClick={handleGenerateSmartTasks}
                 loading={loading}
-                style={{ marginBottom: '8px' }}
+                className={styles.smartButton}
               >
                 📝 Generate Smart Tasks
               </Button>
-
               <Button 
                 type="default" 
                 size="large"
                 onClick={handleGenerateEmailTemplate}
                 loading={loading}
-                style={{ marginBottom: '8px' }}
+                className={styles.smartButton}
               >
                 📧 Generate Email Template
               </Button>
@@ -280,7 +273,7 @@ Selling Point AI Assistant`;
           </Card>
 
           {/* Features Description */}
-          <Card title="🎯 Automation Features" style={{ marginBottom: '16px' }}>
+          <Card title="🎯 Automation Features" className={styles.smartCard}>
             <List>
               <List.Item>
                 <Text strong>Auto-Opportunity Creation:</Text> AI analyzes client history and suggests relevant new opportunities
@@ -299,18 +292,7 @@ Selling Point AI Assistant`;
 
           {/* Loading State */}
           {loading && (
-            <div style={{ 
-              position: 'fixed', 
-              top: 0, 
-              left: 0, 
-              width: '100%', 
-              height: '100%', 
-              backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              zIndex: 1000 
-            }}>
+            <div className={styles.smartLoading}>
               <Progress />
             </div>
           )}

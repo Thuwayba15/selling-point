@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 import { groqService } from "@/lib/ai/groq-service";
 import { dataAwareAIService } from "@/lib/ai/data-aware-ai-service";
-import useStyles from "./AIAssistant.style";
+import { useStyles } from "./style";
 
 const { Text, Title } = Typography;
 
@@ -214,9 +214,6 @@ export const AIAssistant = () => {
                   <Title level={5} className={styles.title}>
                     AI Assistant
                   </Title>
-                  <Text type="secondary" className={styles.subtitle}>
-                    Your CRM Helper
-                  </Text>
                 </div>
               </Space>
               <Space>

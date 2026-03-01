@@ -25,18 +25,24 @@ import {
 } from '@ant-design/icons';
 import { dataAwareAIService } from '@/lib/ai/data-aware-ai-service';
 import { groqService } from '@/lib/ai/groq-service';
+import { useStyles } from './style';
+import { DashboardSalesPerformance } from '@/components/dashboard';
+import type { ISalesPerformance } from '@/providers/dashboard/context';
+import { useRbac } from '@/hooks/useRbac';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
 export const SmartAutomationDashboard = () => {
+  const { styles } = useStyles();
+  const { isAdmin, isManager } = useRbac();
+  const canViewSalesPerformance = isAdmin || isManager;
   const [loading, setLoading] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [followUps, setFollowUps] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
-  const [insights, setInsights] = useState<any[]>([]);
   const [currentUserName, setCurrentUserName] = useState<string>('User');
   
   // Modal states
@@ -81,53 +87,69 @@ export const SmartAutomationDashboard = () => {
       setOpportunities(opportunitiesData);
       setClients(clientsData);
       
-      // Calculate automation insights
-      const totalOpps = opportunitiesData.length;
-      const avgValue = opportunitiesData.reduce((sum: number, opp: any) => sum + (opp.estimatedValue || 0), 0) / totalOpps;
-      const highValueOpps = opportunitiesData.filter((opp: any) => (opp.estimatedValue || 0) > 50000).length;
-      const followUpNeeded = opportunitiesData.filter((opp: any) => {
+      // Get current user from local storage to filter data
+      let currentUser = null;
+      try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          currentUser = JSON.parse(userStr);
+        }
+      } catch (error) {
+        console.log('Could not get user from local storage:', error);
+      }
+      
+      // Filter opportunities for current user/tenant (if user data available)
+      // Since Current User is null, let's try a different approach
+      let userOpps = opportunitiesData;
+      
+      // Try to get user info again with different keys
+      try {
+        const userStr = localStorage.getItem('user') || 
+                        localStorage.getItem('currentUser') || 
+                        localStorage.getItem('authUser');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          console.log('Found user data:', user);
+          
+          // Filter by multiple possible tenant fields
+          userOpps = opportunitiesData.filter((opp: any) => {
+            // Check if opportunity has any tenant-related fields that match user
+            return opp.tenantId === user.tenantId ||
+                   opp.organizationId === user.organizationId ||
+                   opp.companyId === user.companyId ||
+                   opp.assignedTo === user.id ||
+                   opp.ownerId === user.id ||
+                   opp.createdBy === user.id;
+          });
+        }
+      } catch (error) {
+        console.log('Still could not get user data:', error);
+      }
+      
+      // Debug logging to help identify filtering issues
+      console.log('🔍 Data Filtering Debug:');
+      console.log('Current User:', currentUser);
+      console.log('Total Opportunities:', opportunitiesData.length);
+      console.log('Filtered Opportunities:', userOpps.length);
+      console.log('Sample Opportunity:', opportunitiesData[0]);
+      
+      // Calculate automation insights from user's opportunities only
+      const totalOpps = userOpps.length;
+      const avgValue = totalOpps > 0 ? userOpps.reduce((sum: number, opp: any) => sum + (opp.estimatedValue || 0), 0) / totalOpps : 0;
+      const highValueOpps = userOpps.filter((opp: any) => (opp.estimatedValue || 0) > 50000).length;
+      const followUpNeeded = userOpps.filter((opp: any) => {
         const stage = opp.stage || 0;
         const closeDate = opp.expectedCloseDate ? new Date(opp.expectedCloseDate) : null;
         const today = new Date();
+        // Active stages (1-4) that need follow-up within 14 days
         return [1, 2, 3, 4].includes(stage) && 
           closeDate && closeDate > today && 
-          (closeDate.getTime() - today.getTime()) <= (7 * 24 * 60 * 60 * 1000);
+          (closeDate.getTime() - today.getTime()) <= (14 * 24 * 60 * 60 * 1000);
       }).length;
 
-      const automationInsights = [
-        {
-          title: 'Total Opportunities',
-          value: totalOpps,
-          icon: <DollarOutlined />,
-          color: '#1890ff',
-          prefix: '#'
-        },
-        {
-          title: 'High-Value Deals',
-          value: highValueOpps,
-          icon: <AlertOutlined />,
-          color: '#52c41a',
-          prefix: '#'
-        },
-        {
-          title: 'Follow-ups Needed',
-          value: followUpNeeded,
-          icon: <ClockCircleOutlined />,
-          color: followUpNeeded > 5 ? '#ff4d4f' : '#faad14',
-          prefix: ''
-        },
-        {
-          title: 'Tasks Generated',
-          value: Math.round(totalOpps * 0.8),
-          icon: <CheckCircleOutlined />,
-          color: '#722ed1',
-          prefix: ''
-        }
-      ];
-
-      setInsights(automationInsights);
+      // Removed insights cards - now using Key Metrics instead
       
-      // Generate follow-ups and tasks
+      // Generate follow-ups and tasks from ALL opportunities (flipped as requested)
       await generateFollowUps(opportunitiesData);
       await generateTasks(opportunitiesData);
       
@@ -142,9 +164,13 @@ export const SmartAutomationDashboard = () => {
   const generateFollowUps = async (opps: any[]) => {
     const today = new Date();
     
+    // Follow-up reminders are RULE-BASED (not AI)
+    // Logic: Active opportunities (stages 1-4) closing within 14 days
+    // Prioritization: Stage urgency + value
     const followUpOpps = opps.filter((opp: any) => {
       const stage = opp.stage || 0;
       const closeDate = opp.expectedCloseDate ? new Date(opp.expectedCloseDate) : null;
+      // Active opportunities needing follow-up within 14 days
       return [1, 2, 3, 4].includes(stage) && 
         closeDate && closeDate > today && 
         (closeDate.getTime() - today.getTime()) <= (14 * 24 * 60 * 60 * 1000);
@@ -179,6 +205,9 @@ export const SmartAutomationDashboard = () => {
   const generateTasks = async (opps: any[]) => {
     const today = new Date();
     
+    // Smart Tasks are RULE-BASED with AI-GENERATED CONTENT
+    // Rule-based: Priority logic based on stage + timing + value
+    // AI-generated: Task descriptions created by Groq AI
     const taskList = opps
       .filter((opp: any) => {
         const stage = opp.stage || 0;
@@ -239,16 +268,16 @@ export const SmartAutomationDashboard = () => {
           stage,
           completed: false // Always start as false when generating new tasks
         };
-      })
-      .sort((a: any, b: any) => {
-        const priorityOrder: { [key: string]: number } = { high: 0, medium: 1, low: 2 };
-        return (priorityOrder[a.priority] || 999) - (priorityOrder[b.priority] || 999);
       });
 
-    // Preserve completion state for existing tasks
+    // Preserve completion state for existing tasks and sort by priority
     const updatedTasks = taskList.map(newTask => {
       const existingTask = tasks.find(t => t.id === newTask.id);
       return existingTask ? { ...newTask, completed: existingTask.completed } : newTask;
+    }).sort((a: any, b: any) => {
+      // Sort by priority: High > Medium > Low
+      const priorityOrder: { [key: string]: number } = { high: 0, medium: 1, low: 2 };
+      return (priorityOrder[a.priority] || 999) - (priorityOrder[b.priority] || 999);
     });
 
     const oldCount = tasks.length;
@@ -476,7 +505,7 @@ export const SmartAutomationDashboard = () => {
               setTasks(updatedTasks);
             }}
           />
-          <span style={{ marginLeft: 8 }}>{text}</span>
+          <span className={styles.marginLeft}>{text}</span>
         </div>
       )
     },
@@ -518,200 +547,285 @@ export const SmartAutomationDashboard = () => {
     }
   ];
 
+  const stageMeta = [
+    { stage: 1, label: 'Lead', color: '#1890ff' },
+    { stage: 2, label: 'Qualified', color: '#52c41a' },
+    { stage: 3, label: 'Proposal', color: '#faad14' },
+    { stage: 4, label: 'Negotiation', color: '#ff4d4f' },
+    { stage: 5, label: 'Won', color: '#722ed1' },
+    { stage: 6, label: 'Lost', color: '#8c8c8c' },
+  ];
+
+  const pipelineByStage = stageMeta.map((item) => {
+    const stageOpps = opportunities.filter((opp: any) => (opp.stage || 0) === item.stage);
+    const value = stageOpps.reduce((sum: number, opp: any) => sum + (opp.estimatedValue || 0), 0);
+    return {
+      ...item,
+      count: stageOpps.length,
+      value,
+    };
+  });
+
+  const maxStageValue = Math.max(...pipelineByStage.map((item) => item.value), 1);
+  const salesPerformanceData: ISalesPerformance[] = Object.values(
+    opportunities.reduce((acc: Record<string, ISalesPerformance>, opp: any) => {
+      const repId =
+        opp.assignedTo ||
+        opp.assignedUserId ||
+        opp.ownerId ||
+        opp.createdBy ||
+        'unassigned';
+      const repName =
+        opp.assignedToName ||
+        opp.assignedUserName ||
+        opp.ownerName ||
+        opp.createdByName ||
+        'Unassigned';
+
+      if (!acc[repId]) {
+        acc[repId] = {
+          userId: String(repId),
+          userName: String(repName),
+          opportunitiesCount: 0,
+          wonCount: 0,
+          lostCount: 0,
+          totalRevenue: 0,
+          winRate: 0,
+        };
+      }
+
+      acc[repId].opportunitiesCount += 1;
+
+      const stage = opp.stage || 0;
+      const value = opp.estimatedValue || 0;
+      if (stage === 5) {
+        acc[repId].wonCount += 1;
+        acc[repId].totalRevenue += value;
+      } else if (stage === 6) {
+        acc[repId].lostCount += 1;
+      }
+
+      return acc;
+    }, {}),
+  )
+    .map((item) => ({
+      ...item,
+      winRate: item.opportunitiesCount
+        ? Math.round((item.wonCount / item.opportunitiesCount) * 100)
+        : 0,
+    }))
+    .sort((a, b) => b.totalRevenue - a.totalRevenue);
+
+  const topSalesPerformanceData = salesPerformanceData.slice(0, 5);
+
   return (
-    <div style={{ 
-      padding: '16px', 
-      background: '#f4ebdb',
-      minHeight: '100vh'
-    }}>
+    <div className={styles.container}>
       <Spin spinning={loading}>
         {/* Header */}
-        <div style={{ marginBottom: '24px', textAlign: 'center' }}>
-          <Title level={2} style={{ color: '#2c3e50', marginBottom: '8px' }}>
-            <RobotOutlined style={{ marginRight: '8px' }} />
+        <div className={styles.header}>
+          <Title level={2} className={styles.title}>
             Smart Automation Dashboard
           </Title>
-          <Text type="secondary">
+          <Text type="secondary" className={styles.subtitle}>
             Intelligent CRM automation to save time and improve efficiency
           </Text>
         </div>
 
-        {/* Automation Overview - Responsive Grid */}
-        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-          {insights.map((insight, index) => (
-            <Col xs={24} sm={12} lg={6} key={index}>
-              <Card 
-                hoverable
-                style={{ 
-                  textAlign: 'center',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}
-              >
-                <Statistic
-                  title={
-                    <span style={{ fontSize: '14px', color: '#666' }}>
-                      {insight.icon} {insight.title}
-                    </span>
-                  }
-                  value={insight.value}
-                  prefix={insight.prefix}
-                  valueStyle={{ 
-                    color: insight.color,
-                    fontSize: '28px',
-                    fontWeight: 'bold'
+        {/* Top Section: Quick Actions + Key Metrics + Follow-up Reminders */}
+        <Row gutter={[16, 16]} className={styles.topSection}>
+          {/* Quick Actions */}
+          <Col xs={24} md={4}>
+            <Card 
+              title="Quick Actions" 
+              size="small"
+              className={styles.quickActionsCard}
+            >
+              <Space orientation="vertical" className={`${styles.fullWidth} ${styles.buttonContainer}`} size="small">
+                <Button 
+                  className={styles.quickActionButton}
+                  type="primary"
+                  size="small"
+                  block
+                  icon={<ClockCircleOutlined />}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      await generateFollowUps(opportunities);
+                    } catch (error) {
+                      message.error('Failed to refresh follow-ups');
+                    } finally {
+                      setLoading(false);
+                    }
                   }}
-                />
-              </Card>
-            </Col>
-          ))}
+                  loading={loading}
+                >
+                  Refresh Follow-ups
+                </Button>
+                <Button 
+                  className={styles.quickActionButton}
+                  size="small"
+                  block
+                  icon={<CheckCircleOutlined />}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      await generateTasks(opportunities);
+                    } catch (error) {
+                      message.error('Failed to regenerate tasks');
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  loading={loading}
+                >
+                  Generate Tasks
+                </Button>
+                <Button 
+                  className={styles.quickActionButton}
+                  size="small"
+                  block
+                  icon={<MailOutlined />}
+                  onClick={() => {
+                    if (opportunities.length === 0) {
+                      message.warning('No opportunities available to generate email for');
+                      return;
+                    }
+                    setEmailModalVisible(true);
+                  }}
+                >
+                  Draft Email
+                </Button>
+              </Space>
+            </Card>
+          </Col>
+
+          {/* Key Metrics */}
+          <Col xs={24} md={4}>
+            <Card 
+              title="Key Metrics" 
+              size="small"
+ 
+              className={styles.keyMetricsCard}
+            >
+              <Space orientation="vertical" className={`${styles.fullWidth} ${styles.metricsContainer}`} size="small" align="center">
+                <div className={styles.metricItem}>
+                  <Text type="secondary" className={styles.metricLabel}>Total Pipeline Value</Text>
+                  <div className={`${styles.metricValue} ${styles.pipelineValue}`}>
+                    R{opportunities.reduce((sum: number, opp: any) => sum + (opp.estimatedValue || 0), 0).toLocaleString('en-ZA')}
+                  </div>
+                </div>
+                <div className={styles.metricItem}>
+                  <Text type="secondary" className={styles.metricLabel}>Active Opportunities</Text>
+                  <div className={`${styles.metricValue} ${styles.activeOppsValue}`}>
+                    {opportunities.filter((opp: any) => [1, 2, 3, 4].includes(opp.stage || 0)).length}
+                  </div>
+                </div>
+                <div className={styles.metricItem}>
+                  <Text type="secondary" className={styles.metricLabel}>Conversion Rate</Text>
+                  <div className={`${styles.metricValue} ${styles.conversionRateValue}`}>
+                    {opportunities.length > 0 ? Math.round((opportunities.filter((opp: any) => opp.stage === 5).length / opportunities.length) * 100) : 0}%
+                  </div>
+                </div>
+                <div className={styles.metricItem}>
+                  <Text type="secondary" className={styles.metricLabel}>Avg Deal Size</Text>
+                  <div className={`${styles.metricValue} ${styles.avgDealSizeValue}`}>
+                    R{opportunities.length > 0 ? Math.round(opportunities.reduce((sum: number, opp: any) => sum + (opp.estimatedValue || 0), 0) / opportunities.length).toLocaleString('en-ZA') : 0}
+                  </div>
+                </div>
+              </Space>
+            </Card>
+          </Col>
+
+          {/* Follow-up Reminders */}
+          <Col xs={24} md={16}>
+            <Card 
+              title="Follow-up Reminders"
+              extra={<Badge count={followUps.length} />}
+              size="small"
+              className={styles.followUpsCard}
+            >
+              <Table
+                dataSource={followUps}
+                columns={followUpColumns}
+                pagination={{ pageSize: 5, size: 'small' }}
+                size="small"
+                scroll={{ x: 400, y: 300 }}
+                className={styles.compactTable}
+              />
+            </Card>
+          </Col>
         </Row>
 
-        {/* Quick Actions - Responsive */}
-        <Card 
-          title="⚡ Quick Actions" 
-          style={{ marginBottom: '24px' }}
-          extra={
-            <Button 
-              icon={<SettingOutlined />} 
-              type="text"
-              onClick={() => message.info('Automation settings coming soon')}
-            >
-              Settings
-            </Button>
-          }
-        >
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={6}>
-              <Button 
-                type="primary" 
-                size="large" 
-                block
-                icon={<PlusOutlined />}
-                onClick={() => setOpportunityModalVisible(true)}
-                style={{ height: '60px' }}
-              >
-                Create Opportunity
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button 
-                size="large" 
-                block
-                icon={<ClockCircleOutlined />}
-                onClick={async () => {
-                  setLoading(true);
-                  try {
-                    await generateFollowUps(opportunities);
-                  } catch (error) {
-                    message.error('Failed to refresh follow-ups');
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-                loading={loading}
-                style={{ height: '60px' }}
-              >
-                Refresh Follow-ups
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button 
-                size="large" 
-                block
-                icon={<CheckCircleOutlined />}
-                onClick={async () => {
-                  setLoading(true);
-                  try {
-                    await generateTasks(opportunities);
-                  } catch (error) {
-                    message.error('Failed to regenerate tasks');
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-                loading={loading}
-                style={{ height: '60px' }}
-              >
-                Generate Tasks
-              </Button>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Button 
-                size="large" 
-                block
-                icon={<MailOutlined />}
-                onClick={() => {
-                  if (opportunities.length === 0) {
-                    message.warning('No opportunities available to generate email for');
-                    return;
-                  }
-                  // Just open the modal - let user choose fields
-                  setEmailModalVisible(true);
-                }}
-                style={{ height: '60px' }}
-              >
-                Draft Email
-              </Button>
-            </Col>
-          </Row>
-        </Card>
-
-        {/* Follow-up Reminders */}
-        <Card 
-          title={
-            <span>
-              <ClockCircleOutlined style={{ marginRight: '8px', color: '#faad14' }} />
-              Follow-up Reminders
-              <Badge count={followUps.length} style={{ marginLeft: '8px' }} />
-            </span>
-          } 
-          style={{ marginBottom: '24px' }}
-        >
-          <Table
-            columns={followUpColumns}
-            dataSource={followUps}
-            rowKey="id"
-            pagination={{ 
-              pageSize: 5, 
-              showSizeChanger: false,
-              simple: true 
-            }}
-            scroll={{ x: 800 }}
-            size="small"
-          />
-        </Card>
-
         {/* Smart Tasks */}
-        <Card 
-          title={
-            <span>
-              <CheckCircleOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
-              Smart Tasks
-              <Badge count={tasks.filter(t => !t.completed).length} style={{ marginLeft: '8px' }} />
-            </span>
-          } 
-          style={{ marginBottom: '24px' }}
-        >
-          <Table
-            columns={taskColumns}
-            dataSource={tasks}
-            rowKey="id"
-            pagination={{ 
-              pageSize: 8, 
-              showSizeChanger: false,
-              simple: true 
-            }}
-            scroll={{ x: 800 }}
-            size="small"
-          />
-        </Card>
+        <Row gutter={[16, 16]} className={styles.middleSection}>
+          <Col xs={24}>
+            <Card 
+              title="Smart Tasks"
+              extra={<Badge count={tasks.filter(t => !t.completed).length} />}
+              size="small"
+              className={styles.tasksCard}
+            >
+              <Table
+                columns={taskColumns}
+                dataSource={tasks}
+                rowKey="id"
+                pagination={{ 
+                  pageSize: 10, 
+                  showSizeChanger: false,
+                  simple: true 
+                }}
+                scroll={{ x: 800, y: 400 }}
+                size="small"
+                className={styles.compactTable}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        <div className={styles.bottomAnalyticsScroll}>
+          <div className={styles.bottomAnalyticsRow}>
+            <Card title="Pipeline by Stage" size="small" className={styles.pipelineCard}>
+              <div className={styles.pipelineGraphScroll}>
+                <div className={styles.pipelineBars}>
+                  {pipelineByStage.map((item) => {
+                    const barHeight = Math.max((item.value / maxStageValue) * 100, item.count > 0 ? 8 : 0);
+
+                    return (
+                      <div key={item.stage} className={styles.pipelineBarItem}>
+                        <Text className={styles.pipelineBarValue}>
+                          R{item.value.toLocaleString('en-ZA')}
+                        </Text>
+                        <div className={styles.pipelineBarTrack}>
+                          <div
+                            className={styles.pipelineBarFill}
+                            style={{ height: `${barHeight}%`, backgroundColor: item.color }}
+                          />
+                        </div>
+                        <Text className={styles.pipelineBarLabel}>{item.label}</Text>
+                        <Text className={styles.pipelineBarCount}>{item.count} opps</Text>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Card>
+
+            {canViewSalesPerformance && (
+              <Card title="Sales Performance" size="small" className={styles.salesPerformanceCard}>
+                <DashboardSalesPerformance
+                  salesPerformance={topSalesPerformanceData}
+                  isLoading={loading}
+                />
+              </Card>
+            )}
+          </div>
+        </div>
 
         {/* Create Opportunity Modal */}
         <Modal
           title={
             <span>
-              <PlusOutlined style={{ marginRight: '8px' }} />
+              <PlusOutlined className={styles.marginRight} />
               Create Opportunity
             </span>
           }
@@ -783,7 +897,7 @@ export const SmartAutomationDashboard = () => {
             </Form.Item>
 
             <Form.Item>
-              <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+              <Space className={styles.flexEnd}>
                 <Button onClick={() => setOpportunityModalVisible(false)}>
                   Cancel
                 </Button>
@@ -799,7 +913,7 @@ export const SmartAutomationDashboard = () => {
         <Modal
           title={
             <span>
-              <MailOutlined style={{ marginRight: '8px' }} />
+              <MailOutlined className={styles.marginRight} />
               Email Template
             </span>
           }
@@ -887,14 +1001,14 @@ export const SmartAutomationDashboard = () => {
                   handleGenerateEmail(values);
                 }}
                 loading={loading}
-                style={{ width: '100%' }}
+                className={styles.fullWidth}
               >
                 Generate Email Template
               </Button>
             </Form.Item>
 
             <Form.Item>
-              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+              <Space className={styles.spaceBetween}>
                 <Button 
                   icon={<EyeOutlined />}
                   onClick={() => {
@@ -941,12 +1055,12 @@ export const SmartAutomationDashboard = () => {
             </Form.Item>
 
             {emailTemplate && (
-              <div>
+              <div className={styles.emailContentContainer}>
                 <Text strong>Subject (Editable):</Text>
                 <Input
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
-                  style={{ marginTop: '8px', marginBottom: '16px' }}
+                  className={styles.emailSubject}
                   placeholder="Edit email subject..."
                 />
                 
@@ -955,10 +1069,10 @@ export const SmartAutomationDashboard = () => {
                   value={emailTemplate}
                   onChange={(e) => setEmailTemplate(e.target.value)}
                   rows={8}
-                  style={{ marginTop: '8px' }}
+                  className={styles.emailContent}
                   placeholder="Edit your email content here..."
                 />
-                <Text type="secondary" style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                <Text type="secondary" className={styles.characterCount}>
                   {emailTemplate.length} characters
                 </Text>
               </div>

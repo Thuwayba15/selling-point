@@ -1,2 +1,3 @@
 export { AIAssistant } from './AIAssistant';
-export { default as useStyles } from './AIAssistant.style';
+export { SmartAutomationDashboard } from './SmartAutomationDashboardNew';
+export { DashboardWidgets } from './DashboardWidgets';
