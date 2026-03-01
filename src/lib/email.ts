@@ -1,8 +1,8 @@
 /**
  * Email Service Utility
- * 
+ *
  * This utility sends emails via Brevo (formerly Sendinblue)
- * 
+ *
  * Setup Instructions:
  * 1. Sign up for a free account at https://www.brevo.com
  * 2. Get your API key from Settings > SMTP & API
@@ -27,7 +27,6 @@ export const sendEmail = async ({
   htmlContent,
   textContent,
 }: SendEmailParams): Promise<boolean> => {
-
   if (!BREVO_API_KEY) {
     return false;
   }

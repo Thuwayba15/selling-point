@@ -1,9 +1,7 @@
 "use client";
 
 import { Button } from "antd";
-import {
-  OpportunitiesFilters,
-} from "@/components/opportunities";
+import { OpportunitiesFilters } from "@/components/opportunities";
 import { useStyles } from "@/components/opportunities/style";
 
 interface OpportunitiesFiltersSectionProps {

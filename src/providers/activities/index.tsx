@@ -144,10 +144,7 @@ export const ActivitiesProvider = ({ children }: { children: React.ReactNode }) 
 
   // Get Overdue Activities
   // GET /api/activities/overdue
-  const getOverdueActivities = async (params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) => {
+  const getOverdueActivities = async (params?: { pageNumber?: number; pageSize?: number }) => {
     dispatch(getOverdueActivitiesPending());
     try {
       const response = await api.get("/api/activities/overdue", { params });

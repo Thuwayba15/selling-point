@@ -2,9 +2,7 @@ import { handleActions } from "redux-actions";
 import type { Action } from "redux-actions";
 
 import { INITIAL_STATE, type IDashboardStateContext } from "./context";
-import {
-  DashboardActionEnums,
-} from "./actions";
+import { DashboardActionEnums } from "./actions";
 
 export const dashboardReducer = handleActions<IDashboardStateContext, IDashboardStateContext>(
   {

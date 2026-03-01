@@ -23,19 +23,8 @@ export const CreateContactModal = ({
   clients = [],
 }: CreateContactModalProps) => {
   return (
-    <Modal
-      title="Create Contact"
-      open={isOpen}
-      onCancel={onCancel}
-      footer={null}
-      width={600}
-    >
-      <ContactForm
-        form={form}
-        loading={loading}
-        onSubmit={onSubmit}
-        clients={clients}
-      />
+    <Modal title="Create Contact" open={isOpen} onCancel={onCancel} footer={null} width={600}>
+      <ContactForm form={form} loading={loading} onSubmit={onSubmit} clients={clients} />
     </Modal>
   );
 };

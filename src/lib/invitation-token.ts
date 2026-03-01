@@ -1,6 +1,6 @@
 /**
  * Invitation Token Utility
- * 
+ *
  * Generates and verifies secure JWT tokens for invitation links.
  * This prevents users from manipulating tenantId and role in the URL.
  */
@@ -22,9 +22,7 @@ export interface InvitationTokenPayload {
 /**
  * Generate a secure invitation token
  */
-export async function generateInvitationToken(
-  payload: InvitationTokenPayload,
-): Promise<string> {
+export async function generateInvitationToken(payload: InvitationTokenPayload): Promise<string> {
   try {
     const token = await new SignJWT({ ...payload })
       .setProtectedHeader({ alg: "HS256" })
@@ -41,9 +39,7 @@ export async function generateInvitationToken(
 /**
  * Verify and decode an invitation token
  */
-export async function verifyInvitationToken(
-  token: string,
-): Promise<InvitationTokenPayload | null> {
+export async function verifyInvitationToken(token: string): Promise<InvitationTokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secret);
 

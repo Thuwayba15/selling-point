@@ -19,11 +19,11 @@ const STATUS_OPTIONS = [
   { label: "Approved", value: 4 },
 ];
 
-export const ProposalsFilters = ({ 
-  clients, 
-  opportunities, 
-  onApplyFilters, 
-  onClear 
+export const ProposalsFilters = ({
+  clients,
+  opportunities,
+  onApplyFilters,
+  onClear,
 }: ProposalsFiltersProps) => {
   const [form] = Form.useForm();
   const { styles } = useStyles();
@@ -84,9 +84,7 @@ export const ProposalsFilters = ({
             <Button type="primary" onClick={handleApply}>
               Apply
             </Button>
-            {hasActiveFilters && (
-              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
-            )}
+            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={handleClear} danger />}
           </div>
         </Form.Item>
       </Form>

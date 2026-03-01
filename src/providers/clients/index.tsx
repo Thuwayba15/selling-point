@@ -85,9 +85,7 @@ export const ClientsProvider = ({ children }: { children: React.ReactNode }) => 
       const response = await api.get(`/api/clients/${id}/stats`);
       dispatch(getClientStatsSuccess(response.data));
     } catch (error: unknown) {
-      dispatch(
-        getClientStatsError(getErrorMessage(error, "Failed to fetch client stats")),
-      );
+      dispatch(getClientStatsError(getErrorMessage(error, "Failed to fetch client stats")));
     }
   };
 

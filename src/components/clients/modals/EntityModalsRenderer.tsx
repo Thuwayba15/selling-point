@@ -47,9 +47,16 @@ interface UseClientEntityModalsType {
     note: FormInstance<any>;
   };
   openCreateModal: (type: "contact" | "opportunity" | "contract" | "document" | "note") => void;
-  openEditModal: (type: "contact" | "opportunity" | "contract" | "document" | "note", entity: WorkspaceEntity) => void;
+  openEditModal: (
+    type: "contact" | "opportunity" | "contract" | "document" | "note",
+    entity: WorkspaceEntity,
+  ) => void;
   closeModal: (type: "contact" | "opportunity" | "contract" | "document" | "note") => void;
-  handleDeleteEntity: (type: "contact" | "opportunity" | "contract" | "document" | "note", entity: WorkspaceEntity, clientId: string) => Promise<void>;
+  handleDeleteEntity: (
+    type: "contact" | "opportunity" | "contract" | "document" | "note",
+    entity: WorkspaceEntity,
+    clientId: string,
+  ) => Promise<void>;
 }
 
 interface EntityModalsRendererProps {
@@ -82,14 +89,22 @@ export const EntityModalsRenderer = ({
 
   // Pre-fill contract form with clientId when modal opens in create mode
   useEffect(() => {
-    if (entityModals.modals.contract.isOpen && entityModals.modals.contract.mode === "create" && selectedClient) {
+    if (
+      entityModals.modals.contract.isOpen &&
+      entityModals.modals.contract.mode === "create" &&
+      selectedClient
+    ) {
       contractForm.setFieldsValue({
         clientId: selectedClient.id,
-        currency: 'R',
+        currency: "R",
         status: 1,
         autoRenew: false,
       });
-    } else if (entityModals.modals.contract.isOpen && entityModals.modals.contract.mode === "edit" && entityModals.modals.contract.entity) {
+    } else if (
+      entityModals.modals.contract.isOpen &&
+      entityModals.modals.contract.mode === "edit" &&
+      entityModals.modals.contract.entity
+    ) {
       const contract = entityModals.modals.contract.entity as IContract;
       contractForm.setFieldsValue({
         ...contract,
@@ -99,7 +114,13 @@ export const EntityModalsRenderer = ({
     } else if (!entityModals.modals.contract.isOpen) {
       contractForm.resetFields();
     }
-  }, [entityModals.modals.contract.isOpen, entityModals.modals.contract.mode, entityModals.modals.contract.entity, selectedClient, contractForm]);
+  }, [
+    entityModals.modals.contract.isOpen,
+    entityModals.modals.contract.mode,
+    entityModals.modals.contract.entity,
+    selectedClient,
+    contractForm,
+  ]);
 
   const handleCreateOpportunity = useCallback(
     async (values: any) => {
@@ -121,7 +142,7 @@ export const EntityModalsRenderer = ({
           ownerId: user.id, // Add the current user's ID as the owner
           estimatedValue: values.estimatedValue ? parseFloat(values.estimatedValue) : 0,
           probability: values.probability ? parseFloat(values.probability) : 0,
-          currency: 'R', // Always set to ZAR
+          currency: "R", // Always set to ZAR
         };
 
         await opportunitiesActions.createOpportunity(payload);
@@ -135,7 +156,15 @@ export const EntityModalsRenderer = ({
         setIsSubmitting(false);
       }
     },
-    [selectedClient?.id, user?.id, opportunitiesActions, message, entityModals, opportunityForm, onRefresh],
+    [
+      selectedClient?.id,
+      user?.id,
+      opportunitiesActions,
+      message,
+      entityModals,
+      opportunityForm,
+      onRefresh,
+    ],
   );
 
   const handleEditOpportunity = useCallback(
@@ -255,26 +284,34 @@ export const EntityModalsRenderer = ({
           clientId: selectedClient.id,
           ownerId: user.id, // Add the current user's ID as the owner
           contractValue: values.contractValue ? parseFloat(values.contractValue) : 0,
-          currency: 'R', // Always set to ZAR
+          currency: "R", // Always set to ZAR
         };
 
-        console.log('Creating contract with payload:', payload);
+        console.log("Creating contract with payload:", payload);
         const result = await contractsActions.createContract(payload);
-        console.log('Contract created successfully:', result);
+        console.log("Contract created successfully:", result);
         message.success("Contract created successfully");
         contractForm.resetFields();
         entityModals.closeModal("contract");
-        console.log('Refreshing workspace data...');
+        console.log("Refreshing workspace data...");
         await onRefresh();
-        console.log('Workspace refresh complete');
+        console.log("Workspace refresh complete");
       } catch (error) {
-        console.error('Failed to create contract:', error);
+        console.error("Failed to create contract:", error);
         message.error("Failed to create contract");
       } finally {
         setIsSubmitting(false);
       }
     },
-    [selectedClient?.id, user?.id, contractsActions, message, entityModals, contractForm, onRefresh],
+    [
+      selectedClient?.id,
+      user?.id,
+      contractsActions,
+      message,
+      entityModals,
+      contractForm,
+      onRefresh,
+    ],
   );
 
   const handleEditContract = useCallback(
@@ -310,9 +347,7 @@ export const EntityModalsRenderer = ({
   return (
     <>
       <CreateContactModal
-        isOpen={
-          entityModals.modals.contact.isOpen && entityModals.modals.contact.mode === "create"
-        }
+        isOpen={entityModals.modals.contact.isOpen && entityModals.modals.contact.mode === "create"}
         form={createContactForm}
         loading={isSubmitting}
         onSubmit={handleCreateContact}
@@ -324,9 +359,7 @@ export const EntityModalsRenderer = ({
       />
 
       <EditContactModal
-        isOpen={
-          entityModals.modals.contact.isOpen && entityModals.modals.contact.mode === "edit"
-        }
+        isOpen={entityModals.modals.contact.isOpen && entityModals.modals.contact.mode === "edit"}
         contact={(entityModals.modals.contact.entity as IContact) || null}
         form={editContactForm}
         loading={isSubmitting}
@@ -342,8 +375,16 @@ export const EntityModalsRenderer = ({
         client={selectedClient}
         form={opportunityForm}
         loading={isSubmitting}
-        onSubmit={entityModals.modals.opportunity.mode === "create" ? handleCreateOpportunity : handleEditOpportunity}
-        initialValues={entityModals.modals.opportunity.mode === "edit" ? entityModals.modals.opportunity.entity as IOpportunity : undefined}
+        onSubmit={
+          entityModals.modals.opportunity.mode === "create"
+            ? handleCreateOpportunity
+            : handleEditOpportunity
+        }
+        initialValues={
+          entityModals.modals.opportunity.mode === "edit"
+            ? (entityModals.modals.opportunity.entity as IOpportunity)
+            : undefined
+        }
         onCancel={() => entityModals.closeModal("opportunity")}
       />
 
@@ -359,17 +400,25 @@ export const EntityModalsRenderer = ({
       >
         <ContractForm
           form={contractForm}
-          initialValues={entityModals.modals.contract.mode === "edit" ? entityModals.modals.contract.entity as IContract : undefined}
+          initialValues={
+            entityModals.modals.contract.mode === "edit"
+              ? (entityModals.modals.contract.entity as IContract)
+              : undefined
+          }
           loading={isSubmitting}
-          onSubmit={entityModals.modals.contract.mode === "create" ? handleCreateContract : handleEditContract}
+          onSubmit={
+            entityModals.modals.contract.mode === "create"
+              ? handleCreateContract
+              : handleEditContract
+          }
           onCancel={() => {
             entityModals.closeModal("contract");
             contractForm.resetFields();
           }}
           clients={selectedClient ? [{ id: selectedClient.id, name: selectedClient.name }] : []}
-          opportunities={workspaceData.opportunities.map(opp => ({ 
-            id: opp.id, 
-            title: opp.title 
+          opportunities={workspaceData.opportunities.map((opp) => ({
+            id: opp.id,
+            title: opp.title,
           }))}
           proposals={[]} // Proposals would need to be fetched separately
         />

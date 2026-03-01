@@ -1,28 +1,12 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  App,
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Select,
-  Space,
-  Table,
-  Tag,
-} from "antd";
+import { App, Button, Card, Col, Form, Input, Modal, Row, Select, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useAuthState } from "@/providers/auth";
-import {
-  useNotesActions,
-  useNotesState,
-} from "@/providers/notes";
+import { useNotesActions, useNotesState } from "@/providers/notes";
 import type { INote, RelatedToType } from "@/providers/notes/context";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
@@ -444,11 +428,12 @@ const NotesPage = () => {
           <Space orientation="vertical">
             <div>ID: {selectedNote.id}</div>
             <div>
-              Related To Type: {relatedTypeLabelMap[selectedNote.relatedToType] ||
-                selectedNote.relatedToType}
+              Related To Type:{" "}
+              {relatedTypeLabelMap[selectedNote.relatedToType] || selectedNote.relatedToType}
             </div>
             <div>
-              Related To: {getRelatedEntityName(selectedNote.relatedToType, selectedNote.relatedToId)}
+              Related To:{" "}
+              {getRelatedEntityName(selectedNote.relatedToType, selectedNote.relatedToId)}
             </div>
             <div>Content: {selectedNote.content}</div>
             <div>
@@ -460,8 +445,14 @@ const NotesPage = () => {
               )}
             </div>
             <div>Private: {selectedNote.isPrivate ? "Yes" : "No"}</div>
-            <div>Created: {selectedNote.createdAt ? dayjs(selectedNote.createdAt).format("MMM DD, YYYY") : "-"}</div>
-            <div>Updated: {selectedNote.updatedAt ? dayjs(selectedNote.updatedAt).format("MMM DD, YYYY") : "-"}</div>
+            <div>
+              Created:{" "}
+              {selectedNote.createdAt ? dayjs(selectedNote.createdAt).format("MMM DD, YYYY") : "-"}
+            </div>
+            <div>
+              Updated:{" "}
+              {selectedNote.updatedAt ? dayjs(selectedNote.updatedAt).format("MMM DD, YYYY") : "-"}
+            </div>
             {selectedNote.createdById !== user?.id && (
               <div style={{ marginTop: 8 }}>
                 <Tag color="orange">You can only update your own notes</Tag>

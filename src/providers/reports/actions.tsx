@@ -19,24 +19,22 @@ export enum ReportsActionEnums {
 
 // Action Creators - Opportunities Report
 export const getOpportunitiesReportPending = createAction(
-  ReportsActionEnums.GET_OPPORTUNITIES_REPORT_PENDING
+  ReportsActionEnums.GET_OPPORTUNITIES_REPORT_PENDING,
 );
 export const getOpportunitiesReportSuccess = createAction<{
   report: IOpportunityReportItem[];
 }>(ReportsActionEnums.GET_OPPORTUNITIES_REPORT_SUCCESS);
 export const getOpportunitiesReportError = createAction<string>(
-  ReportsActionEnums.GET_OPPORTUNITIES_REPORT_ERROR
+  ReportsActionEnums.GET_OPPORTUNITIES_REPORT_ERROR,
 );
 
 // Action Creators - Sales by Period Report
-export const getSalesByPeriodPending = createAction(
-  ReportsActionEnums.GET_SALES_BY_PERIOD_PENDING
-);
+export const getSalesByPeriodPending = createAction(ReportsActionEnums.GET_SALES_BY_PERIOD_PENDING);
 export const getSalesByPeriodSuccess = createAction<{
   report: ISalesByPeriodItem[];
 }>(ReportsActionEnums.GET_SALES_BY_PERIOD_SUCCESS);
 export const getSalesByPeriodError = createAction<string>(
-  ReportsActionEnums.GET_SALES_BY_PERIOD_ERROR
+  ReportsActionEnums.GET_SALES_BY_PERIOD_ERROR,
 );
 
 // Utility Actions

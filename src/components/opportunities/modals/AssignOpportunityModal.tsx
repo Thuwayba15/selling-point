@@ -22,13 +22,7 @@ export const AssignOpportunityModal = ({
   onSubmit,
 }: AssignOpportunityModalProps) => {
   return (
-    <Modal
-      title="Assign Opportunity"
-      open={isOpen}
-      onCancel={onCancel}
-      footer={null}
-      width={480}
-    >
+    <Modal title="Assign Opportunity" open={isOpen} onCancel={onCancel} footer={null} width={480}>
       <Form form={form} layout="vertical" onFinish={onSubmit}>
         <Form.Item
           name="userId"

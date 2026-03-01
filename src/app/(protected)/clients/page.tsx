@@ -6,12 +6,7 @@ import { useRouter } from "next/navigation";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { useAuthState } from "@/providers/auth";
 import { useStyles } from "@/components/clients/style";
-import {
-  ClientsFilters,
-  ClientsTable,
-  ClientForm,
-  type Client,
-} from "@/components/clients";
+import { ClientsFilters, ClientsTable, ClientForm, type Client } from "@/components/clients";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import type { IClient } from "@/providers/clients/context";
 
@@ -55,23 +50,26 @@ const ClientsPage = () => {
   }, []);
 
   // Handle filter application - user clicks Apply Filters button
-  const handleApplyFilters = useCallback((filters: {
-    searchTerm?: string;
-    industry?: string;
-    clientType?: number;
-    isActive?: boolean;
-  }) => {
-    setSearchTerm(filters.searchTerm || "");
-    setIndustry(filters.industry || "");
-    setClientType(filters.clientType || undefined);
-    setIsActive(filters.isActive);
-    setCurrentPage(1); // Reset to page 1 when filters change
-    actions.getClients({
-      ...filters,
-      pageNumber: 1,
-      pageSize,
-    });
-  }, [pageSize]);
+  const handleApplyFilters = useCallback(
+    (filters: {
+      searchTerm?: string;
+      industry?: string;
+      clientType?: number;
+      isActive?: boolean;
+    }) => {
+      setSearchTerm(filters.searchTerm || "");
+      setIndustry(filters.industry || "");
+      setClientType(filters.clientType || undefined);
+      setIsActive(filters.isActive);
+      setCurrentPage(1); // Reset to page 1 when filters change
+      actions.getClients({
+        ...filters,
+        pageNumber: 1,
+        pageSize,
+      });
+    },
+    [pageSize],
+  );
 
   // Handle filter clearing
   const handleClearFilters = useCallback(() => {

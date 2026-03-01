@@ -46,14 +46,14 @@ const RegisterForm = () => {
     setVerifyingToken(true);
     try {
       const response = await fetch(`/api/invitations/verify?token=${encodeURIComponent(token)}`);
-      
+
       if (!response.ok) {
         message.error("Invalid or expired invitation link");
         return;
       }
 
       const data = await response.json();
-      
+
       setInviteData({
         tenantId: data.tenantId,
         role: data.role,
@@ -61,10 +61,10 @@ const RegisterForm = () => {
       });
 
       setMode("invite");
-      
+
       // Pre-fill email
       form.setFieldValue("email", data.email);
-      
+
       message.success("Invitation verified! Please complete your registration.");
     } catch (error) {
       message.error("Failed to verify invitation token");
@@ -77,7 +77,9 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       if (mode === "invite" && !inviteData) {
-        message.error("An invite is required to join an organization. Please check your email for an invite link.");
+        message.error(
+          "An invite is required to join an organization. Please check your email for an invite link.",
+        );
         setLoading(false);
         return;
       }
@@ -154,9 +156,7 @@ const RegisterForm = () => {
         <div style={{ marginTop: 20 }}>
           {inviteData ? (
             <div>
-              <p style={{ color: "#52c41a", marginBottom: 10 }}>
-                ✓ Your invitation is valid!
-              </p>
+              <p style={{ color: "#52c41a", marginBottom: 10 }}>✓ Your invitation is valid!</p>
               <p style={{ color: "#666", marginBottom: 20 }}>
                 You'll be joining as: <strong>{inviteData.role}</strong>
               </p>

@@ -199,8 +199,13 @@ export const useEntityActions = ({
         if (!success) return;
 
         if (lineItems) {
-          const existingLineItems = ('lineItems' in selectedEntity && selectedEntity.lineItems) ? selectedEntity.lineItems : [];
-          const existingIds = new Set(existingLineItems.map((item: IProposalLineItem) => item.id).filter(Boolean));
+          const existingLineItems =
+            "lineItems" in selectedEntity && selectedEntity.lineItems
+              ? selectedEntity.lineItems
+              : [];
+          const existingIds = new Set(
+            existingLineItems.map((item: IProposalLineItem) => item.id).filter(Boolean),
+          );
 
           const newItems = lineItems.filter((item) => !item.id || !existingIds.has(item.id));
           for (const item of newItems) {
@@ -291,9 +296,13 @@ export const useEntityActions = ({
         const success = await pricingRequestsActions.createPricingRequest({
           ...values,
           opportunityId: selectedOpportunity.id,
-          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
-          priority: typeof values.priority === 'string' ? parseInt(values.priority, 10) : values.priority,
-          estimatedValue: typeof values.estimatedValue === 'string' ? parseFloat(values.estimatedValue) : values.estimatedValue,
+          status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,
+          priority:
+            typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
+          estimatedValue:
+            typeof values.estimatedValue === "string"
+              ? parseFloat(values.estimatedValue)
+              : values.estimatedValue,
         } as Partial<IPricingRequest>);
         if (!success) return;
         message.success("Pricing request created successfully");
@@ -309,15 +318,16 @@ export const useEntityActions = ({
     async (values: PricingRequestFormValues) => {
       try {
         if (!selectedEntity?.id) return;
-        const success = await pricingRequestsActions.updatePricingRequest(
-          selectedEntity.id,
-          {
-            ...values,
-            status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
-            priority: typeof values.priority === 'string' ? parseInt(values.priority, 10) : values.priority,
-            estimatedValue: typeof values.estimatedValue === 'string' ? parseFloat(values.estimatedValue) : values.estimatedValue,
-          } as Partial<IPricingRequest>,
-        );
+        const success = await pricingRequestsActions.updatePricingRequest(selectedEntity.id, {
+          ...values,
+          status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,
+          priority:
+            typeof values.priority === "string" ? parseInt(values.priority, 10) : values.priority,
+          estimatedValue:
+            typeof values.estimatedValue === "string"
+              ? parseFloat(values.estimatedValue)
+              : values.estimatedValue,
+        } as Partial<IPricingRequest>);
         if (!success) return;
         message.success("Pricing request updated successfully");
         await onRefresh();
@@ -374,8 +384,10 @@ export const useEntityActions = ({
       try {
         if (!selectedOpportunity) return false;
         const ownerId = normalizeOwnerId(values.ownerId, user?.id);
-        const startDate = typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
-        const endDate = typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
+        const startDate =
+          typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
+        const endDate =
+          typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
         const contractData = {
           ...values,
           opportunityId: selectedOpportunity.id,
@@ -383,9 +395,13 @@ export const useEntityActions = ({
           ownerId,
           startDate,
           endDate,
-          value: typeof values.value === 'string' ? parseFloat(values.value) : values.value,
-          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
-          renewalNoticeDays: values.renewalNoticeDays ? (typeof values.renewalNoticeDays === 'string' ? parseInt(values.renewalNoticeDays, 10) : values.renewalNoticeDays) : undefined,
+          value: typeof values.value === "string" ? parseFloat(values.value) : values.value,
+          status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,
+          renewalNoticeDays: values.renewalNoticeDays
+            ? typeof values.renewalNoticeDays === "string"
+              ? parseInt(values.renewalNoticeDays, 10)
+              : values.renewalNoticeDays
+            : undefined,
         } as Partial<IContract>;
         const success = await contractsActions.createContract(contractData);
         if (!success) {
@@ -408,24 +424,34 @@ export const useEntityActions = ({
       try {
         if (!selectedEntity?.id) return false;
         const ownerId = normalizeOwnerId(values.ownerId, user?.id);
-        const startDate = typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
-        const endDate = typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
+        const startDate =
+          typeof values.startDate === "string" ? values.startDate : values.startDate.toISOString();
+        const endDate =
+          typeof values.endDate === "string" ? values.endDate : values.endDate.toISOString();
         const contractData = {
           ...values,
           ownerId,
           startDate,
           endDate,
-          value: typeof values.value === 'string' ? parseFloat(values.value) : values.value,
-          status: typeof values.status === 'string' ? parseInt(values.status, 10) : values.status,
-          renewalNoticeDays: values.renewalNoticeDays ? (typeof values.renewalNoticeDays === 'string' ? parseInt(values.renewalNoticeDays, 10) : values.renewalNoticeDays) : undefined,
+          value: typeof values.value === "string" ? parseFloat(values.value) : values.value,
+          status: typeof values.status === "string" ? parseInt(values.status, 10) : values.status,
+          renewalNoticeDays: values.renewalNoticeDays
+            ? typeof values.renewalNoticeDays === "string"
+              ? parseInt(values.renewalNoticeDays, 10)
+              : values.renewalNoticeDays
+            : undefined,
         };
         const requestedStatus =
           typeof contractData.status === "number" ? contractData.status : undefined;
         const currentStatus =
-          'status' in selectedEntity && typeof selectedEntity.status === "number" ? selectedEntity.status : undefined;
+          "status" in selectedEntity && typeof selectedEntity.status === "number"
+            ? selectedEntity.status
+            : undefined;
 
         if (requestedStatus === 3 || requestedStatus === 4) {
-          message.info("Expired and Renewed are system-managed statuses and cannot be set manually");
+          message.info(
+            "Expired and Renewed are system-managed statuses and cannot be set manually",
+          );
           return false;
         }
 
@@ -433,7 +459,10 @@ export const useEntityActions = ({
         const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
 
         const { status: _status, ...updatePayload } = contractData;
-        const updateSuccess = await contractsActions.updateContract(selectedEntity.id, updatePayload as Partial<IContract>);
+        const updateSuccess = await contractsActions.updateContract(
+          selectedEntity.id,
+          updatePayload as Partial<IContract>,
+        );
 
         if (!updateSuccess) {
           message.error("Failed to update contract");

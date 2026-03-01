@@ -136,10 +136,7 @@ export const useWorkspaceEntityModals = (
       if (activeModal?.mode === "create") {
         success = await pricingRequestsActions.createPricingRequest(payload);
       } else if (activeModal?.entity) {
-        success = await pricingRequestsActions.updatePricingRequest(
-          activeModal.entity.id,
-          payload,
-        );
+        success = await pricingRequestsActions.updatePricingRequest(activeModal.entity.id, payload);
       }
 
       if (success) {

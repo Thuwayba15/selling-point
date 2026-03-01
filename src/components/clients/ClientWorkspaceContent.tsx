@@ -85,7 +85,7 @@ export const ClientWorkspaceContent = ({
   const { can } = useRbac();
   const { styles } = useStyles();
   const { message } = App.useApp();
-  
+
   // Document management hook - same as opportunities workspace
   const documents = useWorkspaceDocuments(onRefreshWorkspace);
   const documentsActions = useDocumentsActions();
@@ -95,57 +95,66 @@ export const ClientWorkspaceContent = ({
   const notesActions = useNotesActions();
 
   // Client-specific note creation handler
-  const handleClientNoteSubmit = useCallback(async (values: any) => {
-    if (!client?.id) return;
-    
-    try {
-      if (notes.editingWorkspaceNote) {
-        const success = await notesActions.updateNote(notes.editingWorkspaceNote.id, {
-          content: values.content,
-        });
-        if (!success) return;
+  const handleClientNoteSubmit = useCallback(
+    async (values: any) => {
+      if (!client?.id) return;
 
-        message.success("Note updated successfully");
-        notes.closeWorkspaceNoteForm();
-        await onRefreshWorkspace();
-      } else {
-        const success = await notesActions.createNote({
-          content: values.content,
-          relatedToType: NoteRelatedToType.Client,
-          relatedToId: client.id,
-        });
-        if (!success) return;
+      try {
+        if (notes.editingWorkspaceNote) {
+          const success = await notesActions.updateNote(notes.editingWorkspaceNote.id, {
+            content: values.content,
+          });
+          if (!success) return;
 
-        message.success("Note created successfully");
-        notes.closeWorkspaceNoteForm();
-        await onRefreshWorkspace();
+          message.success("Note updated successfully");
+          notes.closeWorkspaceNoteForm();
+          await onRefreshWorkspace();
+        } else {
+          const success = await notesActions.createNote({
+            content: values.content,
+            relatedToType: NoteRelatedToType.Client,
+            relatedToId: client.id,
+          });
+          if (!success) return;
+
+          message.success("Note created successfully");
+          notes.closeWorkspaceNoteForm();
+          await onRefreshWorkspace();
+        }
+      } catch (error) {
+        message.error("Failed to save note");
       }
-    } catch (error) {
-      message.error("Failed to save note");
-    }
-  }, [client?.id, notes, notesActions, message, onRefreshWorkspace]);
+    },
+    [client?.id, notes, notesActions, message, onRefreshWorkspace],
+  );
 
   // Handle opening contract documents
-  const handleEntityDocuments = useCallback((type: "contract", entity: IContract) => {
-    if (!entity?.id) return;
-    const target: RelatedDocsTarget = {
-      relatedToType: DocumentRelatedToType.Contract,
-      relatedToId: entity.id,
-      title: entity.contractNumber || entity.title || "Contract",
-    };
-    documents.openRelatedDocuments(target);
-  }, [documents]);
+  const handleEntityDocuments = useCallback(
+    (type: "contract", entity: IContract) => {
+      if (!entity?.id) return;
+      const target: RelatedDocsTarget = {
+        relatedToType: DocumentRelatedToType.Contract,
+        relatedToId: entity.id,
+        title: entity.contractNumber || entity.title || "Contract",
+      };
+      documents.openRelatedDocuments(target);
+    },
+    [documents],
+  );
 
   // Handle opening contract notes
-  const handleEntityNotes = useCallback((type: "contract", entity: IContract) => {
-    if (!entity?.id) return;
-    const target: RelatedNotesTarget = {
-      relatedToType: NoteRelatedToType.Contract,
-      relatedToId: entity.id,
-      title: entity.contractNumber || entity.title || "Contract",
-    };
-    notes.openRelatedNotes(target);
-  }, [notes]);
+  const handleEntityNotes = useCallback(
+    (type: "contract", entity: IContract) => {
+      if (!entity?.id) return;
+      const target: RelatedNotesTarget = {
+        relatedToType: NoteRelatedToType.Contract,
+        relatedToId: entity.id,
+        title: entity.contractNumber || entity.title || "Contract",
+      };
+      notes.openRelatedNotes(target);
+    },
+    [notes],
+  );
 
   // Client-specific document upload handler
   const handleClientUpload = useCallback(() => {
@@ -159,26 +168,29 @@ export const ClientWorkspaceContent = ({
   }, [client?.id, documents]);
 
   // Client-specific document upload submit handler
-  const handleClientUploadSubmit = useCallback(async (values: any, file: File) => {
-    if (!client?.id) return;
-    
-    try {
-      const success = await documentsActions.uploadDocument(file, {
-        category: values.category,
-        relatedToType: DocumentRelatedToType.Client,
-        relatedToId: client.id,
-        description: values.description,
-      });
+  const handleClientUploadSubmit = useCallback(
+    async (values: any, file: File) => {
+      if (!client?.id) return;
 
-      if (!success) return;
+      try {
+        const success = await documentsActions.uploadDocument(file, {
+          category: values.category,
+          relatedToType: DocumentRelatedToType.Client,
+          relatedToId: client.id,
+          description: values.description,
+        });
 
-      message.success("Document uploaded successfully");
-      documents.setIsWorkspaceUploadOpen(false);
-      await onRefreshWorkspace();
-    } catch (error) {
-      message.error("Failed to upload document");
-    }
-  }, [client?.id, documentsActions, documents, message, onRefreshWorkspace]);
+        if (!success) return;
+
+        message.success("Document uploaded successfully");
+        documents.setIsWorkspaceUploadOpen(false);
+        await onRefreshWorkspace();
+      } catch (error) {
+        message.error("Failed to upload document");
+      }
+    },
+    [client?.id, documentsActions, documents, message, onRefreshWorkspace],
+  );
 
   if (!client) {
     if (isLoadingDetails) {
@@ -261,39 +273,32 @@ export const ClientWorkspaceContent = ({
           onSelectNote={notes.setSelectedNote}
           onAdd={notes.openWorkspaceNoteForm}
           onEdit={() => notes.selectedNote && notes.editWorkspaceNote(notes.selectedNote)}
-          onDelete={() =>
-            notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))
-          }
+          onDelete={() => notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))}
         />
       ),
     },
   ];
 
-  const clientTypeInfo = CLIENT_TYPE_MAP[client.clientType] || { label: "Unknown", color: "default" };
+  const clientTypeInfo = CLIENT_TYPE_MAP[client.clientType] || {
+    label: "Unknown",
+    color: "default",
+  };
 
   return (
     <div style={{ padding: "24px" }}>
-      {/* Header */}
-      <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
-        <Col span={24}>
-          <Space>
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined />}
-              onClick={onBackToClients}
-              style={{ fontSize: "16px" }}
-            >
-              Back to Clients
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
       {/* Client Details Card */}
       <Card
         loading={isLoadingDetails}
-        style={{ marginBottom: "24px" }}
-        title={<h2 style={{ margin: 0 }}>{client.name}</h2>}
+        className={styles.clientDetailsCard}
+        title={
+          <Space>
+            <ArrowLeftOutlined
+              onClick={onBackToClients}
+              style={{ fontSize: "20px", cursor: "pointer" }}
+            />
+            <h2 style={{ margin: 0 }}>{client.name}</h2>
+          </Space>
+        }
         extra={
           <Space>
             {can("update:client") && (
@@ -309,11 +314,7 @@ export const ClientWorkspaceContent = ({
           </Space>
         }
       >
-        <Descriptions
-          column={{ xxl: 4, xl: 3, lg: 2, md: 1 }}
-          bordered={false}
-          size="small"
-        >
+        <Descriptions column={{ xxl: 4, xl: 3, lg: 2, md: 1 }} bordered={false} size="small">
           <Descriptions.Item label="Type">
             <Tag color={clientTypeInfo.color}>{clientTypeInfo.label}</Tag>
           </Descriptions.Item>
@@ -334,7 +335,9 @@ export const ClientWorkspaceContent = ({
             )}
           </Descriptions.Item>
           <Descriptions.Item label="Tax Number">{client.taxNumber || "—"}</Descriptions.Item>
-          <Descriptions.Item label="Billing Address">{client.billingAddress || "—"}</Descriptions.Item>
+          <Descriptions.Item label="Billing Address">
+            {client.billingAddress || "—"}
+          </Descriptions.Item>
           <Descriptions.Item label="Created Date">
             {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : "—"}
           </Descriptions.Item>
@@ -347,6 +350,7 @@ export const ClientWorkspaceContent = ({
         items={tabs}
         activeKey={activeTab}
         onChange={onTabChange}
+        className={styles.workspaceTabsCard}
       />
 
       {/* Document Upload Modal */}

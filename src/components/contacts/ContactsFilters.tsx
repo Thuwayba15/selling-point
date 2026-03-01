@@ -74,9 +74,7 @@ export const ContactsFilters = ({
             <Button type="primary" onClick={handleApply}>
               Apply
             </Button>
-            {hasActiveFilters && (
-              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
-            )}
+            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={handleClear} danger />}
           </div>
         </Form.Item>
       </Form>

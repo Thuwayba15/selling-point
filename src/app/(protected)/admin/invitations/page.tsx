@@ -98,7 +98,6 @@ const InvitationsPage = () => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-
         {/* Generate Invitations Card */}
         <Card
           className={styles.cardSection}
@@ -110,16 +109,13 @@ const InvitationsPage = () => {
           }
         >
           <p className={styles.cardDescription}>
-            Use this section to invite new members to your organization. They will receive an email with a secure registration link.
+            Use this section to invite new members to your organization. They will receive an email
+            with a secure registration link.
           </p>
         </Card>
 
         {/* Organization Members Card */}
-        <Card 
-          className={styles.tableCard}
-          title="Organization Members"
-          loading={isLoadingUsers}
-        >
+        <Card className={styles.tableCard} title="Organization Members" loading={isLoadingUsers}>
           {isLoadingUsers ? (
             <Spin />
           ) : users && users.length > 0 ? (
@@ -129,7 +125,8 @@ const InvitationsPage = () => {
                   title: "Name",
                   dataIndex: "fullName",
                   key: "fullName",
-                  render: (_, record: IUser) => `${record.firstName || ""} ${record.lastName || ""}`.trim(),
+                  render: (_, record: IUser) =>
+                    `${record.firstName || ""} ${record.lastName || ""}`.trim(),
                 },
                 {
                   title: "Email",
@@ -164,11 +161,7 @@ const InvitationsPage = () => {
         }}
         footer={null}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleGenerateInvitation}
-        >
+        <Form form={form} layout="vertical" onFinish={handleGenerateInvitation}>
           <Form.Item
             label="Tenant ID"
             name="tenantId"
@@ -235,11 +228,10 @@ const InvitationsPage = () => {
       >
         <div>
           <div className={styles.successMessage}>
-            <p className={styles.successTitle}>
-              ✅ Email Sent Successfully!
-            </p>
+            <p className={styles.successTitle}>✅ Email Sent Successfully!</p>
             <p className={styles.successText}>
-              An invitation email has been sent to <strong>{selectedInvitation?.invitedEmail}</strong>
+              An invitation email has been sent to{" "}
+              <strong>{selectedInvitation?.invitedEmail}</strong>
             </p>
           </div>
 
@@ -250,12 +242,11 @@ const InvitationsPage = () => {
           <Divider />
 
           <p className={styles.backupLinkText}>
-            If the user doesn't receive the email, you can copy the invitation link below as a backup:
+            If the user doesn't receive the email, you can copy the invitation link below as a
+            backup:
           </p>
 
-          <div className={styles.linkContainer}>
-            {selectedInvitation?.inviteLink}
-          </div>
+          <div className={styles.linkContainer}>{selectedInvitation?.inviteLink}</div>
         </div>
       </Modal>
     </div>

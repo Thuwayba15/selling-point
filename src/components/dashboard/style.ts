@@ -1,4 +1,5 @@
 import { createStyles } from "antd-style";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ token, css }) => ({
   container: css`
@@ -68,6 +69,19 @@ export const useStyles = createStyles(({ token, css }) => ({
 
     @media (max-width: 768px) {
       margin-bottom: ${token.marginLG}px;
+    }
+  `,
+
+  salesPerformanceCard: css`
+    background-color: ${colors.primary};
+
+    & .ant-card-head {
+      background-color: ${colors.shell};
+      color: ${token.colorTextLightSolid};
+    }
+
+    & .ant-card-body {
+      background-color: ${colors.white};
     }
   `,
 
@@ -230,7 +244,7 @@ export const useStyles = createStyles(({ token, css }) => ({
 
   barContainer: css`
     width: 100%;
-    height: 280px; 
+    height: 280px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

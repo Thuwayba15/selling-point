@@ -141,7 +141,9 @@ export const WorkspaceEntityCard = ({
     };
 
     const canEdit = Boolean(onEdit && editPermissionMap[type] && can(editPermissionMap[type]!));
-    const canDelete = Boolean(onDelete && deletePermissionMap[type] && can(deletePermissionMap[type]!));
+    const canDelete = Boolean(
+      onDelete && deletePermissionMap[type] && can(deletePermissionMap[type]!),
+    );
 
     if (!canEdit && !canDelete) return null;
 
@@ -190,7 +192,14 @@ export const WorkspaceEntityCard = ({
       <Space orientation="vertical" style={{ width: "100%" }} size="small">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 4,
+              }}
+            >
               <Text strong>{activity.subject}</Text>
               {renderActions()}
             </div>
@@ -258,7 +267,9 @@ export const WorkspaceEntityCard = ({
     const canSubmitProposal = Boolean(onSubmit && can("update:proposal") && isDraft);
     const canApproveProposal = Boolean(onApprove && can("approve:proposal") && isSubmitted);
     const canRejectProposal = Boolean(onReject && can("reject:proposal") && isSubmitted);
-    const canDeleteProposal = Boolean(onDelete && can("delete:proposal") && (isDraft || isRejected));
+    const canDeleteProposal = Boolean(
+      onDelete && can("delete:proposal") && (isDraft || isRejected),
+    );
     const canViewProposalDocs = Boolean(onViewDocuments && proposal.id);
     const canViewProposalNotes = Boolean(onViewNotes && proposal.id);
 
@@ -415,16 +426,23 @@ export const WorkspaceEntityCard = ({
                 {proposal.lineItems && proposal.lineItems.length > 0 ? (
                   <Space orientation="vertical" style={{ width: "100%", marginTop: 8 }} size={8}>
                     {proposal.lineItems.map((item) => (
-                      <div key={item.id} style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: 8 }}>
+                      <div
+                        key={item.id}
+                        style={{ border: "1px solid #f0f0f0", borderRadius: 6, padding: 8 }}
+                      >
                         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                           <Text>{item.productServiceName || item.description || "Item"}</Text>
                           <Text>
-                            {proposal.currency || "R"} {(item.total ?? item.totalPrice ?? 0).toLocaleString()}
+                            {proposal.currency || "R"}{" "}
+                            {(item.total ?? item.totalPrice ?? 0).toLocaleString()}
                           </Text>
                         </div>
                         <Space size="small" wrap>
                           <Text type="secondary">Qty: {item.quantity ?? 0}</Text>
-                          <Text type="secondary">Unit: {proposal.currency || "R"} {(item.unitPrice ?? 0).toLocaleString()}</Text>
+                          <Text type="secondary">
+                            Unit: {proposal.currency || "R"}{" "}
+                            {(item.unitPrice ?? 0).toLocaleString()}
+                          </Text>
                           <Text type="secondary">Discount: {item.discount ?? 0}%</Text>
                           <Text type="secondary">Tax: {item.taxRate ?? 0}%</Text>
                         </Space>
@@ -450,7 +468,9 @@ export const WorkspaceEntityCard = ({
     const isCompleted = pricingRequest.status === 3;
     const canEditPricing = Boolean(onEdit && can("update:pricing-request") && !isCompleted);
     const canAssignPricing = Boolean(onAssign && can("assign:pricing-request") && !isCompleted);
-    const canCompletePricing = Boolean(onComplete && can("complete:pricing-request") && !isCompleted);
+    const canCompletePricing = Boolean(
+      onComplete && can("complete:pricing-request") && !isCompleted,
+    );
     const canDeletePricing = false;
 
     return (
@@ -492,7 +512,11 @@ export const WorkspaceEntityCard = ({
             </Space>
           </Space>
 
-          {(canEditPricing || canAssignPricing || canCompletePricing || canDeletePricing || pricingRequest.description) && (
+          {(canEditPricing ||
+            canAssignPricing ||
+            canCompletePricing ||
+            canDeletePricing ||
+            pricingRequest.description) && (
             <Space size="small" wrap>
               {canEditPricing && (
                 <Button
@@ -624,95 +648,95 @@ export const WorkspaceEntityCard = ({
           </Space>
 
           <Space size="small" wrap>
-              {canEditContract && (
-                <Button
-                  size="small"
-                  type="text"
-                  icon={<EditOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit?.(contract);
-                  }}
-                >
-                  Edit
-                </Button>
-              )}
-              {canActivateContract && (
-                <Button
-                  size="small"
-                  type="text"
-                  icon={<CheckOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onActivate?.(contract);
-                  }}
-                >
-                  Activate
-                </Button>
-              )}
-              {canCancelContract && (
-                <Button
-                  size="small"
-                  type="text"
-                  danger
-                  icon={<CloseOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onCancel?.(contract);
-                  }}
-                >
-                  Cancel
-                </Button>
-              )}
-              {canDeleteContract && (
-                <Button
-                  size="small"
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete?.(contract);
-                  }}
-                >
-                  Delete
-                </Button>
-              )}
-              {canViewContractDocs && (
-                <Button
-                  size="small"
-                  type="text"
-                  icon={<BookOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onViewDocuments?.("contract", contract);
-                  }}
-                >
-                  Docs
-                </Button>
-              )}
-              {canViewContractNotes && (
-                <Button
-                  size="small"
-                  type="text"
-                  icon={<FileTextOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onViewNotes?.("contract", contract);
-                  }}
-                >
-                  Notes
-                </Button>
-              )}
+            {canEditContract && (
               <Button
                 size="small"
                 type="text"
-                icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+                icon={<EditOutlined />}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setExpanded((prev) => !prev);
+                  onEdit?.(contract);
                 }}
-              />
+              >
+                Edit
+              </Button>
+            )}
+            {canActivateContract && (
+              <Button
+                size="small"
+                type="text"
+                icon={<CheckOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onActivate?.(contract);
+                }}
+              >
+                Activate
+              </Button>
+            )}
+            {canCancelContract && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<CloseOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCancel?.(contract);
+                }}
+              >
+                Cancel
+              </Button>
+            )}
+            {canDeleteContract && (
+              <Button
+                size="small"
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete?.(contract);
+                }}
+              >
+                Delete
+              </Button>
+            )}
+            {canViewContractDocs && (
+              <Button
+                size="small"
+                type="text"
+                icon={<BookOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDocuments?.("contract", contract);
+                }}
+              >
+                Docs
+              </Button>
+            )}
+            {canViewContractNotes && (
+              <Button
+                size="small"
+                type="text"
+                icon={<FileTextOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewNotes?.("contract", contract);
+                }}
+              >
+                Notes
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="text"
+              icon={expanded ? <MinusOutlined /> : <PlusOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded((prev) => !prev);
+              }}
+            />
           </Space>
 
           {expanded && (

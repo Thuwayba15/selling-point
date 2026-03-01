@@ -128,10 +128,7 @@ export interface IActivitiesActionContext {
     pageSize?: number;
   }) => Promise<void>;
 
-  getOverdueActivities: (params?: {
-    pageNumber?: number;
-    pageSize?: number;
-  }) => Promise<void>;
+  getOverdueActivities: (params?: { pageNumber?: number; pageSize?: number }) => Promise<void>;
 
   // Single activity operations
   getActivity: (id: string) => Promise<void>;

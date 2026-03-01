@@ -73,7 +73,8 @@ export const ClientsFilters = ({
     });
   };
 
-  const hasActiveFilters = searchTerm || industry || clientType !== undefined || isActive !== undefined;
+  const hasActiveFilters =
+    searchTerm || industry || clientType !== undefined || isActive !== undefined;
 
   return (
     <div className={styles.inlineFiltersBar}>
@@ -130,9 +131,7 @@ export const ClientsFilters = ({
             <Button type="primary" onClick={handleApply}>
               Apply
             </Button>
-            {hasActiveFilters && (
-              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
-            )}
+            {hasActiveFilters && <Button icon={<ClearOutlined />} onClick={handleClear} danger />}
           </Space>
         </Form.Item>
       </Form>

@@ -105,12 +105,14 @@ export const CreateProposalForm = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={clients?.map((client) => {
-            if ('value' in client) {
-              return { value: client.value, label: client.label };
-            }
-            return { value: client.id, label: client.name };
-          }) || []}
+          options={
+            clients?.map((client) => {
+              if ("value" in client) {
+                return { value: client.value, label: client.label };
+              }
+              return { value: client.id, label: client.name };
+            }) || []
+          }
         />
       </Form.Item>
 
@@ -125,12 +127,14 @@ export const CreateProposalForm = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
-          options={opportunities?.map((opp) => {
-            if ('value' in opp) {
-              return { value: opp.value, label: opp.label };
-            }
-            return { value: opp.id, label: opp.title };
-          }) || []}
+          options={
+            opportunities?.map((opp) => {
+              if ("value" in opp) {
+                return { value: opp.value, label: opp.label };
+              }
+              return { value: opp.id, label: opp.title };
+            }) || []
+          }
         />
       </Form.Item>
 

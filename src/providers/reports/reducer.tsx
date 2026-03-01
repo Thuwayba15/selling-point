@@ -44,5 +44,5 @@ export const ReportsReducer = handleActions<IReportsState, any>(
       errorMessage: null,
     }),
   },
-  INITIAL_STATE
+  INITIAL_STATE,
 );

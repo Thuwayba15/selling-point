@@ -50,10 +50,14 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
   }, [initialValues?.id]);
 
   const handleAddLineItem = (values: ProposalLineItemFormValues) => {
-    const quantity = typeof values.quantity === "string" ? parseFloat(values.quantity) : values.quantity;
-    const unitPrice = typeof values.unitPrice === "string" ? parseFloat(values.unitPrice) : values.unitPrice;
-    const discount = typeof values.discount === "string" ? parseFloat(values.discount) : values.discount || 0;
-    const taxRate = typeof values.taxRate === "string" ? parseFloat(values.taxRate) : values.taxRate || 0;
+    const quantity =
+      typeof values.quantity === "string" ? parseFloat(values.quantity) : values.quantity;
+    const unitPrice =
+      typeof values.unitPrice === "string" ? parseFloat(values.unitPrice) : values.unitPrice;
+    const discount =
+      typeof values.discount === "string" ? parseFloat(values.discount) : values.discount || 0;
+    const taxRate =
+      typeof values.taxRate === "string" ? parseFloat(values.taxRate) : values.taxRate || 0;
 
     const subtotal = quantity * unitPrice;
     const discountAmount = subtotal * (discount / 100);
@@ -152,7 +156,10 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       key: "total",
       render: (total, record) => {
         // Use total field if available, otherwise calculate from the line item
-        const lineTotal = total !== undefined ? total : (record.total || (record.quantity || 0) * (record.unitPrice || 0));
+        const lineTotal =
+          total !== undefined
+            ? total
+            : record.total || (record.quantity || 0) * (record.unitPrice || 0);
         return `${lineTotal.toLocaleString()}`;
       },
     },
@@ -170,15 +177,15 @@ export const ProposalForm: React.FC<ProposalFormProps> = ({
       ),
     },
   ];
-const formInitialValues = {
-  status: 1,
-  title: initialValues?.title || "",
-  clientId: initialValues?.clientId,
-  opportunityId: initialValues?.opportunityId,
-  description: initialValues?.description || "",
-  notes: initialValues?.notes,
-  validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
-};
+  const formInitialValues = {
+    status: 1,
+    title: initialValues?.title || "",
+    clientId: initialValues?.clientId,
+    opportunityId: initialValues?.opportunityId,
+    description: initialValues?.description || "",
+    notes: initialValues?.notes,
+    validUntil: initialValues?.validUntil ? dayjs(initialValues.validUntil) : undefined,
+  };
 
   return (
     <>

@@ -2,7 +2,13 @@
 
 import { useState, useMemo } from "react";
 import { Button, Space, Card, Empty, App, Table, Tag, Pagination } from "antd";
-import { EditOutlined, DeleteOutlined, StarOutlined, StarFilled, PlusOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  StarOutlined,
+  StarFilled,
+  PlusOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useRbac } from "@/hooks/useRbac";
 import { useWorkspacePagination } from "@/hooks/useWorkspacePagination";
@@ -173,10 +179,6 @@ export const ContactsTab = ({
       ),
     },
   ];
-
-  if (contacts.length === 0) {
-    return <Empty description="No contacts found" />;
-  }
 
   return (
     <>

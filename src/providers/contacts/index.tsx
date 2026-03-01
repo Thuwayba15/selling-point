@@ -89,7 +89,9 @@ export const ContactsProvider = ({ children }: { children: ReactNode }) => {
       try {
         const api = getAxiosInstance();
         const { data } = await api.get(`/api/contacts/by-client/${clientId}`);
-        const activeContacts = (data || []).filter((contact: IContact) => contact.isActive !== false);
+        const activeContacts = (data || []).filter(
+          (contact: IContact) => contact.isActive !== false,
+        );
 
         dispatch(getContactsByClientSuccess({ contacts: activeContacts }));
       } catch (error: unknown) {
