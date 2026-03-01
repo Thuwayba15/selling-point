@@ -3,11 +3,10 @@ export const ROUTES = {
   register: "/register",
 
   dashboard: "/",
-  proposals: "/proposals",
-  contracts: "/contracts",
-  pricingRequests: "/pricing-requests",
   clients: "/clients",
   contacts: "/contacts",
   opportunities: "/opportunities",
+  activities: "/activities",
   reports: "/reports",
+  invitations: "/admin/invitations",
 } as const;

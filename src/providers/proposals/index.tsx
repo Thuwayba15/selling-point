@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useContext, useMemo, useReducer } from "react";
 import { getAxiosInstance } from "@/lib/api";
 import { getErrorMessage } from "@/lib/errors";
+import { calculateProposalTotals } from "@/utils/proposal";
 
 import {
   INITIAL_STATE,
@@ -11,6 +12,8 @@ import {
   ProposalsActionsContext,
   type IProposal,
   type IProposalLineItem,
+  type ICreateProposalPayload,
+  type IUpdateProposalPayload,
   type IProposalsActionContext,
 } from "./context";
 
@@ -94,6 +97,20 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         const { data } = await api.get(`/api/proposals/${id}`);
 
+        // Always recalculate totals from line items if they exist
+        // This ensures we always have accurate totals even if the server returns stale values
+        if (data.lineItems && data.lineItems.length > 0) {
+          const calculatedTotals = calculateProposalTotals(data.lineItems);
+          data.subtotal = calculatedTotals.subtotal;
+          data.tax = calculatedTotals.tax;
+          data.totalAmount = calculatedTotals.totalAmount;
+        } else {
+          // No line items = zero totals
+          data.subtotal = 0;
+          data.tax = 0;
+          data.totalAmount = 0;
+        }
+        
         dispatch(getProposalSuccess(data));
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch proposal");
@@ -101,13 +118,12 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    const createProposal = async (proposal: Partial<IProposal>): Promise<boolean> => {
+    const createProposal = async (proposal: ICreateProposalPayload): Promise<boolean> => {
       dispatch(createProposalPending());
 
       try {
         const api = getAxiosInstance();
         const { data } = await api.post("/api/proposals", proposal);
-
         dispatch(createProposalSuccess(data));
         return true;
       } catch (error: unknown) {
@@ -117,7 +133,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    const updateProposal = async (id: string, proposal: Partial<IProposal>): Promise<boolean> => {
+    const updateProposal = async (id: string, proposal: IUpdateProposalPayload): Promise<boolean> => {
       dispatch(updateProposalPending());
 
       try {
@@ -141,9 +157,11 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.post(`/api/proposals/${proposalId}/line-items`, lineItem);
+        await api.post(`/api/proposals/${proposalId}/line-items`, lineItem);
 
-        dispatch(addLineItemSuccess(data));
+        // Line item added successfully, but don't update proposal state here
+        // The page handler will fetch fresh data
+        dispatch(addLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to add line item");
@@ -161,12 +179,12 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         const api = getAxiosInstance();
-        const { data } = await api.put(
+        await api.put(
           `/api/proposals/${proposalId}/line-items/${lineItemId}`,
           lineItem,
         );
 
-        dispatch(updateLineItemSuccess(data));
+        dispatch(updateLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to update line item");
@@ -182,7 +200,7 @@ export const ProposalsProvider = ({ children }: { children: ReactNode }) => {
         const api = getAxiosInstance();
         await api.delete(`/api/proposals/${proposalId}/line-items/${lineItemId}`);
 
-        dispatch(deleteLineItemSuccess({ id: proposalId } as IProposal));
+        dispatch(deleteLineItemSuccess({} as IProposal));
         return true;
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to delete line item");

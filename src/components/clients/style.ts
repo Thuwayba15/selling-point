@@ -1,4 +1,5 @@
 import { createStyles } from "antd-style";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ token, css }) => ({
   pageContainer: css`
@@ -64,6 +65,23 @@ export const useStyles = createStyles(({ token, css }) => ({
     }
   `,
 
+  workspaceToolbarRow: css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: ${token.margin}px;
+    margin-bottom: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
+
+  workspaceViewSelect: css`
+    min-width: 180px;
+  `,
+
   filterItem: css`
     flex: 1;
     min-width: 200px;
@@ -77,14 +95,30 @@ export const useStyles = createStyles(({ token, css }) => ({
   filtersActions: css`
     display: flex;
     gap: ${token.marginXS}px;
-  `,
-
-  formItemNoBorder: css`
-    margin-bottom: 0;
+    align-items: flex-end;
   `,
 
   tableCard: css`
     margin-bottom: ${token.marginLG}px;
+
+    background-color: ${colors.light};
+
+    :global(.ant-card-head) {
+      background-color: ${colors.secondary};
+    }
+
+    :global(.ant-card-body) {
+      background-color: ${colors.bgLayout};
+    }
+
+    :global(.ant-table),
+    :global(.ant-table-container),
+    :global(.ant-table-content),
+    :global(.ant-table-cell),
+    :global(.ant-table-thead > tr > th),
+    :global(.ant-table-tbody > tr > td) {
+      background-color: ${colors.bgLayout};
+    }
   `,
 
   tableRow: css`
@@ -109,10 +143,6 @@ export const useStyles = createStyles(({ token, css }) => ({
     height: 100%;
   `,
 
-  statsCard: css`
-    margin-bottom: ${token.marginLG}px;
-  `,
-
   actionsCard: css`
     flex: 1;
     min-width: 300px;
@@ -126,13 +156,22 @@ export const useStyles = createStyles(({ token, css }) => ({
     width: 100%;
   `,
 
-  noActionsMessage: css`
-    color: ${token.colorTextSecondary};
-    text-align: center;
-  `,
-
   fullWidthControl: css`
     width: 100%;
+  `,
+
+  insightsRow: css`
+    display: flex;
+    gap: ${token.marginLG}px;
+    margin-bottom: ${token.marginLG}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  `,
+
+  insightCard: css`
+    flex: 1;
   `,
 
   emptyState: css`
@@ -140,19 +179,79 @@ export const useStyles = createStyles(({ token, css }) => ({
     padding: ${token.paddingSM}px 0;
   `,
 
-  primaryBadge: css`
+  primaryTag: css`
     margin-left: ${token.marginXS}px;
   `,
 
-  highlightedRow: css`
-  background-color: ${token.colorPrimaryBg} !important;
+  sectionSpacing: css`
+    margin-bottom: ${token.marginLG}px;
+  `,
 
-  td {
-    background-color: ${token.colorPrimaryBg} !important;
-  }
+  chartPlaceholder: css`
+    height: 320px;
+  `,
 
-  &:hover td {
-    background-color: ${token.colorPrimaryBgHover} !important;
-  }
-`,
+  workspacePagination: css`
+    margin-top: ${token.margin}px;
+    float: right;
+  `,
+
+  inlineFiltersBar: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.light};
+    padding: ${token.padding}px;
+    border-radius: ${token.borderRadius}px;
+  `,
+
+  inlineFiltersForm: css`
+    display: flex;
+    gap: ${token.margin}px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: ${token.marginSM}px;
+    }
+  `,
+
+  inlineFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  inlineFilterActionsItem: css`
+    margin-bottom: 0;
+    margin-left: auto;
+  `,
+
+  opportunitiesListContainer: css`
+    background-color: ${colors.bgLayout};
+    border-radius: ${token.borderRadius}px;
+    overflow: hidden;
+  `,
+
+  toolbarContainer: css`
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: ${token.marginLG}px;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      > div:first-child {
+        width: 100%;
+      }
+
+      > button {
+        width: 100%;
+      }
+    }
+  `,
+
+  toolbarFilters: css`
+    flex: 1;
+  `,
 }));

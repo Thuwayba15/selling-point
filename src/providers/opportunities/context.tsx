@@ -18,14 +18,19 @@ export interface IOpportunity {
   description?: string;
   ownerId?: string;
   ownerName?: string;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface IOpportunityStageHistory {
   id?: string;
-  stage?: number;
-  reason?: string;
+  fromStage?: number;
+  fromStageName?: string;
+  toStage?: number;
+  toStageName?: string;
+  notes?: string;
+  lossReason?: string;
   changedAt?: string;
   changedByName?: string;
 }
@@ -71,6 +76,7 @@ export interface IOpportunitiesActionContext {
     stage?: number;
     ownerId?: string;
     searchTerm?: string;
+    isActive?: boolean;
     pageNumber?: number;
     pageSize?: number;
   }) => Promise<void>;
@@ -84,7 +90,12 @@ export interface IOpportunitiesActionContext {
   getOpportunityPipeline: (params?: { ownerId?: string }) => Promise<void>;
   createOpportunity: (opportunity: Partial<IOpportunity>) => Promise<boolean>;
   updateOpportunity: (id: string, opportunity: Partial<IOpportunity>) => Promise<boolean>;
-  updateOpportunityStage: (id: string, stage: number, reason?: string) => Promise<boolean>;
+  updateOpportunityStage: (
+    id: string,
+    stage: number,
+    notes?: string,
+    lossReason?: string,
+  ) => Promise<boolean>;
   assignOpportunity: (id: string, userId: string) => Promise<boolean>;
   deleteOpportunity: (id: string) => Promise<boolean>;
   clearError: () => void;

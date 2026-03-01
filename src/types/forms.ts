@@ -45,6 +45,7 @@ export interface ClientFormValues {
 export interface OpportunityFormValues {
   title: string;
   clientId: string;
+  contactId?: string;
   estimatedValue: number | string;
   currency: string;
   stage: number | string;
@@ -134,4 +135,31 @@ export interface RegisterFormValues {
   tenantName?: string;
   tenantId?: string;
   role?: UserRole;
+}
+
+/**
+ * Activity Participant Form Values
+ */
+export interface ActivityParticipantFormValues {
+  userId?: string;
+  contactId?: string;
+  isRequired: boolean;
+}
+
+/**
+ * Activity Form Values
+ * Used in: ActivityForm component
+ */
+export interface ActivityFormValues {
+  subject: string;
+  type: number;
+  priority: number;
+  dueDate: Dayjs | string;
+  assignedToId: string;
+  relatedToType?: number;
+  relatedToId?: string;
+  duration?: number;
+  location?: string;
+  description?: string;
+  participants?: ActivityParticipantFormValues[];
 }

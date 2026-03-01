@@ -3,13 +3,13 @@
 import { useEffect } from "react";
 import { Card, Space, Typography, App } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { useRbac } from "@/hooks/useRbac";
 import { useDashboardState, useDashboardActions } from "@/providers/dashboard";
 import {
   DashboardKPIs,
   DashboardPipeline,
   DashboardSalesPerformance,
   DashboardActivitySummary,
-  DashboardExpiringContracts,
 } from "@/components/dashboard";
 import { useStyles } from "@/components/dashboard/style";
 
@@ -18,6 +18,7 @@ const { Title } = Typography;
 const DashboardPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
+  const { isAdmin, isManager } = useRbac();
   const {
     isPending,
     isError,
@@ -26,7 +27,6 @@ const DashboardPage = () => {
     pipelineMetrics,
     salesPerformance,
     activitySummary,
-    expiringContracts,
   } = useDashboardState();
 
   const {
@@ -34,7 +34,6 @@ const DashboardPage = () => {
     getPipelineMetrics,
     getSalesPerformance,
     getActivitySummary,
-    getExpiringContracts,
     clearError,
   } = useDashboardActions();
 
@@ -44,8 +43,7 @@ const DashboardPage = () => {
     getPipelineMetrics();
     getSalesPerformance();
     getActivitySummary();
-    getExpiringContracts();
-  }, []);
+  }, [getDashboardOverview, getPipelineMetrics, getSalesPerformance, getActivitySummary]);
 
   // Handle errors
   useEffect(() => {
@@ -53,7 +51,7 @@ const DashboardPage = () => {
       message.error(errorMessage);
       clearError();
     }
-  }, [isError, errorMessage]);
+  }, [isError, errorMessage, clearError, message]);
 
   return (
     <div className={styles.container}>
@@ -64,33 +62,45 @@ const DashboardPage = () => {
           </Title>
         </div>
 
-        <Space orientation="vertical" size="large" className={styles.fullWidth}>
-          {/* KPI Section */}
+        {/* KPIs Row - Across top */}
+        <div className={styles.kpiRow}>
           <div className={styles.section}>
             <DashboardKPIs overview={overview} isLoading={isPending} />
           </div>
+        </div>
 
-          {/* Pipeline Section */}
+        {/* Charts Row - Horizontally Scrollable */}
+        <div className={styles.chartsScrollContainer}>
+          {/* Pipeline by Stage */}
           {(pipelineMetrics || isPending) && (
-            <div className={styles.section}>
+            <div className={styles.chartCard}>
               <Card title="Pipeline by Stage">
                 <DashboardPipeline pipelineMetrics={pipelineMetrics} isLoading={isPending} />
               </Card>
             </div>
           )}
 
-          {/* Expiring Contracts Section */}
-          {(expiringContracts || isPending) && (
+          {/* Activity Summary */}
+          {(activitySummary || isPending) && (
+            <div className={styles.chartCard}>
+              <DashboardActivitySummary activitySummary={activitySummary} isLoading={isPending} />
+            </div>
+          )}
+        </div>
+
+        {/* Sales Performance Section */}
+        {(isAdmin || isManager) && (salesPerformance || isPending) && (
+          <div className={styles.salesPerformanceSection}>
             <div className={styles.section}>
-              <Card title="Contracts Expiring Soon">
-                <DashboardExpiringContracts
-                  expiringContracts={expiringContracts}
+              <Card title="Sales Performance">
+                <DashboardSalesPerformance
+                  salesPerformance={salesPerformance}
                   isLoading={isPending}
                 />
               </Card>
             </div>
-          )}
-        </Space>
+          </div>
+        )}
       </div>
     </div>
   );

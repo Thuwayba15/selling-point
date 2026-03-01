@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Input, Button, Select } from "antd";
+import { Form, Input, Button, Select } from "antd";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
@@ -28,53 +28,58 @@ export const ContactsFilters = ({
     });
   };
 
+  const handleClear = () => {
+    setSearchTerm("");
+    setClientId(undefined);
+    form.resetFields();
+    onClear();
+  };
+
   const hasActiveFilters = searchTerm || clientId;
 
   return (
-    <Card className={styles.filtersCard} title="Filters">
-      <Form form={form} layout="vertical">
-        <div className={styles.filtersRow}>
-          <Form.Item label="Search" className={styles.filterItem}>
-            <Input
-              placeholder="Search by name, email, position..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              prefix={<SearchOutlined />}
-              allowClear
-            />
-          </Form.Item>
+    <div className={styles.workspaceFiltersBar}>
+      <Form form={form} layout="inline" className={styles.workspaceFiltersForm}>
+        <Form.Item className={styles.workspaceFilterItem}>
+          <Input
+            placeholder="Search by name, email, position..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            prefix={<SearchOutlined />}
+            allowClear
+            className={styles.workspaceFilterSelect}
+          />
+        </Form.Item>
 
-          <Form.Item label="Client" className={styles.filterItem}>
-            <Select
-              placeholder="Filter by client"
-              value={clientId}
-              onChange={setClientId}
-              allowClear
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              options={clients.map((client) => ({
-                value: client.id,
-                label: client.name,
-              }))}
-            />
-          </Form.Item>
+        <Form.Item className={styles.workspaceFilterItem}>
+          <Select
+            placeholder="Client"
+            value={clientId}
+            onChange={setClientId}
+            allowClear
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={clients.map((client) => ({
+              value: client.id,
+              label: client.name,
+            }))}
+            className={styles.workspaceFilterSelect}
+          />
+        </Form.Item>
 
-          <Form.Item label=" " className={styles.filterItem}>
-            <div className={styles.filtersActions}>
-              <Button type="primary" onClick={handleApply}>
-                Apply Filters
-              </Button>
-              {hasActiveFilters && (
-                <Button icon={<ClearOutlined />} onClick={onClear} danger>
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.workspaceFilterActionsItem}>
+          <div className={styles.workspaceFiltersActions}>
+            <Button type="primary" onClick={handleApply}>
+              Apply
+            </Button>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </div>
+        </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 };

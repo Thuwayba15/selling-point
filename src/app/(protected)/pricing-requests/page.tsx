@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { App, Button, Form, Input, Modal } from "antd";
+import { App, Button, Form, Input, Modal, Select } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { getAxiosInstance } from "@/lib/api";
 import { usePricingRequestsState, usePricingRequestsActions } from "@/providers/pricing-requests";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import {
@@ -16,6 +17,7 @@ import {
 import { useStyles } from "@/components/pricing-requests/style";
 import { IPricingRequest } from "@/providers/pricing-requests/context";
 import { useRbac } from "@/hooks/useRbac";
+import type { IUser } from "@/providers/users/context";
 
 const PricingRequestsPage = () => {
   const { styles } = useStyles();
@@ -56,12 +58,13 @@ const PricingRequestsPage = () => {
     null,
   );
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [viewMode, setViewMode] = useState<"all" | "pending" | "mine">("all");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assignableUsers, setAssignableUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [createForm] = Form.useForm();
   const [editForm] = Form.useForm();
   const [assignForm] = Form.useForm();
@@ -80,6 +83,28 @@ const PricingRequestsPage = () => {
       // Fetch pricing requests
       getPricingRequests({ pageNumber: currentPage, pageSize });
     }
+  }, []);
+
+  // Fetch users for assignment dropdown
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/users", {
+          params: { isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const users = (data?.items || data || []) as IUser[];
+        const options = users.map((item) => ({
+          id: item.id,
+          label: item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
+        }));
+        setAssignableUsers(options);
+      } catch (error) {
+        setAssignableUsers([]);
+      }
+    };
+
+    loadUsers();
   }, []);
 
   // Load pricing request details when selected
@@ -427,10 +452,20 @@ const PricingRequestsPage = () => {
           <Form form={assignForm} layout="vertical" onFinish={handleAssignSubmit}>
             <Form.Item
               name="userId"
-              label="User ID"
-              rules={[{ required: true, message: "Please enter a user id" }]}
+              label="Assign To"
+              rules={[{ required: true, message: "Please select a user" }]}
             >
-              <Input placeholder="User id to assign" />
+              <Select
+                placeholder="Select a user"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
+                options={assignableUsers.map((item) => ({
+                  value: item.id,
+                  label: item.label,
+                }))}
+              />
             </Form.Item>
 
             <Form.Item>

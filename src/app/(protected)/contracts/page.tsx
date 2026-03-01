@@ -21,6 +21,17 @@ import { useStyles } from "@/components/contracts/style";
 import { IContract } from "@/providers/contracts/context";
 import { useRbac } from "@/hooks/useRbac";
 
+const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
+const normalizeOwnerId = (...candidates: Array<string | undefined>) => {
+  const validOwnerId = candidates.find((candidate) => {
+    const trimmedCandidate = candidate?.trim();
+    return Boolean(trimmedCandidate && trimmedCandidate !== EMPTY_GUID);
+  });
+
+  return validOwnerId?.trim();
+};
+
 const ContractsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
@@ -67,7 +78,7 @@ const ContractsPage = () => {
   const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [selectedContract, setSelectedContract] = useState<IContract | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [activeTab, setActiveTab] = useState("all");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -115,10 +126,10 @@ const ContractsPage = () => {
   };
 
   const handleCreateSubmit = async (values: Partial<IContract>) => {
-    // Automatically set ownerId to current user if not set
+    const ownerId = normalizeOwnerId(values.ownerId, user?.id);
     const contractData = {
       ...values,
-      ownerId: values.ownerId || user?.id,
+      ownerId,
     };
     const success = await createContract(contractData);
     if (success) {
@@ -145,21 +156,48 @@ const ContractsPage = () => {
   const handleEditSubmit = async (values: Partial<IContract>) => {
     if (!contract?.id) return;
 
-    // Automatically set ownerId to current user if not set
+    const requestedStatus = typeof values.status === "number" ? values.status : undefined;
+    const currentStatus = typeof contract.status === "number" ? contract.status : undefined;
+
+    if (requestedStatus === 3 || requestedStatus === 4) {
+      message.info("Expired and Renewed are system-managed statuses and cannot be set manually");
+      return;
+    }
+
+    const shouldActivate = requestedStatus === 2 && currentStatus !== 2;
+    const shouldCancel = requestedStatus === 5 && currentStatus !== 5;
+
+    const ownerId = normalizeOwnerId(values.ownerId, user?.id);
+    const { status: _status, ...restValues } = values;
     const contractData = {
-      ...values,
-      ownerId: values.ownerId || user?.id,
+      ...restValues,
+      ownerId,
     };
     const success = await updateContract(contract.id, contractData);
-    if (success) {
-      message.success("Contract updated successfully");
-      setIsEditModalOpen(false);
-      editForm.resetFields();
-      // Refresh contract details
-      getContract(contract.id);
-      // Refresh contracts list
-      getContracts({ pageNumber: currentPage, pageSize, status, clientId });
+    if (!success) return;
+
+    if (shouldActivate) {
+      const activated = await activateContract(contract.id);
+      if (!activated) return;
     }
+
+    if (shouldCancel) {
+      const cancelled = await cancelContract(contract.id);
+      if (!cancelled) return;
+    }
+
+    if (shouldActivate) {
+      message.success("Contract updated and activated successfully");
+    } else if (shouldCancel) {
+      message.success("Contract updated and cancelled successfully");
+    } else {
+      message.success("Contract updated successfully");
+    }
+
+    setIsEditModalOpen(false);
+    editForm.resetFields();
+    getContract(contract.id);
+    getContracts({ pageNumber: currentPage, pageSize, status, clientId });
   };
 
   const handleActivate = async () => {
@@ -205,9 +243,11 @@ const ContractsPage = () => {
     setClientId(newClientId);
   };
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = (filters: { status?: number; clientId?: string }) => {
+    setStatus(filters.status);
+    setClientId(filters.clientId);
     setCurrentPage(1);
-    getContracts({ pageNumber: 1, pageSize, status, clientId });
+    getContracts({ pageNumber: 1, pageSize, status: filters.status, clientId: filters.clientId });
   };
 
   const handleClearFilters = () => {
@@ -254,13 +294,9 @@ const ContractsPage = () => {
               children: (
                 <>
                   <ContractsFilters
-                    status={status}
-                    clientId={clientId}
-                    onStatusChange={handleStatusChange}
-                    onClientIdChange={handleClientIdChange}
+                    clients={clientOptions}
                     onApplyFilters={handleApplyFilters}
                     onClear={handleClearFilters}
-                    clients={clientOptions}
                   />
 
                   <ContractsTable

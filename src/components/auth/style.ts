@@ -40,7 +40,7 @@ export const useStyles = createStyles({
   `,
   card: css`
     width: 100%;
-    max-width: 400px;
+    max-width: 550px;
     border-radius: 14px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
     padding: 40px 36px;
@@ -49,7 +49,7 @@ export const useStyles = createStyles({
     .ant-card-body {
       padding: 0 !important;
     }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       padding: 24px 8px;
       max-width: 100%;
     }

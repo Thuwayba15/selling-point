@@ -1,19 +1,22 @@
-import React from "react";
-import { Card, Form, Input, Select, Button } from "antd";
+"use client";
+
+import { useState } from "react";
+import { Form, Input, Button, Select, Space } from "antd";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import { useStyles } from "./style";
 
 interface ClientsFiltersProps {
-  searchTerm: string;
-  industry: string | undefined;
-  clientType: number | undefined;
-  isActive: boolean | undefined;
-  onSearchChange: (value: string) => void;
-  onIndustryChange: (value: string | undefined) => void;
-  onClientTypeChange: (value: number | undefined) => void;
-  onActiveChange: (value: boolean | undefined) => void;
-  onApplyFilters: () => void;
+  onApplyFilters: (filters: {
+    searchTerm?: string;
+    industry?: string;
+    clientType?: number;
+    isActive?: boolean;
+  }) => void;
   onClear: () => void;
+  initialSearchTerm?: string;
+  initialIndustry?: string;
+  initialClientType?: number;
+  initialIsActive?: boolean;
 }
 
 const CLIENT_TYPES = [
@@ -38,83 +41,101 @@ const INDUSTRY_OPTIONS = [
   { label: "Other", value: "Other" },
 ];
 
-export const ClientsFilters: React.FC<ClientsFiltersProps> = ({
-  searchTerm,
-  industry,
-  clientType,
-  isActive,
-  onSearchChange,
-  onIndustryChange,
-  onClientTypeChange,
-  onActiveChange,
+export const ClientsFilters = ({
   onApplyFilters,
   onClear,
-}) => {
+  initialSearchTerm = "",
+  initialIndustry,
+  initialClientType,
+  initialIsActive,
+}: ClientsFiltersProps) => {
+  const [form] = Form.useForm();
   const { styles } = useStyles();
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [industry, setIndustry] = useState<string | undefined>(initialIndustry);
+  const [clientType, setClientType] = useState<number | undefined>(initialClientType);
+  const [isActive, setIsActive] = useState<boolean | undefined>(initialIsActive);
+
+  const handleClear = () => {
+    setSearchTerm("");
+    setIndustry(undefined);
+    setClientType(undefined);
+    setIsActive(undefined);
+    onClear();
+  };
+
+  const handleApply = () => {
+    onApplyFilters({
+      searchTerm: searchTerm || undefined,
+      industry,
+      clientType,
+      isActive,
+    });
+  };
+
+  const hasActiveFilters = searchTerm || industry || clientType !== undefined || isActive !== undefined;
 
   return (
-    <Card className={styles.filtersCard}>
-      <div className={styles.filtersRow}>
-        <div className={styles.filterItem}>
-          <Form.Item label="Search" className={styles.formItemNoBorder}>
-            <Input
-              placeholder="Search by name..."
-              prefix={<SearchOutlined />}
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              allowClear
-            />
-          </Form.Item>
-        </div>
+    <div className={styles.inlineFiltersBar}>
+      <Form form={form} layout="inline" className={styles.inlineFiltersForm}>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Input
+            placeholder="Search by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            prefix={<SearchOutlined />}
+            allowClear
+          />
+        </Form.Item>
 
-        <div className={styles.filterItem}>
-          <Form.Item label="Industry" className={styles.formItemNoBorder}>
-            <Select
-              placeholder="All industries"
-              value={industry}
-              onChange={onIndustryChange}
-              options={INDUSTRY_OPTIONS}
-              allowClear
-              showSearch
-            />
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Industry"
+            value={industry}
+            onChange={setIndustry}
+            allowClear
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={INDUSTRY_OPTIONS}
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-        <div className={styles.filterItem}>
-          <Form.Item label="Type" className={styles.formItemNoBorder}>
-            <Select
-              placeholder="All types"
-              value={clientType}
-              onChange={onClientTypeChange}
-              options={CLIENT_TYPES}
-              allowClear
-            />
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Type"
+            value={clientType}
+            onChange={setClientType}
+            allowClear
+            options={CLIENT_TYPES}
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-        <div className={styles.filterItem}>
-          <Form.Item label="Status" className={styles.formItemNoBorder}>
-            <Select
-              placeholder="All statuses"
-              value={isActive}
-              onChange={onActiveChange}
-              options={ACTIVE_OPTIONS}
-              allowClear
-            />
-          </Form.Item>
-        </div>
+        <Form.Item className={styles.inlineFilterItem}>
+          <Select
+            placeholder="Status"
+            value={isActive}
+            onChange={setIsActive}
+            allowClear
+            options={ACTIVE_OPTIONS}
+            style={{ minWidth: 140 }}
+          />
+        </Form.Item>
 
-        <div className={styles.filtersActions}>
-          <Button type="primary" onClick={onApplyFilters}>
-            Apply Filters
-          </Button>
-          {(searchTerm || industry || clientType !== undefined || isActive !== undefined) && (
-            <Button icon={<ClearOutlined />} onClick={onClear} danger>
-              Clear Filters
+        <Form.Item className={styles.inlineFilterActionsItem}>
+          <Space size="small">
+            <Button type="primary" onClick={handleApply}>
+              Apply
             </Button>
-          )}
-        </div>
-      </div>
-    </Card>
+            {hasActiveFilters && (
+              <Button icon={<ClearOutlined />} onClick={handleClear} danger />
+            )}
+          </Space>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };

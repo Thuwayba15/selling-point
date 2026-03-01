@@ -37,7 +37,6 @@ export const withAuthGuard = <P extends object>(
         try {
           user = JSON.parse(raw) as AuthUser;
         } catch (error) {
-          console.error("Auth Guard - Failed to parse user:", error);
           user = null;
           storage.remove(AUTH_STORAGE_KEY);
         }

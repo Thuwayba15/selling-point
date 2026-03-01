@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { App, Button, Form, Input, Modal, Select } from "antd";
+import { useRouter } from "next/navigation";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
+import { getAxiosInstance } from "@/lib/api";
 import { useAuthState } from "@/providers/auth";
 import { useOpportunitiesState, useOpportunitiesActions } from "@/providers/opportunities";
 import { useClientsState, useClientsActions } from "@/providers/clients";
 import {
-  OpportunitiesHeader,
   OpportunitiesFilters,
   OpportunitiesTable,
   OpportunityDetails,
@@ -15,10 +16,13 @@ import {
   OpportunityForm,
   OpportunityStageHistory,
 } from "@/components/opportunities";
+import { EntityWorkspaceTabs, WorkspaceEntityList, type WorkspaceTabItem } from "@/components/common";
 import { useStyles } from "@/components/opportunities/style";
 import { IOpportunity } from "@/providers/opportunities/context";
+import type { IUser } from "@/providers/users/context";
 
 const OpportunitiesPage = () => {
+  const router = useRouter();
   const { styles } = useStyles();
   const { message } = App.useApp();
   const { user } = useAuthState();
@@ -30,7 +34,6 @@ const OpportunitiesPage = () => {
     opportunities,
     opportunity,
     pagination,
-    pipeline,
     stageHistory,
   } = useOpportunitiesState();
   const {
@@ -58,8 +61,30 @@ const OpportunitiesPage = () => {
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
   const [showMyOpportunities, setShowMyOpportunities] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<IOpportunity | null>(null);
+  const [workspaceTab, setWorkspaceTab] = useState("overview");
+  const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [workspaceData, setWorkspaceData] = useState<{
+    activities: Array<{ id: string; title: string; subtitle?: string }>;
+    pricingRequests: Array<{ id: string; title: string; subtitle?: string }>;
+    proposals: Array<{ id: string; title: string; subtitle?: string }>;
+    contracts: Array<{ id: string; title: string; subtitle?: string }>;
+    documents: Array<{ id: string; title: string; subtitle?: string }>;
+    notes: Array<{ id: string; title: string; subtitle?: string }>;
+  }>({
+    activities: [],
+    pricingRequests: [],
+    proposals: [],
+    contracts: [],
+    documents: [],
+    notes: [],
+  });
+  const [assignableUsers, setAssignableUsers] = useState<Array<{ id: string; label: string }>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [createModalClientId, setCreateModalClientId] = useState<string | undefined>(undefined);
+  const [editModalClientId, setEditModalClientId] = useState<string | undefined>(undefined);
+  const [createModalContacts, setCreateModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
+  const [editModalContacts, setEditModalContacts] = useState<Array<{ id: string; firstName: string; lastName: string; email: string }>>([]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,6 +96,7 @@ const OpportunitiesPage = () => {
   const [assignForm] = Form.useForm();
 
   const initializedRef = useRef(false);
+  const isSalesRep = Boolean(user?.roles?.includes("SalesRep"));
 
   // Initialize data on mount
   useEffect(() => {
@@ -78,14 +104,79 @@ const OpportunitiesPage = () => {
       initializedRef.current = true;
       // Fetch clients list
       clientsActions.getClients({
+        isActive: true,
         pageNumber: 1,
         pageSize: 1000,
       });
       // Fetch opportunities
-      getOpportunities({ pageNumber: currentPage, pageSize });
+      getOpportunities({ isActive: true, pageNumber: currentPage, pageSize });
       getOpportunityPipeline();
     }
   }, []);
+
+  // Fetch users for assignment dropdown
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/users", {
+          params: { isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const users = (data?.items || data || []) as IUser[];
+        const options = users.map((item) => ({
+          id: item.id,
+          label: item.fullName || `${item.firstName || ""} ${item.lastName || ""}`.trim() || item.email,
+        }));
+        setAssignableUsers(options);
+      } catch (error) {
+        setAssignableUsers([]);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
+  // Fetch contacts for create modal when clientId changes
+  useEffect(() => {
+    if (!createModalClientId) {
+      setCreateModalContacts([]);
+      return;
+    }
+    const loadContacts = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/contacts", {
+          params: { clientId: createModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        setCreateModalContacts(contactsData);
+      } catch (error) {
+        setCreateModalContacts([]);
+      }
+    };
+    loadContacts();
+  }, [createModalClientId]);
+
+  // Fetch contacts for edit modal when clientId changes
+  useEffect(() => {
+    if (!editModalClientId) {
+      setEditModalContacts([]);
+      return;
+    }
+    const loadContacts = async () => {
+      try {
+        const api = getAxiosInstance();
+        const { data } = await api.get("/api/contacts", {
+          params: { clientId: editModalClientId, isActive: true, pageNumber: 1, pageSize: 1000 },
+        });
+        const contactsData = (data?.items || data || []) as Array<{ id: string; firstName: string; lastName: string; email: string }>;
+        setEditModalContacts(contactsData);
+      } catch (error) {
+        setEditModalContacts([]);
+      }
+    };
+    loadContacts();
+  }, [editModalClientId]);
 
   // Map clients for the form
   const clientsList = (clientsState.clients || []).map((client) => ({
@@ -113,7 +204,7 @@ const OpportunitiesPage = () => {
       return;
     }
 
-    await getOpportunities(params);
+      await getOpportunities({ ...params, isActive: true });
   };
 
   const fetchPipeline = async (overrideOwnerId?: string, useMy = showMyOpportunities) => {
@@ -122,19 +213,138 @@ const OpportunitiesPage = () => {
   };
 
   useEffect(() => {
-    if (!initializedRef.current) {
-      initializedRef.current = true;
-      fetchOpportunities({ pageNumber: currentPage, pageSize });
-      fetchPipeline();
-    }
-  }, []);
-
-  useEffect(() => {
     if (selectedOpportunity?.id) {
       getOpportunity(selectedOpportunity.id);
       getOpportunityStageHistory(selectedOpportunity.id);
     }
   }, [selectedOpportunity?.id]);
+
+  useEffect(() => {
+    const loadWorkspaceData = async () => {
+      if (!selectedOpportunity?.id) {
+        setWorkspaceData({
+          activities: [],
+          pricingRequests: [],
+          proposals: [],
+          contracts: [],
+          documents: [],
+          notes: [],
+        });
+        return;
+      }
+
+      setWorkspaceLoading(true);
+      try {
+        const api = getAxiosInstance();
+        const [activitiesRes, pricingRequestsRes, proposalsRes, contractsRes, documentsRes, notesRes] =
+          await Promise.all([
+            api
+              .get("/api/activities", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/pricingrequests", {
+                params: { pageNumber: 1, pageSize: 100 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/proposals", {
+                params: { opportunityId: selectedOpportunity.id, pageNumber: 1, pageSize: 10 },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/contracts", {
+                params: {
+                  clientId: selectedOpportunity.clientId,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/documents", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+            api
+              .get("/api/notes", {
+                params: {
+                  relatedToType: 2,
+                  relatedToId: selectedOpportunity.id,
+                  pageNumber: 1,
+                  pageSize: 10,
+                },
+              })
+              .catch(() => ({ data: { items: [] } })),
+          ]);
+
+        const activities = (activitiesRes.data?.items || activitiesRes.data || []).map(
+          (item: { id: string; title?: string; typeName?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || item.typeName || "Activity",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const pricingRequests = (pricingRequestsRes.data?.items || pricingRequestsRes.data || [])
+          .filter((item: { opportunityId?: string }) => item.opportunityId === selectedOpportunity.id)
+          .map((item: { id: string; title?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || "Pricing Request",
+            subtitle: item.statusName,
+          }));
+
+        const proposals = (proposalsRes.data?.items || proposalsRes.data || []).map(
+          (item: { id: string; title?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.title || "Proposal",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const contracts = (contractsRes.data?.items || contractsRes.data || []).map(
+          (item: { id: string; contractNumber?: string; statusName?: string }) => ({
+            id: item.id,
+            title: item.contractNumber || "Contract",
+            subtitle: item.statusName,
+          }),
+        );
+
+        const documents = (documentsRes.data?.items || documentsRes.data || []).map(
+          (item: { id: string; fileName?: string; categoryName?: string }) => ({
+            id: item.id,
+            title: item.fileName || "Document",
+            subtitle: item.categoryName,
+          }),
+        );
+
+        const notes = (notesRes.data?.items || notesRes.data || []).map(
+          (item: { id: string; content?: string; createdByName?: string }) => ({
+            id: item.id,
+            title: item.content || "Note",
+            subtitle: item.createdByName,
+          }),
+        );
+
+        setWorkspaceData({ activities, pricingRequests, proposals, contracts, documents, notes });
+      } finally {
+        setWorkspaceLoading(false);
+      }
+    };
+
+    loadWorkspaceData();
+  }, [selectedOpportunity?.id, selectedOpportunity?.clientId]);
 
   useEffect(() => {
     if (isError && errorMessage) {
@@ -145,6 +355,8 @@ const OpportunitiesPage = () => {
 
   const handleCreateClick = () => {
     createForm.resetFields();
+    setCreateModalClientId(undefined);
+    setCreateModalContacts([]);
     setIsCreateModalOpen(true);
   };
 
@@ -173,11 +385,14 @@ const OpportunitiesPage = () => {
   const handleCreateCancel = () => {
     setIsCreateModalOpen(false);
     createForm.resetFields();
+    setCreateModalClientId(undefined);
+    setCreateModalContacts([]);
   };
 
   const handleEdit = () => {
     if (!selectedOpportunity) return;
     editForm.setFieldsValue(selectedOpportunity);
+    setEditModalClientId(selectedOpportunity.clientId);
     setIsEditModalOpen(true);
   };
 
@@ -210,24 +425,28 @@ const OpportunitiesPage = () => {
   const handleEditCancel = () => {
     setIsEditModalOpen(false);
     editForm.resetFields();
+    setEditModalClientId(undefined);
+    setEditModalContacts([]);
   };
 
   const handleUpdateStage = () => {
     if (!selectedOpportunity) return;
     stageForm.setFieldsValue({
       stage: selectedOpportunity.stage,
-      reason: "",
+      notes: "",
+      lossReason: "",
     });
     setIsStageModalOpen(true);
   };
 
-  const handleStageSubmit = async (values: { stage: number; reason?: string }) => {
+  const handleStageSubmit = async (values: { stage: number; notes?: string; lossReason?: string }) => {
     if (!selectedOpportunity) return;
 
     const success = await updateOpportunityStage(
       selectedOpportunity.id,
       values.stage,
-      values.reason,
+      values.notes,
+      values.lossReason,
     );
     if (success) {
       message.success("Stage updated successfully");
@@ -314,7 +533,18 @@ const OpportunitiesPage = () => {
   };
 
   const handleSelectOpportunity = (item: IOpportunity) => {
-    setSelectedOpportunity(item);
+    const query = new URLSearchParams();
+
+    if (searchTerm) query.set("searchTerm", searchTerm);
+    if (clientId) query.set("clientId", clientId);
+    if (stage) query.set("stage", String(stage));
+    if (ownerId) query.set("ownerId", ownerId);
+    if (showMyOpportunities) query.set("my", "1");
+    query.set("page", String(currentPage));
+    query.set("pageSize", String(pageSize));
+
+    const queryString = query.toString();
+    router.push(`/opportunities/${item.id}${queryString ? `?${queryString}` : ""}`);
   };
 
   const handleApplyFilters = (filters: {
@@ -356,6 +586,7 @@ const OpportunitiesPage = () => {
   };
 
   const handleShowMyOpportunitiesChange = (value: boolean) => {
+    if (!isSalesRep) return;
     setShowMyOpportunities(value);
     if (value) setOwnerId(undefined);
     setCurrentPage(1);
@@ -389,17 +620,108 @@ const OpportunitiesPage = () => {
     );
   };
 
+  const workspaceItems: WorkspaceTabItem[] = [
+    {
+      key: "overview",
+      label: "Overview",
+      content: (
+        <>
+          <div className={styles.selectedRow}>
+            <div className={styles.detailsPanel}>
+              <OpportunityDetails opportunity={opportunity || null} loading={isLoadingDetails} />
+            </div>
+            {selectedOpportunity && (
+              <OpportunityActions
+                opportunity={selectedOpportunity}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onUpdateStage={handleUpdateStage}
+                onAssign={handleAssign}
+              />
+            )}
+          </div>
+          <div className={styles.sectionSpacing}>
+            <OpportunityStageHistory
+              stageHistory={stageHistory}
+              loading={isLoadingDetails}
+              hasSelection={Boolean(selectedOpportunity)}
+            />
+          </div>
+        </>
+      ),
+    },
+    {
+      key: "activities",
+      label: "Activities",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.activities}
+          emptyText={workspaceLoading ? "Loading activities..." : "No activities for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "pricing",
+      label: "Pricing Requests",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.pricingRequests}
+          emptyText={workspaceLoading ? "Loading pricing requests..." : "No pricing requests for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "proposals",
+      label: "Proposals",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.proposals}
+          emptyText={workspaceLoading ? "Loading proposals..." : "No proposals for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "contracts",
+      label: "Contracts",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.contracts}
+          emptyText={workspaceLoading ? "Loading contracts..." : "No contracts linked to this opportunity's client"}
+        />
+      ),
+    },
+    {
+      key: "documents",
+      label: "Documents",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.documents}
+          emptyText={workspaceLoading ? "Loading documents..." : "No documents for this opportunity"}
+        />
+      ),
+    },
+    {
+      key: "notes",
+      label: "Notes",
+      content: (
+        <WorkspaceEntityList
+          items={workspaceData.notes}
+          emptyText={workspaceLoading ? "Loading notes..." : "No notes for this opportunity"}
+        />
+      ),
+    },
+  ];
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        <OpportunitiesHeader onCreateClick={handleCreateClick} />
-
         <OpportunitiesFilters
           onApplyFilters={handleApplyFilters}
           onClear={handleClearFilters}
           clients={clientsList}
           showMyOpportunities={showMyOpportunities}
           onShowMyOpportunitiesChange={handleShowMyOpportunitiesChange}
+          showMyOpportunitiesToggle={isSalesRep}
         />
 
         <OpportunitiesTable
@@ -409,40 +731,14 @@ const OpportunitiesPage = () => {
           selectedOpportunityId={selectedOpportunity?.id}
           onSelectOpportunity={handleSelectOpportunity}
           onPaginationChange={handlePaginationChange}
+          headerExtra={
+            user ? (
+              <Button type="primary" onClick={handleCreateClick}>
+                Create Opportunity
+              </Button>
+            ) : null
+          }
         />
-
-        {selectedOpportunity && (
-          <div className={styles.selectedRow}>
-            <div className={styles.detailsPanel}>
-              <OpportunityDetails opportunity={opportunity || null} loading={isLoadingDetails} />
-            </div>
-            <OpportunityActions
-              opportunity={selectedOpportunity}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onUpdateStage={handleUpdateStage}
-              onAssign={handleAssign}
-            />
-          </div>
-        )}
-
-        {/* Pipeline Overview shows statistics by stage */}
-        {/* <div className={styles.insightsRow}>
-          <OpportunitiesPipeline pipeline={pipeline} loading={isLoadingDetails} />
-          <OpportunityStageHistory
-            stageHistory={stageHistory}
-            loading={isLoadingDetails}
-            hasSelection={Boolean(selectedOpportunity)}
-          />
-        </div> */}
-
-        <div style={{ marginBottom: "24px" }}>
-          <OpportunityStageHistory
-            stageHistory={stageHistory}
-            loading={isLoadingDetails}
-            hasSelection={Boolean(selectedOpportunity)}
-          />
-        </div>
 
         <Modal
           title="Create Opportunity"
@@ -457,6 +753,8 @@ const OpportunitiesPage = () => {
             onCancel={handleCreateCancel}
             loading={isPending}
             clients={clientsList}
+            contacts={createModalContacts}
+            onClientChange={setCreateModalClientId}
           />
         </Modal>
 
@@ -474,6 +772,8 @@ const OpportunitiesPage = () => {
             onCancel={handleEditCancel}
             loading={isPending}
             clients={clientsList}
+            contacts={editModalContacts}
+            onClientChange={setEditModalClientId}
           />
         </Modal>
 
@@ -502,8 +802,25 @@ const OpportunitiesPage = () => {
               />
             </Form.Item>
 
-            <Form.Item name="reason" label="Reason">
-              <Input.TextArea rows={3} placeholder="Optional reason for stage change" />
+            <Form.Item name="notes" label="Notes">
+              <Input.TextArea rows={3} placeholder="Optional notes for stage change" />
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) => prevValues.stage !== currentValues.stage}
+            >
+              {({ getFieldValue }) =>
+                getFieldValue("stage") === 6 ? (
+                  <Form.Item
+                    name="lossReason"
+                    label="Loss Reason"
+                    rules={[{ required: true, message: "Loss reason is required for Closed Lost" }]}
+                  >
+                    <Input.TextArea rows={3} placeholder="Reason for lost opportunity" />
+                  </Form.Item>
+                ) : null
+              }
             </Form.Item>
 
             <Form.Item>
@@ -524,10 +841,20 @@ const OpportunitiesPage = () => {
           <Form form={assignForm} layout="vertical" onFinish={handleAssignSubmit}>
             <Form.Item
               name="userId"
-              label="User ID"
-              rules={[{ required: true, message: "Please enter a user id" }]}
+              label="Assign To"
+              rules={[{ required: true, message: "Please select a user" }]}
             >
-              <Input placeholder="Sales rep user id" />
+              <Select
+                placeholder="Select a user"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
+                options={assignableUsers.map((item) => ({
+                  value: item.id,
+                  label: item.label,
+                }))}
+              />
             </Form.Item>
 
             <Form.Item>

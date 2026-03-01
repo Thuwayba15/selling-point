@@ -67,7 +67,9 @@ export const ClientActions: React.FC<ClientActionsProps> = ({
           </Button>
         )}
         {!canEdit && !canDelete && (
-          <div className={styles.noActionsMessage}>No actions available for your role</div>
+          <div style={{ color: '#999', fontStyle: 'italic', fontSize: '12px' }}>
+            No actions available for your role
+          </div>
         )}
       </Space>
     </Card>

@@ -90,7 +90,7 @@ export const ContractsTable = ({
       dataIndex: "contractValue",
       key: "contractValue",
       render: (value, record) =>
-        value != null ? `${record.currency || "ZAR"} ${value.toLocaleString()}` : "—",
+        value != null ? `${record.currency || "R"} ${value.toLocaleString()}` : "—",
     },
   ];
 
@@ -109,8 +109,6 @@ export const ContractsTable = ({
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
                 onChange: onPaginationChange,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} contracts`,
               }
             : false
         }

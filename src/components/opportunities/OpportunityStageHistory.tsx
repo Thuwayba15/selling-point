@@ -38,18 +38,35 @@ export const OpportunityStageHistory = ({
 
   const columns: ColumnsType<IOpportunityStageHistory> = [
     {
-      title: "Stage",
-      dataIndex: "stage",
-      key: "stage",
+      title: "From Stage",
+      dataIndex: "fromStage",
+      key: "fromStage",
+      render: (stage) => (
+        <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
+      ),
+    },
+    {
+      title: "To Stage",
+      dataIndex: "toStage",
+      key: "toStage",
       render: (stage) => (
         <Tag color={STAGE_COLORS[stage] || "default"}>{STAGE_LABELS[stage] || "—"}</Tag>
       ),
     },
     {
       title: "Reason",
-      dataIndex: "reason",
-      key: "reason",
-      render: (reason) => reason || "—",
+      dataIndex: "notes",
+      key: "notes",
+      render: (notes, record) => {
+        const parts = [];
+        if (record.toStage === 6 && record.lossReason) {
+          parts.push(`Loss Reason: ${record.lossReason}`);
+        }
+        if (notes) {
+          parts.push(notes);
+        }
+        return parts.length > 0 ? parts.join(" | ") : "—";
+      },
     },
     {
       title: "Changed At",
@@ -71,7 +88,7 @@ export const OpportunityStageHistory = ({
         <Table
           columns={columns}
           dataSource={stageHistory}
-          rowKey={(record, index) => record.id || `${record.stage ?? "stage"}-${index}`}
+          rowKey={(record, index) => record.id || `${record.toStage ?? "stage"}-${index}`}
           pagination={false}
           scroll={{ x: "max-content" }}
           size="small"

@@ -68,7 +68,7 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       title: "Unit Price",
       dataIndex: "unitPrice",
       key: "unitPrice",
-      render: (price) => (price ? `${proposal.currency || "ZAR"} ${price.toLocaleString()}` : "—"),
+      render: (price) => (price ? `${proposal.currency || "R"} ${price.toLocaleString()}` : "—"),
     },
     {
       title: "Discount %",
@@ -86,7 +86,10 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
       title: "Total",
       dataIndex: "total",
       key: "total",
-      render: (total) => (total ? `${proposal.currency || "ZAR"} ${total.toLocaleString()}` : "—"),
+      render: (total, record) => {
+        const lineTotal = total !== undefined ? total : record.totalPrice;
+        return (lineTotal ? `${proposal.currency || "R"} ${lineTotal.toLocaleString()}` : "—");
+      },
     },
   ];
 
@@ -136,19 +139,19 @@ export const ProposalDetails = ({ proposal, loading }: ProposalDetailsProps) => 
             <div className={styles.summaryRow}>
               <span className={styles.summaryLabel}>Subtotal:</span>
               <span className={styles.summaryValue}>
-                {proposal.currency} {(proposal.subtotal || 0).toLocaleString()}
+                {proposal.currency || "R"} {(proposal.subtotal || 0).toLocaleString()}
               </span>
             </div>
             <div className={styles.summaryRow}>
               <span className={styles.summaryLabel}>Tax:</span>
               <span className={styles.summaryValue}>
-                {proposal.currency} {(proposal.tax || 0).toLocaleString()}
+                {proposal.currency || "R"} {(proposal.tax || 0).toLocaleString()}
               </span>
             </div>
             <div className={styles.summaryRow}>
               <span className={`${styles.summaryLabel} ${styles.totalAmount}`}>Total:</span>
               <span className={`${styles.summaryValue} ${styles.totalAmount}`}>
-                {proposal.currency} {(proposal.totalAmount || 0).toLocaleString()}
+                {proposal.currency || "R"} {(proposal.totalAmount || 0).toLocaleString()}
               </span>
             </div>
           </div>

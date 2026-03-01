@@ -1,7 +1,9 @@
 "use client";
 
+import React, { ReactElement } from "react";
 import { Skeleton, Empty } from "antd";
-import { IPipelineMetrics } from "@/providers/dashboard/context";
+import { IPipelineMetrics, IStageMetrics } from "@/providers/dashboard/context";
+import { formatCurrency } from "@/utils/currency";
 import { useStyles } from "./style";
 
 interface DashboardPipelineProps {
@@ -38,53 +40,48 @@ export const DashboardPipeline = ({ pipelineMetrics, isLoading }: DashboardPipel
     return <Empty description="No pipeline data available" />;
   }
 
-  const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "$0.00M";
-    return `$${(value / 1000000).toFixed(2)}M`;
-  };
+  // Calculate max stage value for bar scaling
+  const maxValue = Math.max(...pipelineMetrics.stages.map((s: IStageMetrics) => s.value || 0));
 
-  // Find max value for scaling bars - try both 'value' and 'totalValue' fields
-  const maxValue = Math.max(
-    ...pipelineMetrics.stages.map((s) => (s as any).totalValue || s.value || 0),
-  );
-
-  // Calculate total pipeline value from all stages (excluding Closed Won/Lost)
+  // Calculate total pipeline value from open stages (1-4)
   const calculatedTotalValue = pipelineMetrics.stages
-    .filter((s) => s.stage <= 4) // Only stages 1-4 (Lead, Qualified, Proposal, Negotiation)
-    .reduce((sum, s) => sum + ((s as any).totalValue || s.value || 0), 0);
+    .filter((s: IStageMetrics) => s.stage <= 4)
+    .reduce((sum: number, s: IStageMetrics) => sum + (s.value || 0), 0);
+
+  const renderStageBar = (stage: IStageMetrics): ReactElement => {
+    const stageValue = stage.value || 0;
+
+    // Use linear scale so relative differences stay accurate
+    const rawHeight = maxValue > 0 ? (stageValue / maxValue) * 100 : 0;
+    const barHeight = stageValue > 0 ? Math.max(rawHeight, 2) : 0;
+
+    return (
+      <div key={stage.stage} className={styles.barWrapper}>
+        <div className={styles.barContainer}>
+          <div
+            className={styles.bar}
+            style={{
+              height: `${barHeight}%`,
+            }}
+          />
+          <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
+        </div>
+        <div className={styles.barLabel}>{STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}</div>
+        <div className={styles.barCount}>{stage.count ?? 0} opps</div>
+      </div>
+    );
+  };
 
   return (
     <div>
-      <div className={styles.barChartContainer}>
-        {pipelineMetrics.stages.map((stage) => {
-          // Support both 'value' and 'totalValue' field names from API
-          const stageValue = (stage as any).totalValue || stage.value || 0;
-          const barHeight = maxValue > 0 ? (stageValue / maxValue) * 100 : 10;
-
-          return (
-            <div key={stage.stage} className={styles.barWrapper}>
-              <div className={styles.barContainer}>
-                <div className={styles.bar} style={{ height: `${barHeight}%` }} />
-                <div className={styles.barValue}>{formatCurrency(stageValue)}</div>
-              </div>
-              <div className={styles.barLabel}>
-                {STAGE_NAMES[stage.stage] || `Stage ${stage.stage}`}
-              </div>
-              <div className={styles.barCount}>{stage.count ?? 0} opps</div>
-            </div>
-          );
-        })}
+      <div className={styles.barChartScroll}>
+        <div className={styles.barChartContainer}>{pipelineMetrics.stages.map(renderStageBar)}</div>
       </div>
       <div className={styles.pipelineSummary}>
         <div>
-          Weighted Pipeline Value:{" "}
-          {formatCurrency(
-            (pipelineMetrics as any).weightedPipelineValue || pipelineMetrics.weightedValue,
-          )}
+          Weighted Pipeline Value: {formatCurrency(pipelineMetrics.weightedValue)}
         </div>
-        <div>
-          Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}
-        </div>
+        <div>Total Pipeline Value: {formatCurrency(pipelineMetrics.totalValue || calculatedTotalValue)}</div>
       </div>
     </div>
   );

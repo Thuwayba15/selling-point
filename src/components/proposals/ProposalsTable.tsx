@@ -70,7 +70,7 @@ export const ProposalsTable = ({
       dataIndex: "totalAmount",
       key: "totalAmount",
       render: (total, record) => {
-        const currency = record.currency || "ZAR";
+        const currency = record.currency || "R";
         return total ? `${currency} ${total.toLocaleString()}` : "—";
       },
     },
@@ -101,8 +101,6 @@ export const ProposalsTable = ({
                 pageSize: pagination.pageSize,
                 total: pagination.totalCount,
                 onChange: onPaginationChange,
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} proposals`,
               }
             : false
         }

@@ -83,7 +83,7 @@ export const ContractDetails = ({ contract, loading }: ContractDetailsProps) => 
           {
             label: "Contract Value",
             children: contract.contractValue
-              ? `${contract.currency || "ZAR"} ${contract.contractValue.toLocaleString()}`
+              ? `${contract.currency || "R"} ${contract.contractValue.toLocaleString()}`
               : "—",
           },
           {

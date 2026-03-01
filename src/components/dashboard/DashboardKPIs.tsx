@@ -2,6 +2,7 @@
 
 import { Space, Skeleton } from "antd";
 import { IDashboardOverview } from "@/providers/dashboard/context";
+import { formatCurrency, formatPercentage } from "@/utils/currency";
 import { useStyles } from "./style";
 
 interface DashboardKPIsProps {
@@ -11,9 +12,6 @@ interface DashboardKPIsProps {
 
 export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
   const { styles } = useStyles();
-
-  // Debug: Log the overview data
-  console.log("DashboardKPIs - overview:", overview);
 
   if (isLoading) {
     return (
@@ -26,16 +24,6 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
       </div>
     );
   }
-
-  const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "$0.00M";
-    return `$${(value / 1000000).toFixed(2)}M`;
-  };
-
-  const formatPercentage = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "0.0%";
-    return `${value.toFixed(1)}%`;
-  };
 
   return (
     <div className={styles.kpiGrid}>
