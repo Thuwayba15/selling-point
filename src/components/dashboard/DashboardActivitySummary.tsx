@@ -149,14 +149,6 @@ export const DashboardActivitySummary = ({
           </div>
         </div>
       </div>
-
-      {/* Total Activities Card */}
-      <div className={styles.totalActivityCard}>
-        <div className={styles.card}>
-          <div className={styles.cardTitle}>Total Activities</div>
-          <div className={styles.cardValue}>{activitySummary.totalCount}</div>
-        </div>
-      </div>
     </div>
   );
 };

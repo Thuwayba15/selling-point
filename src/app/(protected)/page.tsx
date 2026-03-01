@@ -10,7 +10,6 @@ import {
   DashboardPipeline,
   DashboardSalesPerformance,
   DashboardActivitySummary,
-  DashboardExpiringContracts,
 } from "@/components/dashboard";
 import { useStyles } from "@/components/dashboard/style";
 
@@ -28,7 +27,6 @@ const DashboardPage = () => {
     pipelineMetrics,
     salesPerformance,
     activitySummary,
-    expiringContracts,
   } = useDashboardState();
 
   const {
@@ -36,7 +34,6 @@ const DashboardPage = () => {
     getPipelineMetrics,
     getSalesPerformance,
     getActivitySummary,
-    getExpiringContracts,
     clearError,
   } = useDashboardActions();
 
@@ -46,8 +43,7 @@ const DashboardPage = () => {
     getPipelineMetrics();
     getSalesPerformance();
     getActivitySummary();
-    getExpiringContracts();
-  }, [getDashboardOverview, getPipelineMetrics, getSalesPerformance, getActivitySummary, getExpiringContracts]);
+  }, [getDashboardOverview, getPipelineMetrics, getSalesPerformance, getActivitySummary]);
 
   // Handle errors
   useEffect(() => {
@@ -66,30 +62,35 @@ const DashboardPage = () => {
           </Title>
         </div>
 
-        <Space orientation="vertical" size="large" className={styles.fullWidth}>
-          {/* KPI Section */}
+        {/* KPIs Row - Across top */}
+        <div className={styles.kpiRow}>
           <div className={styles.section}>
             <DashboardKPIs overview={overview} isLoading={isPending} />
           </div>
+        </div>
 
-          {/* Pipeline Section */}
+        {/* Charts Row - Horizontally Scrollable */}
+        <div className={styles.chartsScrollContainer}>
+          {/* Pipeline by Stage */}
           {(pipelineMetrics || isPending) && (
-            <div className={styles.section}>
+            <div className={styles.chartCard}>
               <Card title="Pipeline by Stage">
                 <DashboardPipeline pipelineMetrics={pipelineMetrics} isLoading={isPending} />
               </Card>
             </div>
           )}
 
-          {/* Activities Summary Section */}
+          {/* Activity Summary */}
           {(activitySummary || isPending) && (
-            <div className={styles.section}>
+            <div className={styles.chartCard}>
               <DashboardActivitySummary activitySummary={activitySummary} isLoading={isPending} />
             </div>
           )}
+        </div>
 
-          {/* Sales Performance Section - Admin and Sales Managers only */}
-          {(isAdmin || isManager) && (salesPerformance || isPending) && (
+        {/* Sales Performance Section */}
+        {(isAdmin || isManager) && (salesPerformance || isPending) && (
+          <div className={styles.salesPerformanceSection}>
             <div className={styles.section}>
               <Card title="Sales Performance">
                 <DashboardSalesPerformance
@@ -98,20 +99,8 @@ const DashboardPage = () => {
                 />
               </Card>
             </div>
-          )}
-
-          {/* Expiring Contracts Section */}
-          {(expiringContracts || isPending) && (
-            <div className={styles.section}>
-              <Card title="Contracts Expiring Soon">
-                <DashboardExpiringContracts
-                  expiringContracts={expiringContracts}
-                  isLoading={isPending}
-                />
-              </Card>
-            </div>
-          )}
-        </Space>
+          </div>
+        )}
       </div>
     </div>
   );

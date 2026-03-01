@@ -64,17 +64,6 @@ export const ContractsFilters = ({
           />
         </Form.Item>
 
-        <Form.Item className={styles.workspaceFilterItem}>
-          <Select
-            placeholder="Client"
-            value={clientId}
-            onChange={setClientId}
-            allowClear
-            options={clientOptions}
-            className={styles.workspaceFilterSelect}
-          />
-        </Form.Item>
-
         <Form.Item className={styles.workspaceFilterActionsItem}>
           <div className={styles.workspaceFiltersActions}>
             <Button type="primary" onClick={handleApply}>

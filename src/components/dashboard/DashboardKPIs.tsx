@@ -1,7 +1,9 @@
 "use client";
 
 import { Space, Skeleton } from "antd";
-import { IDashboardOverview } from "@/providers/dashboard/context";import { formatCurrency, formatPercentage } from "@/utils/currency";import { useStyles } from "./style";
+import { IDashboardOverview } from "@/providers/dashboard/context";
+import { formatCurrency, formatPercentage } from "@/utils/currency";
+import { useStyles } from "./style";
 
 interface DashboardKPIsProps {
   overview?: IDashboardOverview;
@@ -22,16 +24,6 @@ export const DashboardKPIs = ({ overview, isLoading }: DashboardKPIsProps) => {
       </div>
     );
   }
-
-  const formatCurrency = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "R0.00M";
-    return `R${(value / 1000000).toFixed(2)}M`;
-  };
-
-  const formatPercentage = (value: number | undefined | null) => {
-    if (value === undefined || value === null || isNaN(value)) return "0.0%";
-    return `${value.toFixed(1)}%`;
-  };
 
   return (
     <div className={styles.kpiGrid}>
