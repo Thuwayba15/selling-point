@@ -287,17 +287,12 @@ export const EntityModalsRenderer = ({
           currency: "R", // Always set to ZAR
         };
 
-        console.log("Creating contract with payload:", payload);
         const result = await contractsActions.createContract(payload);
-        console.log("Contract created successfully:", result);
         message.success("Contract created successfully");
         contractForm.resetFields();
         entityModals.closeModal("contract");
-        console.log("Refreshing workspace data...");
         await onRefresh();
-        console.log("Workspace refresh complete");
       } catch (error) {
-        console.error("Failed to create contract:", error);
         message.error("Failed to create contract");
       } finally {
         setIsSubmitting(false);

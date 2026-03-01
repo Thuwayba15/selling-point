@@ -42,7 +42,6 @@ export const useWorkspaceDocuments = (onRefresh: () => Promise<void>) => {
         });
         setRelatedDocuments((data?.items || data || []) as IDocument[]);
       } catch (error) {
-        console.error("Failed to load related documents:", error);
         setRelatedDocuments([]);
         message.error("Failed to load related documents");
       } finally {

@@ -209,10 +209,6 @@ export class DataAwareAIService {
       // Get relevant data based on the user's query
       const realData = await this.getRelevantData(userMessage);
 
-      // Create enhanced prompt with real data
-      console.log("=== AI DEBUG: Real data being sent to AI ===");
-      console.log(realData);
-      console.log("=== END DEBUG DATA ===");
 
       const enhancedPrompt = `You are a helpful AI assistant for Selling Point CRM system.
 
@@ -273,7 +269,6 @@ Answer based ONLY on the real data provided above: "${userMessage}"`;
 
       return response;
     } catch (error) {
-      console.error("Data-aware AI service error:", error);
       // Fallback to regular service if data fetch fails
       return groqService.chat([{ role: "user", content: userMessage }]);
     }

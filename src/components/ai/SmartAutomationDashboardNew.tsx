@@ -91,7 +91,7 @@ export const SmartAutomationDashboard = () => {
         setCurrentUserName(fullName);
       }
     } catch (error) {
-      console.log("Could not get user from local storage:", error);
+      
     }
   }, []);
 
@@ -115,7 +115,7 @@ export const SmartAutomationDashboard = () => {
           currentUser = JSON.parse(userStr);
         }
       } catch (error) {
-        console.log("Could not get user from local storage:", error);
+       
       }
 
       // Filter opportunities for current user/tenant (if user data available)
@@ -130,8 +130,7 @@ export const SmartAutomationDashboard = () => {
           localStorage.getItem("authUser");
         if (userStr) {
           const user = JSON.parse(userStr);
-          console.log("Found user data:", user);
-
+        
           // Filter by multiple possible tenant fields
           userOpps = opportunitiesData.filter((opp: any) => {
             // Check if opportunity has any tenant-related fields that match user
@@ -146,15 +145,8 @@ export const SmartAutomationDashboard = () => {
           });
         }
       } catch (error) {
-        console.log("Still could not get user data:", error);
-      }
 
-      // Debug logging to help identify filtering issues
-      console.log("🔍 Data Filtering Debug:");
-      console.log("Current User:", currentUser);
-      console.log("Total Opportunities:", opportunitiesData.length);
-      console.log("Filtered Opportunities:", userOpps.length);
-      console.log("Sample Opportunity:", opportunitiesData[0]);
+      }
 
       // Calculate automation insights from user's opportunities only
       const totalOpps = userOpps.length;
@@ -183,7 +175,6 @@ export const SmartAutomationDashboard = () => {
       await generateFollowUps(opportunitiesData);
       await generateTasks(opportunitiesData);
     } catch (error) {
-      console.error("Error loading automation data:", error);
       message.error("Failed to load automation data");
     } finally {
       setLoading(false);
@@ -375,7 +366,6 @@ export const SmartAutomationDashboard = () => {
       setEmailTemplate(generatedEmail);
       message.success("Email template generated successfully");
     } catch (error) {
-      console.error("Error generating email:", error);
       message.error(`Error generating email: ${error}`);
     } finally {
       setLoading(false);
@@ -440,7 +430,6 @@ export const SmartAutomationDashboard = () => {
         throw new Error(result.error || "Failed to send email");
       }
     } catch (error) {
-      console.error("Email send error:", error);
       message.error(`Failed to send email: ${(error as Error).message}`);
     } finally {
       setLoading(false);

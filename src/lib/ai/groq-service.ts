@@ -44,7 +44,6 @@ export class GroqService {
     // Try each model in sequence
     for (const model of this.models) {
       try {
-        console.log(`Trying model: ${model}`);
 
         const requestBody = {
           model: model,
@@ -149,8 +148,6 @@ RESPONSE GUIDELINES:
           max_tokens: 800,
         };
 
-        console.log("Request body:", JSON.stringify(requestBody, null, 2));
-
         const response = await fetch(`${this.baseUrl}/chat/completions`, {
           method: "POST",
           headers: {
@@ -160,16 +157,11 @@ RESPONSE GUIDELINES:
           body: JSON.stringify(requestBody),
         });
 
-        console.log("Response status:", response.status);
-        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
-
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`Error with model ${model}:`, errorText);
 
           // If this model is decommissioned, try the next one
           if (errorText.includes("decommissioned") || errorText.includes("not supported")) {
-            console.log(`Model ${model} is decommissioned, trying next model...`);
             lastError = new Error(
               `Groq API error: ${response.status} ${response.statusText} - ${errorText}`,
             );
@@ -182,8 +174,6 @@ RESPONSE GUIDELINES:
         }
 
         const data: ChatResponse = await response.json();
-        console.log("Response data:", data);
-
         return (
           data.choices[0]?.message?.content || "I apologize, but I couldn't process your request."
         );

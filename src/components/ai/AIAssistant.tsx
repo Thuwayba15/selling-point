@@ -95,18 +95,11 @@ export const AIAssistant = () => {
         setUnreadCount((prev) => prev + 1);
       }
     } catch (error: any) {
-      console.error("AI Assistant error:", error);
-      console.error("Error details:", {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      });
 
       let errorMessage = "Sorry, I'm having trouble connecting. Please try again.";
       let fallbackResponse = "";
 
       if (error && error.message) {
-        console.error("Error type check passed - instance of Error");
         if (error.message.includes("API key not configured")) {
           errorMessage = "AI service not configured. Please add your Groq API key to continue.";
           fallbackResponse =

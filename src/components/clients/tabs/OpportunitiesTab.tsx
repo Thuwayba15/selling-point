@@ -61,7 +61,6 @@ export const OpportunitiesTab = ({
         <span
           onClick={(e) => {
             e.stopPropagation(); // Prevent row click from firing twice
-            console.log("Navigating to opportunity:", record.id, record.title);
             window.location.href = `/opportunities/${record.id}`;
           }}
           style={{
@@ -134,7 +133,6 @@ export const OpportunitiesTab = ({
               scroll={{ x: "max-content" }}
               onRow={(record) => ({
                 onClick: () => {
-                  console.log("Row clicked - Navigating to opportunity:", record.id, record.title);
                   window.location.href = `/opportunities/${record.id}`;
                 },
                 style: { cursor: "pointer" },

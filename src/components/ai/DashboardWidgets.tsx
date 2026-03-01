@@ -25,7 +25,6 @@ export const DashboardWidgets = () => {
       const insights = await generateAutomationInsights();
       setAutomationInsights(insights);
     } catch (error) {
-      console.error("Error loading dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,6 @@ export const DashboardWidgets = () => {
 
       return insights;
     } catch (error) {
-      console.error("Error generating automation insights:", error);
       return [];
     }
   };
