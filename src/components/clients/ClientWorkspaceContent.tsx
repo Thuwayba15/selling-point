@@ -10,10 +10,13 @@ import { DocumentsTab } from "./tabs/DocumentsTab";
 import { NotesTab } from "./tabs/NotesTab";
 import { EntityModalsRenderer } from "./modals/EntityModalsRenderer";
 import { DocumentUploadForm } from "@/components/documents/DocumentUploadForm";
+import { NoteForm } from "@/components/notes/NoteForm";
 import { EntityWorkspaceTabs, type WorkspaceTabItem } from "@/components/common";
 import { useRbac } from "@/hooks/useRbac";
 import { useWorkspaceDocuments } from "@/hooks/useWorkspaceDocuments";
+import { useWorkspaceNotes } from "@/hooks/useWorkspaceNotes";
 import { useDocumentsActions } from "@/providers/documents";
+import { useNotesActions } from "@/providers/notes";
 import { RelatedToType } from "@/providers/documents/context";
 import type { IClient } from "@/providers/clients/context";
 import type { IContact } from "@/providers/contacts/context";
@@ -82,6 +85,41 @@ export const ClientWorkspaceContent = ({
   // Document management hook - same as opportunities workspace
   const documents = useWorkspaceDocuments(onRefreshWorkspace);
   const documentsActions = useDocumentsActions();
+
+  // Note management hook - same as opportunities workspace
+  const notes = useWorkspaceNotes(onRefreshWorkspace);
+  const notesActions = useNotesActions();
+
+  // Client-specific note creation handler
+  const handleClientNoteSubmit = useCallback(async (values: any) => {
+    if (!client?.id) return;
+    
+    try {
+      if (notes.editingWorkspaceNote) {
+        const success = await notesActions.updateNote(notes.editingWorkspaceNote.id, {
+          content: values.content,
+        });
+        if (!success) return;
+
+        message.success("Note updated successfully");
+        notes.closeWorkspaceNoteForm();
+        await onRefreshWorkspace();
+      } else {
+        const success = await notesActions.createNote({
+          content: values.content,
+          relatedToType: RelatedToType.Client,
+          relatedToId: client.id,
+        });
+        if (!success) return;
+
+        message.success("Note created successfully");
+        notes.closeWorkspaceNoteForm();
+        await onRefreshWorkspace();
+      }
+    } catch (error) {
+      message.error("Failed to save note");
+    }
+  }, [client?.id, notes, notesActions, message, onRefreshWorkspace]);
 
   // Client-specific document upload handler
   const handleClientUpload = useCallback(() => {
@@ -188,9 +226,14 @@ export const ClientWorkspaceContent = ({
       content: (
         <NotesTab
           notes={workspaceData.notes}
-          loading={isLoading}
-          onEdit={(note) => onEditEntity("note", note)}
-          onDelete={(note) => onDeleteEntity("note", note)}
+          isLoading={isLoading}
+          selectedNote={notes.selectedNote}
+          onSelectNote={notes.setSelectedNote}
+          onAdd={notes.openWorkspaceNoteForm}
+          onEdit={() => notes.selectedNote && notes.editWorkspaceNote(notes.selectedNote)}
+          onDelete={() =>
+            notes.deleteNote(notes.selectedNote, () => notes.setSelectedNote(null))
+          }
         />
       ),
     },
@@ -284,6 +327,17 @@ export const ClientWorkspaceContent = ({
         form={documents.workspaceUploadForm}
         relatedToType={RelatedToType.Client}
         clientOptions={client ? [{ value: client.id, label: client.name }] : []}
+      />
+
+      {/* Workspace Note Form */}
+      <NoteForm
+        open={notes.isWorkspaceNoteFormOpen}
+        onCancel={notes.closeWorkspaceNoteForm}
+        onSubmit={handleClientNoteSubmit}
+        form={notes.workspaceNoteForm}
+        loading={isLoading}
+        relatedToType={RelatedToType.Client}
+        note={notes.editingWorkspaceNote}
       />
 
       {/* Entity Modals */}
