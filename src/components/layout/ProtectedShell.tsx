@@ -5,6 +5,7 @@ import { Layout } from "antd";
 
 import { SideNav } from "./SideNav";
 import { TopBar } from "./TopBar";
+import { AIAssistant } from "@/components/ai";
 import { useStyles } from "./style";
 
 const { Sider, Header, Content } = Layout;
@@ -26,6 +27,9 @@ export const ProtectedShell = ({ children }: { children: ReactNode }) => {
           <div className={styles.page}>{children}</div>
         </Content>
       </Layout>
+      
+      {/* AI Assistant */}
+      <AIAssistant />
     </Layout>
   );
 };
