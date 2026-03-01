@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Form, Input, Select, Button, Space } from "antd";
-import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
+import { Form, Select, Button, Space } from "antd";
+import { ClearOutlined } from "@ant-design/icons";
 import {
   ActivityType,
   ActivityStatus,
@@ -71,7 +71,6 @@ export const ActivitiesFilters: React.FC<ActivitiesFiltersProps> = ({
 }) => {
   const { styles } = useStyles();
   const [form] = Form.useForm();
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [type, setType] = useState<ActivityType | undefined>(undefined);
   const [status, setStatus] = useState<ActivityStatus | undefined>(undefined);
   const [priority, setPriority] = useState<Priority | undefined>(undefined);
@@ -91,7 +90,6 @@ export const ActivitiesFilters: React.FC<ActivitiesFiltersProps> = ({
   };
 
   const handleClear = () => {
-    setSearchTerm("");
     setType(undefined);
     setStatus(undefined);
     setPriority(undefined);
@@ -132,21 +130,11 @@ export const ActivitiesFilters: React.FC<ActivitiesFiltersProps> = ({
   }));
 
   const hasActiveFilters =
-    searchTerm || type || status || priority || assignedToId || relatedToType || relatedToId;
+    type || status || priority || assignedToId || relatedToType || relatedToId;
 
   return (
     <div className={styles.inlineFiltersBar}>
       <Form form={form} layout="inline" className={styles.inlineFiltersForm}>
-        <Form.Item className={styles.inlineFilterItem}>
-          <Input
-            placeholder="Search activities..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            prefix={<SearchOutlined />}
-            allowClear
-          />
-        </Form.Item>
-
         <Form.Item className={styles.inlineFilterItem}>
           <Select
             placeholder="Type"
