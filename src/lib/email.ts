@@ -27,7 +27,7 @@ export const sendEmail = async ({
   htmlContent,
   textContent,
 }: SendEmailParams): Promise<boolean> => {
-
+  
   if (!BREVO_API_KEY) {
     return false;
   }

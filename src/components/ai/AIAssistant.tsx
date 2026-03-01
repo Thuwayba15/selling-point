@@ -104,13 +104,19 @@ export const AIAssistant = () => {
       if (!isOpen) {
         setUnreadCount(prev => prev + 1);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI Assistant error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       
       let errorMessage = "Sorry, I'm having trouble connecting. Please try again.";
       let fallbackResponse = "";
       
-      if (error instanceof Error) {
+      if (error && error.message) {
+        console.error("Error type check passed - instance of Error");
         if (error.message.includes("API key not configured")) {
           errorMessage = "AI service not configured. Please add your Groq API key to continue.";
           fallbackResponse = "I'm your AI assistant for the Selling Point CRM! I can help you with:\n\n• Analyzing sales data and opportunities\n• Finding insights about your clients\n• Suggesting next steps for deals\n• Answering questions about your pipeline\n\nTo get started, please configure your Groq API key in the environment variables.";

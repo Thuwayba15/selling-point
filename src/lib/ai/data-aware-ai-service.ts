@@ -6,7 +6,7 @@ import { getAxiosInstance } from '@/lib/api';
 export class DataAwareAIService {
   private api = getAxiosInstance();
 
-  private async fetchOpportunities(): Promise<IOpportunity[]> {
+  public async fetchOpportunities(): Promise<IOpportunity[]> {
     try {
       const response = await this.api.get("/api/opportunities", {
         params: { pageNumber: 1, pageSize: 100, isDeleted: false }
@@ -19,7 +19,7 @@ export class DataAwareAIService {
     }
   }
 
-  private async fetchClients(): Promise<IClient[]> {
+  public async fetchClients(): Promise<IClient[]> {
     try {
       const response = await this.api.get("/api/clients", {
         params: { pageNumber: 1, pageSize: 100, isDeleted: false }
@@ -32,7 +32,7 @@ export class DataAwareAIService {
     }
   }
 
-  private async fetchDashboardData(): Promise<any> {
+  public async fetchDashboardData(): Promise<any> {
     try {
       const response = await this.api.get("/api/dashboard/overview");
       return response.data || {};
@@ -125,6 +125,7 @@ export class DataAwareAIService {
 
     if (query.includes('user') || query.includes('users') || query.includes('organization') || query.includes('org') || query.includes('team') || query.includes('employees')) {
       try {
+        // Fetch users for current tenant only - let API handle tenant filtering automatically
         const response = await this.api.get("/api/users", {
           params: { pageNumber: 1, pageSize: 100 }
         });

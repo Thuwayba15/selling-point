@@ -11,6 +11,7 @@ import {
   DashboardSalesPerformance,
   DashboardActivitySummary,
 } from "@/components/dashboard";
+import { SmartAutomationDashboard as SmartAutomationDashboardNew } from "@/components/ai/SmartAutomationDashboardNew";
 import { useStyles } from "@/components/dashboard/style";
 
 const { Title } = Typography;
@@ -101,6 +102,13 @@ const DashboardPage = () => {
             </div>
           </div>
         )}
+
+        {/* Smart Automation Section */}
+        <div className={styles.salesPerformanceSection}>
+          <div className={styles.section}>
+            <SmartAutomationDashboardNew />
+          </div>
+        </div>
       </div>
     </div>
   );
