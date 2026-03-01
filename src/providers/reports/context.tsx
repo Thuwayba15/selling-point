@@ -17,7 +17,7 @@ export type GroupBy = "month" | "week";
 // Interfaces
 export interface IOpportunityReportItem {
   id: string;
-  name: string;
+  title: string;
   clientName: string;
   stage: OpportunityStage;
   estimatedValue: number;

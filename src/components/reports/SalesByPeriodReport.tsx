@@ -140,6 +140,7 @@ export const SalesByPeriodReport: React.FC<SalesByPeriodReportProps> = ({
           pageSize: 12,
           showTotal: (total) => `Total ${total} periods`,
         }}
+        scroll={{ x: "max-content" }}
       />
     </Card>
   );

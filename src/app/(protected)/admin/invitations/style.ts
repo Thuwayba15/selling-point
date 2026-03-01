@@ -1,16 +1,108 @@
 import { createStyles } from "antd-style";
+import { colors } from "@/theme/colors";
 
 export const useStyles = createStyles(({ token, css }) => ({
   pageContainer: css`
-    padding: 24px;
+    padding: ${token.paddingSM}px;
+    background-color: ${token.colorBgLayout};
+    min-height: 100vh;
+
+    @media (max-width: 768px) {
+      padding: ${token.paddingXS}px;
+    }
   `,
 
-  verticalSpace: css`
-    width: 100%;
+  mainContent: css`
+    max-width: 1400px;
+    margin: 0 auto;
+  `,
+
+  header: css`
+    margin-bottom: ${token.marginLG}px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `,
+
+  headerText: css`
+    flex: 1;
+  `,
+
+  title: css`
+    margin: 0;
+    font-size: ${token.fontSizeHeading2}px;
+    font-weight: ${token.fontWeightStrong};
+    color: ${token.colorText};
+    font-style: italic;
+  `,
+
+  subtitle: css`
+    margin: ${token.marginXS}px 0 0;
+    font-size: ${token.fontSize}px;
+    color: ${token.colorTextSecondary};
+  `,
+
+  cardSection: css`
+    margin-bottom: ${token.marginLG}px;
+    background-color: ${colors.light};
+
+    :global(.ant-card-head) {
+      background-color: ${colors.secondary};
+    }
+
+    :global(.ant-card-body) {
+      background-color: ${colors.bgLayout};
+    }
   `,
 
   cardDescription: css`
     color: ${token.colorTextSecondary};
+    margin: 0;
+  `,
+
+  tableCard: css`
+    background-color: ${colors.light};
+
+    :global(.ant-card-head) {
+      background-color: ${colors.secondary};
+    }
+
+    :global(.ant-card-body) {
+      background-color: ${colors.bgLayout};
+    }
+
+    :global(.ant-table) {
+      background-color: transparent;
+    }
+
+    :global(.ant-table-container) {
+      border: none;
+    }
+
+    :global(.ant-table-thead > tr > th) {
+      background-color: transparent;
+    }
+
+    :global(.ant-table-tbody > tr > td) {
+      background-color: transparent;
+    }
+
+    :global(.ant-table-tbody > tr:hover > td) {
+      background-color: ${token.colorBgElevated};
+    }
+  `,
+
+  noMembers: css`
+    color: ${token.colorTextSecondary};
+    text-align: center;
+    padding: ${token.paddingLG}px 0;
   `,
 
   successMessage: css`
@@ -51,9 +143,5 @@ export const useStyles = createStyles(({ token, css }) => ({
     color: ${token.colorTextSecondary};
     font-size: 13px;
     margin-bottom: 12px;
-  `,
-
-  noMembers: css`
-    color: ${token.colorTextTertiary};
   `,
 }));

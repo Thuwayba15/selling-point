@@ -128,7 +128,7 @@ export const OpportunitiesReportTable: React.FC<OpportunitiesReportTableProps> =
           showSizeChanger: true,
           showTotal: (total) => `Total ${total} opportunities`,
         }}
-        scroll={{ x: 1300 }}
+        scroll={{ x: "max-content" }}
       />
     </Card>
   );
