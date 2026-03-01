@@ -11,7 +11,6 @@ import {
   Spin, 
   message,
   FloatButton,
-  Badge
 } from "antd";
 import { 
   SendOutlined, 
@@ -22,6 +21,7 @@ import {
   BulbOutlined
 } from "@ant-design/icons";
 import { groqService } from "@/lib/ai/groq-service";
+import { dataAwareAIService } from "@/lib/ai/data-aware-ai-service";
 import useStyles from "./AIAssistant.style";
 
 const { Text, Title } = Typography;
@@ -34,12 +34,12 @@ interface Message {
 }
 
 const suggestedQueries = [
-  "How do I create a new opportunity?",
-  "What's the best way to add a new client?",
-  "How do I track activities for an opportunity?",
-  "Where can I find my sales pipeline?",
-  "How do I add documents to a client?",
-  "What do the different opportunity stages mean?"
+  "Which opportunities are looking good?",
+  "What's my current pipeline value?",
+  "Show me my high-value opportunities (over R50,000)",
+  "Which clients need follow-up?",
+  "What's my win rate looking like?",
+  "How many opportunities are closing soon?"
 ];
 
 const formatMessageContent = (content: string) => {
@@ -89,9 +89,8 @@ export const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await groqService.chat([
-        { role: "user", content: input.trim() }
-      ]);
+      // Use data-aware service for real data integration
+      const response = await dataAwareAIService.chatWithRealData(input.trim());
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -244,7 +243,7 @@ export const AIAssistant = () => {
                   <BulbOutlined className={styles.welcomeIcon} />
                   <Title level={4}>Hello! I'm your AI Assistant</Title>
                   <Text type="secondary">
-                    I can help you with CRM best practices, sales strategies, and guidance on using your Selling Point CRM effectively.
+                    I can help you with CRM guidance and provide insights based on your actual sales data, opportunities, and clients.
                   </Text>
                   
                   <div className={styles.suggestions}>

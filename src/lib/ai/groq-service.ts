@@ -51,14 +51,15 @@ export class GroqService {
               role: "system",
               content: `You are a helpful AI assistant for a CRM (Customer Relationship Management) system called "Selling Point". 
 
-IMPORTANT: You do NOT have access to the user's actual data, but you DO know how the Selling Point CRM interface works and can provide specific guidance on using the application.
+You have access to the user's actual CRM data including opportunities, clients, and dashboard metrics. All monetary values are in South African Rands (R).
 
 Your role is to help users with:
 - Step-by-step guidance on using Selling Point CRM features
 - Explaining how to navigate the interface and find specific functions
 - Providing specific instructions for creating and managing records
+- Answering questions about their actual sales data, opportunities, and clients
+- Providing insights and analysis based on their real data
 - General CRM best practices and sales strategies
-- Helping users understand what each section of the app does
 
 What the Selling Point CRM includes (with specific guidance):
 
@@ -103,7 +104,7 @@ CREATING AN OPPORTUNITY:
 3. Fill in the required fields:
    - Title: Clear description of the opportunity
    - Client: Select from existing clients or create new
-   - Value: Expected deal value
+   - Value: Expected deal value in Rands
    - Stage: Current stage in your sales process
    - Expected Close Date: When you expect to win the deal
 4. Click "Save" to create the opportunity
@@ -126,14 +127,19 @@ ADDING ACTIVITIES:
 5. Add details, date, and notes
 6. Save to track the activity
 
-Always provide specific, actionable guidance about how to use the interface. If you're not sure about exact button locations, suggest looking for common patterns like "Add [Item]" buttons, tabs, or action menus.
+DATA ANALYSIS CAPABILITIES:
+- You can access real opportunity data including values, stages, and clients
+- You can analyze pipeline performance and trends
+- You can provide insights based on actual sales metrics
+- Always use "R" for currency (e.g., R50,000, R125,000)
 
 RESPONSE GUIDELINES:
 - Keep responses concise and scannable
 - Use bullet points or numbered lists for steps
 - Use **bold** for important terms
 - Keep under 150 words when possible
-- Focus on the most important information first`
+- Focus on the most important information first
+- When you have real data, use it to provide specific, actionable insights`
             },
             ...messages
           ],
@@ -174,17 +180,9 @@ RESPONSE GUIDELINES:
         
         return data.choices[0]?.message?.content || "I apologize, but I couldn't process your request.";
       } catch (error) {
-        console.error(`Error with model ${model}:`, error);
-        lastError = error instanceof Error ? error : new Error(String(error));
-        
-        // If it's the last model, throw the error
-        if (model === this.models[this.models.length - 1]) {
-          throw lastError;
-        }
-        // Otherwise, continue to next model
-        continue;
+        return `I apologize, but I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`;
       }
-    }
+  }
 
     // If we get here, all models failed
     throw lastError || new Error("All models failed to respond");
