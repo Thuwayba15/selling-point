@@ -121,4 +121,65 @@ export const useStyles = createStyles(({ token, css }) => ({
   primaryBadge: css`
     margin-left: ${token.marginXS}px;
   `,
+
+  workspaceToolbarRow: css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: ${token.marginLG}px;
+  `,
+
+  toolbarContainer: css`
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: ${token.marginLG}px;
+    gap: ${token.margin}px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      > div:first-child {
+        margin-bottom: ${token.marginSM}px;
+      }
+    }
+  `,
+
+  toolbarFilters: css`
+    flex: 1;
+  `,
+
+  workspaceFiltersBar: css`
+    margin-left: auto;
+  `,
+
+  workspaceFiltersForm: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  `,
+
+  workspaceFilterItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFilterSelect: css`
+    width: 140px;
+  `,
+
+  workspaceFilterActionsItem: css`
+    margin-bottom: 0;
+  `,
+
+  workspaceFiltersActions: css`
+    display: flex;
+    gap: ${token.marginXS}px;
+    align-items: center;
+  `,
 }));

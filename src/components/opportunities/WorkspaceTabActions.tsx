@@ -4,13 +4,13 @@ import { Button, Space } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRbac } from "@/hooks/useRbac";
 
-type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note";
-
 interface WorkspaceTabActionsProps {
   entityType: EntityType;
   onCreateClick: (type: EntityType) => void;
   compact?: boolean;
 }
+
+type EntityType = "activity" | "proposal" | "pricingRequest" | "contract" | "document" | "note" | "contact";
 
 const ENTITY_LABELS: Record<EntityType, string> = {
   activity: "Activity",
@@ -19,6 +19,7 @@ const ENTITY_LABELS: Record<EntityType, string> = {
   contract: "Contract",
   document: "Document",
   note: "Note",
+  contact: "Contact",
 };
 
 export const WorkspaceTabActions = ({
@@ -35,6 +36,7 @@ export const WorkspaceTabActions = ({
     contract: "create:contract",
     document: "create:document",
     note: "create:note",
+    contact: "create:contact",
   };
 
   if (!can(permissionMap[entityType])) {
