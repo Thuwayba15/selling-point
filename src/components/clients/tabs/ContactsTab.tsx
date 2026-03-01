@@ -174,10 +174,6 @@ export const ContactsTab = ({
     },
   ];
 
-  if (contacts.length === 0) {
-    return <Empty description="No contacts found" />;
-  }
-
   return (
     <>
       <div className={styles.toolbarContainer}>

@@ -108,10 +108,6 @@ export const OpportunitiesTab = ({
     },
   ];
 
-  if (opportunities.length === 0) {
-    return <Empty description="No opportunities found" />;
-  }
-
   return (
     <>
       <div className={styles.toolbarContainer}>
