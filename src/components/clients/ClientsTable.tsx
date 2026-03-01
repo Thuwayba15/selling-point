@@ -1,5 +1,7 @@
-import React from "react";
-import { Table, Card, Tag } from "antd";
+"use client";
+
+import type { ReactNode } from "react";
+import { Card, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useStyles } from "./style";
 
@@ -19,14 +21,15 @@ export interface Client {
 interface ClientsTableProps {
   clients: Client[];
   loading: boolean;
-  selectedId?: string;
-  onSelect: (client: Client) => void;
   pagination?: {
     current: number;
     pageSize: number;
     total: number;
-    onChange: (page: number, pageSize: number) => void;
   };
+  selectedClientId?: string;
+  onSelectClient: (client: Client) => void;
+  onPaginationChange: (page: number, pageSize: number) => void;
+  headerExtra?: ReactNode;
 }
 
 const CLIENT_TYPE_MAP: Record<number, { label: string; color: string }> = {
@@ -35,13 +38,15 @@ const CLIENT_TYPE_MAP: Record<number, { label: string; color: string }> = {
   3: { label: "Partner", color: "purple" },
 };
 
-export const ClientsTable: React.FC<ClientsTableProps> = ({
+export const ClientsTable = ({
   clients,
   loading,
-  selectedId,
-  onSelect,
   pagination,
-}) => {
+  selectedClientId,
+  onSelectClient,
+  onPaginationChange,
+  headerExtra,
+}: ClientsTableProps) => {
   const { styles } = useStyles();
 
   const columns: ColumnsType<Client> = [
@@ -49,21 +54,18 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: "30%",
-      ellipsis: true,
+      sorter: (a, b) => (a.name || "").localeCompare(b.name || ""),
     },
     {
       title: "Industry",
       dataIndex: "industry",
       key: "industry",
-      width: "20%",
-      ellipsis: true,
+      render: (industry) => industry || "—",
     },
     {
       title: "Type",
       dataIndex: "clientType",
       key: "clientType",
-      width: "15%",
       render: (type: number) => {
         const typeInfo = CLIENT_TYPE_MAP[type] || { label: "Unknown", color: "default" };
         return <Tag color={typeInfo.color}>{typeInfo.label}</Tag>;
@@ -73,7 +75,6 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
       title: "Status",
       dataIndex: "isActive",
       key: "isActive",
-      width: "15%",
       render: (isActive: boolean) => (
         <Tag color={isActive ? "green" : "default"}>{isActive ? "Active" : "Inactive"}</Tag>
       ),
@@ -81,19 +82,38 @@ export const ClientsTable: React.FC<ClientsTableProps> = ({
   ];
 
   return (
-    <Card className={styles.tableCard} loading={loading}>
-      <Table<Client>
-        columns={columns}
-        dataSource={clients}
-        rowKey="id"
-        loading={loading}
-        scroll={{ x: "max-content" }}
-        pagination={pagination}
-        onRow={(record) => ({
-          onClick: () => onSelect(record),
-          className: selectedId === record.id ? styles.highlightedRow : styles.tableRow,
-        })}
-      />
-    </Card>
+    <div className={styles.opportunitiesListContainer}>
+      <Card
+        className={styles.tableCard}
+        title="Select an item for more details"
+        extra={headerExtra}
+      >
+        <Table
+          columns={columns}
+          dataSource={clients}
+          loading={loading}
+          rowKey="id"
+          scroll={{ x: "max-content" }}
+          pagination={
+            pagination
+              ? {
+                  current: pagination.current,
+                  pageSize: pagination.pageSize,
+                  total: pagination.total,
+                  showSizeChanger: true,
+                  showTotal: (total) => `Total ${total} clients`,
+                  onChange: onPaginationChange,
+                }
+              : false
+          }
+          onRow={(record) => ({
+            onClick: () => onSelectClient(record),
+          })}
+          rowClassName={(record) =>
+            `${styles.tableRow} ${record.id === selectedClientId ? "ant-table-row-selected" : ""}`
+          }
+        />
+      </Card>
+    </div>
   );
 };

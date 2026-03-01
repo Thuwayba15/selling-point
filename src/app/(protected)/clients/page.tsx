@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Modal, Form, App } from "antd";
+import { Modal, Form, App, Button } from "antd";
 import { withAuthGuard } from "@/hoc/withAuthGuard";
 import { getAxiosInstance } from "@/lib/api";
+import { useAuthState } from "@/providers/auth";
 import { useStyles } from "@/components/clients/style";
 import {
-  ClientsHeader,
   ClientsFilters,
   ClientsTable,
   ClientDetails,
@@ -22,6 +22,7 @@ import type { IClient } from "@/providers/clients/context";
 const ClientsPage = () => {
   const { styles } = useStyles();
   const { message } = App.useApp();
+  const { user } = useAuthState();
 
   // Provider state and actions
   const state = useClientsState();
@@ -81,17 +82,23 @@ const ClientsPage = () => {
   }, []);
 
   // Handle filter application - user clicks Apply Filters button
-  const handleApplyFilters = useCallback(() => {
+  const handleApplyFilters = useCallback((filters: {
+    searchTerm?: string;
+    industry?: string;
+    clientType?: number;
+    isActive?: boolean;
+  }) => {
+    setSearchTerm(filters.searchTerm);
+    setIndustry(filters.industry);
+    setClientType(filters.clientType);
+    setIsActive(filters.isActive);
     setCurrentPage(1); // Reset to page 1 when filters change
     actions.getClients({
-      searchTerm,
-      industry,
-      clientType,
-      isActive,
+      ...filters,
       pageNumber: 1,
       pageSize,
     });
-  }, [searchTerm, industry, clientType, isActive, pageSize, actions]);
+  }, [pageSize, actions]);
 
   // Handle filter clearing
   const handleClearFilters = useCallback(() => {
@@ -466,81 +473,78 @@ const ClientsPage = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <ClientsHeader onCreateClick={handleCreateClick} />
-
-      <ClientsFilters
-        searchTerm={searchTerm}
-        industry={industry}
-        clientType={clientType}
-        isActive={isActive}
-        onSearchChange={setSearchTerm}
-        onIndustryChange={setIndustry}
-        onClientTypeChange={setClientType}
-        onActiveChange={setIsActive}
-        onApplyFilters={handleApplyFilters}
-        onClear={handleClearFilters}
-      />
-
       <div className={styles.mainContent}>
+        <ClientsFilters
+          onApplyFilters={handleApplyFilters}
+          onClear={handleClearFilters}
+          initialSearchTerm={searchTerm}
+          initialIndustry={industry}
+          initialClientType={clientType}
+          initialIsActive={isActive}
+        />
+
         <ClientsTable
           clients={clients}
           loading={state.isPending}
-          selectedId={selectedClient?.id}
-          onSelect={handleSelectClient}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
             total: state.pagination?.totalCount || clients.length,
-            onChange: handlePaginationChange,
           }}
+          selectedClientId={selectedClient?.id}
+          onSelectClient={handleSelectClient}
+          onPaginationChange={handlePaginationChange}
+          headerExtra={
+            user ? (
+              <Button type="primary" onClick={handleCreateClick}>
+                Create Client
+              </Button>
+            ) : null
+          }
         />
 
-        <div className={styles.detailsPanel}>
-          {selectedClient ? (
-            <EntityWorkspaceTabs
-              title={`${selectedClient.name} Workspace`}
-              items={workspaceItems}
-              activeKey={workspaceTab}
-              onChange={setWorkspaceTab}
-            />
-          ) : (
-            <ClientDetails client={null} />
-          )}
-        </div>
-      </div>
+        {selectedClient && (
+          <EntityWorkspaceTabs
+            title={`${selectedClient.name} Workspace`}
+            items={workspaceItems}
+            activeKey={workspaceTab}
+            onChange={setWorkspaceTab}
+          />
+        )}
 
-      {/* Create Modal */}
-      <Modal
-        title="Create New Client"
-        open={isCreateModalOpen}
-        onCancel={handleCreateCancel}
-        footer={null}
-        width={600}
-      >
-        <ClientForm
-          form={createForm}
-          loading={state.isPending}
-          onSubmit={handleCreateSubmit}
+        {/* Create Modal */}
+        <Modal
+          title="Create New Client"
+          open={isCreateModalOpen}
           onCancel={handleCreateCancel}
-        />
-      </Modal>
+          footer={null}
+          width={600}
+        >
+          <ClientForm
+            form={createForm}
+            loading={state.isPending}
+            onSubmit={handleCreateSubmit}
+            onCancel={handleCreateCancel}
+          />
+        </Modal>
 
-      {/* Edit Modal */}
-      <Modal
-        title="Edit Client"
-        open={isEditModalOpen}
-        onCancel={handleEditCancel}
-        footer={null}
-        width={600}
-      >
-        <ClientForm
-          form={editForm}
-          initialValues={selectedClient || undefined}
-          loading={state.isPending}
-          onSubmit={handleEditSubmit}
+        {/* Edit Modal */}
+        <Modal
+          title="Edit Client"
+          open={isEditModalOpen}
           onCancel={handleEditCancel}
-        />
-      </Modal>
+          footer={null}
+          width={600}
+        >
+          <ClientForm
+            form={editForm}
+            initialValues={selectedClient || undefined}
+            loading={state.isPending}
+            onSubmit={handleEditSubmit}
+            onCancel={handleEditCancel}
+          />
+        </Modal>
+      </div>
     </div>
   );
 };
