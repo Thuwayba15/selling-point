@@ -26,7 +26,7 @@ import type { IActivity, ActivityStatus } from "@/providers/activities/context";
 const ActivitiesPage = () => {
   const { styles } = useStyles();
   const { message, modal } = App.useApp();
-  const { can } = useRbac();
+  const { can, user } = useRbac();
 
   // Provider state and actions
   const activitiesState = useActivitiesState();
@@ -62,7 +62,7 @@ const ActivitiesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Active tab - start with "my" to match initial data load
+  // Active tab
   const [activeTab, setActiveTab] = useState<string>("my");
 
   // Modal states
@@ -74,19 +74,110 @@ const ActivitiesPage = () => {
   const [editForm] = Form.useForm();
   const [completeForm] = Form.useForm();
 
+  const isSalesRep = Boolean(user?.roles?.includes("SalesRep"));
+
+  type ActivityFilters = {
+    type?: ActivityType;
+    status?: ActivityStatus;
+    priority?: Priority;
+    assignedToId?: string;
+    relatedToType?: RelatedToType;
+    relatedToId?: string;
+  };
+
+  const loadActivitiesForTab = useCallback(
+    (
+      key: string,
+      options?: { pageNumber?: number; pageSize?: number; filters?: ActivityFilters },
+    ) => {
+      const nextPageNumber = options?.pageNumber ?? 1;
+      const nextPageSize = options?.pageSize ?? pageSize;
+      const activeFilters = options?.filters;
+      const selectedType = activeFilters?.type ?? filterType;
+      const selectedStatus = activeFilters?.status ?? filterStatus;
+      const selectedAssignedToId = activeFilters?.assignedToId ?? filterAssignedToId;
+      const selectedRelatedToType = activeFilters?.relatedToType ?? filterRelatedToType;
+      const selectedRelatedToId = activeFilters?.relatedToId ?? filterRelatedToId;
+
+      switch (key) {
+        case "all":
+          activitiesActions.getActivities({
+            type: selectedType,
+            status: selectedStatus,
+            assignedToId: selectedAssignedToId,
+            relatedToType: selectedRelatedToType,
+            relatedToId: selectedRelatedToId,
+            pageNumber: nextPageNumber,
+            pageSize: nextPageSize,
+          });
+          break;
+        case "my":
+          if (isSalesRep && user?.id) {
+            activitiesActions.getActivities({
+              assignedToId: user.id,
+              status: selectedStatus,
+              pageNumber: nextPageNumber,
+              pageSize: nextPageSize,
+            });
+          } else {
+            activitiesActions.getMyActivities({
+              status: selectedStatus,
+              pageNumber: nextPageNumber,
+              pageSize: nextPageSize,
+            });
+          }
+          break;
+        case "upcoming":
+          activitiesActions.getUpcomingActivities({
+            daysAhead: 7,
+            pageNumber: nextPageNumber,
+            pageSize: nextPageSize,
+          });
+          break;
+        case "overdue":
+          activitiesActions.getOverdueActivities({
+            pageNumber: nextPageNumber,
+            pageSize: nextPageSize,
+          });
+          break;
+      }
+    },
+    [
+      pageSize,
+      filterType,
+      filterStatus,
+      filterAssignedToId,
+      filterRelatedToType,
+      filterRelatedToId,
+      activitiesActions,
+      isSalesRep,
+      user?.id,
+    ],
+  );
+
   // Initialize data on mount ONLY
   useEffect(() => {
     if (!initializedRef.current) {
       initializedRef.current = true;
       usersActions.getUsers({ isActive: true, pageSize: 1000 });
-      activitiesActions.getMyActivities({ pageNumber: 1, pageSize: 10 });
+      const defaultTab = isSalesRep ? "all" : "my";
+      setActiveTab(defaultTab);
+      loadActivitiesForTab(defaultTab, { pageNumber: 1, pageSize: 10 });
       // Load data for dropdowns
       clientsActions.getClients({ pageSize: 100 });
       opportunitiesActions.getOpportunities({ pageSize: 100 });
       proposalsActions.getProposals({ pageSize: 100 });
       contractsActions.getContracts({ pageSize: 100 });
     }
-  }, []);
+  }, [
+    loadActivitiesForTab,
+    clientsActions,
+    opportunitiesActions,
+    proposalsActions,
+    contractsActions,
+    usersActions,
+    isSalesRep,
+  ]);
 
   // Handle tab change
   const handleTabChange = useCallback(
@@ -95,61 +186,14 @@ const ActivitiesPage = () => {
       setCurrentPage(1);
       setSelectedActivity(null);
 
-      switch (key) {
-        case "all":
-          activitiesActions.getActivities({
-            type: filterType,
-            status: filterStatus,
-            assignedToId: filterAssignedToId,
-            relatedToType: filterRelatedToType,
-            relatedToId: filterRelatedToId,
-            pageNumber: 1,
-            pageSize,
-          });
-          break;
-        case "my":
-          activitiesActions.getMyActivities({
-            status: filterStatus,
-            pageNumber: 1,
-            pageSize,
-          });
-          break;
-        case "upcoming":
-          activitiesActions.getUpcomingActivities({
-            daysAhead: 7,
-            pageNumber: 1,
-            pageSize,
-          });
-          break;
-        case "overdue":
-          activitiesActions.getOverdueActivities({
-            pageNumber: 1,
-            pageSize,
-          });
-          break;
-      }
+      loadActivitiesForTab(key, { pageNumber: 1, pageSize });
     },
-    [
-      filterType,
-      filterStatus,
-      filterAssignedToId,
-      filterRelatedToType,
-      filterRelatedToId,
-      pageSize,
-      activitiesActions,
-    ],
+    [pageSize, loadActivitiesForTab],
   );
 
   // Handle filter application
   const handleApplyFilters = useCallback(
-    (filters: {
-      type?: ActivityType;
-      status?: ActivityStatus;
-      priority?: Priority;
-      assignedToId?: string;
-      relatedToType?: RelatedToType;
-      relatedToId?: string;
-    }) => {
+    (filters: ActivityFilters) => {
       setFilterType(filters.type);
       setFilterStatus(filters.status);
       setFilterPriority(filters.priority);
@@ -158,25 +202,11 @@ const ActivitiesPage = () => {
       setFilterRelatedToId(filters.relatedToId);
       setCurrentPage(1);
 
-      if (activeTab === "all") {
-        activitiesActions.getActivities({
-          type: filters.type,
-          status: filters.status,
-          assignedToId: filters.assignedToId,
-          relatedToType: filters.relatedToType,
-          relatedToId: filters.relatedToId,
-          pageNumber: 1,
-          pageSize,
-        });
-      } else if (activeTab === "my") {
-        activitiesActions.getMyActivities({
-          status: filters.status,
-          pageNumber: 1,
-          pageSize,
-        });
+      if (activeTab === "all" || activeTab === "my") {
+        loadActivitiesForTab(activeTab, { pageNumber: 1, pageSize, filters });
       }
     },
-    [activeTab, pageSize, activitiesActions],
+    [activeTab, pageSize, loadActivitiesForTab],
   );
 
   // Handle filter clearing
@@ -188,8 +218,19 @@ const ActivitiesPage = () => {
     setFilterRelatedToType(undefined);
     setFilterRelatedToId(undefined);
     setCurrentPage(1);
-    handleTabChange(activeTab);
-  }, [activeTab, handleTabChange]);
+    loadActivitiesForTab(activeTab, {
+      pageNumber: 1,
+      pageSize,
+      filters: {
+        type: undefined,
+        status: undefined,
+        priority: undefined,
+        assignedToId: undefined,
+        relatedToType: undefined,
+        relatedToId: undefined,
+      },
+    });
+  }, [activeTab, loadActivitiesForTab, pageSize]);
 
   // Handle pagination change
   const handlePaginationChange = useCallback(
@@ -197,49 +238,9 @@ const ActivitiesPage = () => {
       setCurrentPage(page);
       setPageSize(size);
 
-      switch (activeTab) {
-        case "all":
-          activitiesActions.getActivities({
-            type: filterType,
-            status: filterStatus,
-            assignedToId: filterAssignedToId,
-            relatedToType: filterRelatedToType,
-            relatedToId: filterRelatedToId,
-            pageNumber: page,
-            pageSize: size,
-          });
-          break;
-        case "my":
-          activitiesActions.getMyActivities({
-            status: filterStatus,
-            pageNumber: page,
-            pageSize: size,
-          });
-          break;
-        case "upcoming":
-          activitiesActions.getUpcomingActivities({
-            daysAhead: 7,
-            pageNumber: page,
-            pageSize: size,
-          });
-          break;
-        case "overdue":
-          activitiesActions.getOverdueActivities({
-            pageNumber: page,
-            pageSize: size,
-          });
-          break;
-      }
+      loadActivitiesForTab(activeTab, { pageNumber: page, pageSize: size });
     },
-    [
-      activeTab,
-      filterType,
-      filterStatus,
-      filterAssignedToId,
-      filterRelatedToType,
-      filterRelatedToId,
-      activitiesActions,
-    ],
+    [activeTab, loadActivitiesForTab],
   );
 
   // Load activity details when selected
@@ -546,7 +547,18 @@ const ActivitiesPage = () => {
           contracts={contracts}
         />
 
-      {renderTabContent()}
+        <div className={styles.tabsContainer}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={handleTabChange}
+            items={[
+              { key: "all", label: "All Activities", children: renderTabContent() },
+              { key: "my", label: "My Activities", children: renderTabContent() },
+              { key: "upcoming", label: "Upcoming", children: renderTabContent() },
+              { key: "overdue", label: "Overdue", children: renderTabContent() },
+            ]}
+          />
+        </div>
     </div>
 
       {/* Create Modal */}
